@@ -9,6 +9,7 @@ const projectSchema = new mongoose.Schema({
   projectId: {
     type: String,
     required: true,
+    trim: true,
   },
   description: {
     type: String,
