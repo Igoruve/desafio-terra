@@ -1,6 +1,14 @@
 import projectModel from "../models/projectModel.js";
 import userModel from "../models/userModel.js";
 import issueModel from "../models/issueModel.js";
+
+import {
+  ProjectTitleNotProvided,
+  ProjectDescriptionNotProvided,
+  ProjectNotFound,
+  ProjectDataMissing,
+} from "../utils/errors/projectErrors.js";
+
 import { customAlphabet } from "nanoid";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
@@ -42,7 +50,8 @@ const getProjectByIssueId = async (issueId) => {
     .populate("manager")
     .populate("issues");
 
-  if (!project) throw new Error("ProjectNotFound");
+  if (!project) throw new ProjectNotFound();
+
   return project;
 };
 
@@ -73,6 +82,14 @@ const getAllIssues = async (projectId) => {
 };
 
 const createProject = async (data) => {
+  if (!data.title || data.title.trim() === "") {
+    throw new ProjectTitleNotProvided();
+  }
+
+  if (!data.description || data.description.trim() === "") {
+    throw new ProjectDescriptionNotProvided();
+  }
+
   let projectId;
   let exists;
   const MAX_ATTEMPTS = 5;
@@ -80,7 +97,7 @@ const createProject = async (data) => {
 
   do {
     if (attempts >= MAX_ATTEMPTS) {
-      throw new Error("Could not generate unique projectId");
+      throw new Error("ProjectIdGenerationFailed");
     }
     projectId = getRandomCode();
     exists = await projectModel.findOne({ projectId });
@@ -105,13 +122,15 @@ const updateProject = async (id, updateData) => {
     .populate("manager")
     .populate("issues");
 
-  if (!project) throw new Error("ProjectNotFound");
+  if (!project) throw new ProjectNotFound();
+
   return project;
 };
 
 const removeProject = async (id) => {
   const project = await projectModel.findByIdAndDelete(id);
-  if (!project) throw new Error("ProjectNotFound");
+  if (!project) throw new ProjectNotFound();
+
   return project;
 };
 
