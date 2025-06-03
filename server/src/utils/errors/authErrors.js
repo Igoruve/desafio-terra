@@ -46,10 +46,10 @@ class EmailNotFound extends Error {
   }
 }
 
-class IncorrectPassword extends Error {
+class InvalidCredentials extends Error {
   constructor() {
-    super("Incorrect password.");
-    this.name = "IncorrectPassword";
+    super("Invalid credentials");
+    this.name = "Invalid credentials";
     this.statusCode = 401;
   }
 }
@@ -85,7 +85,7 @@ export {
   UserEmailAlreadyExists,
   UserCreationFailed,
   EmailNotFound,
-  IncorrectPassword,
+  InvalidCredentials,
   UnauthorizedError,
   TokenExpiredError,
   InvalidTokenError

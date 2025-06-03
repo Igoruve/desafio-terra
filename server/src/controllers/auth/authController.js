@@ -1,8 +1,8 @@
-import userModel from "../models/userModel.js";
+import userModel from "../../models/userModel.js";
 import { hash, compare } from "./bcrypt.js";
 import jwt from "jsonwebtoken";
 import { customAlphabet } from "nanoid";
-import { UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided, UserEmailAlreadyExists, UserCreationFailed } from "../utils/errors/authErrors.js";
+import { UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided, UserEmailAlreadyExists, UserCreationFailed, EmailNotFound, InvalidCredentials } from "../../utils/errors/authErrors.js";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
@@ -18,11 +18,11 @@ const login = async ({ email, password }) => {
 
   // Comparar contraseñas
   const isMatch = await compare(password, user.password);
-  if (!isMatch) throw new IncorrectPassword();
+  if (!isMatch) throw new InvalidCredentials();
 
   // Generar token
   const token = jwt.sign(
-    { _id: user._id, role: user.role },
+    { userId: user.userId, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: "24h" }
   );
@@ -58,12 +58,10 @@ const register = async ({ userData }) => {
   const userId = getRandomCode();
 
 const newUser = new userModel({
-    userId,
+    userId: userId,
     name: name,
-    role: "client",
-    email,
-    password: hashedPassword,
-    createdAt: new Date(),
+    email: email,
+    password: hashedPassword
   });
 
   // Guardar en base de datos
@@ -72,13 +70,6 @@ const newUser = new userModel({
   } catch (error) {
     throw new UserCreationFailed();
   }
-
-  // Generar token
-  const token = jwt.sign(
-    { _id: newUser._id, role: newUser.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "24h" }
-  );
 
   return {
     token,
