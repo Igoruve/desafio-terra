@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import session from 'express-session';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 // import router from './routes/index.js';
 
 // Cargar variables de entorno
@@ -13,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configurar middleware
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(express.static('src/public'));
@@ -30,7 +32,7 @@ app.use(session({
 }));
 
 // Configurar rutas
-// app.use('/', router);
+app.use('/', router);
 
 // Iniciar servidor
 app.listen(PORT, () => {
