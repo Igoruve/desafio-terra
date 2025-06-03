@@ -12,12 +12,12 @@ router.get("/user/:id", isLoggedInAPI,projectAPIController.getProjectsByUserId);
 
 router.get("/date/:date", isLoggedInAPI,projectAPIController.getProjectsByDate);
 
-router.get("/status/:status", isLoggedInAPI,projectAPIController.getProjectsByStatus);
+router.get("/status/:status", isLoggedInAPI,projectAPIController.getProjectByStatus);
 
 router.put("/:id", isLoggedInAPI,projectAPIController.editProject);
 
 router.delete("/:id", isLoggedInAPI,projectAPIController.deleteProject);
 
-router.get("/:id", isLoggedInAPI,projectAPIController.getProjectbyId);
+router.get("/:id", isLoggedInAPI,projectAPIController.getProjectById);
 
 export default router;
