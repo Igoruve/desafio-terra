@@ -26,13 +26,11 @@ const projectSchema = new mongoose.Schema({
     enum: ["pending", "in progress", "completed", "cancelled"],
     required: true,
   },
-  clients: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-  ],
+  client: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   manager: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
