@@ -13,7 +13,7 @@ import { customAlphabet } from "nanoid";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
-const validStatuses = ["pending", "in progress", "completed", "cancelled"];
+const validStatuses = ["in progress", "completed", "cancelled"];
 
 const getProjects = () =>
   projectModel
