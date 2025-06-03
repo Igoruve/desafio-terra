@@ -2,6 +2,10 @@ import * as projectController from "./projectController.js";
 
 const createProject = async (req, res) => {
   try {
+    const role = req.user?.role;
+    if (role === "client") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     const { data } = req.body;
     await projectController.createProject(data);
     res.status(201).json({ message: "Project created successfully" });
@@ -49,25 +53,6 @@ const getProjectsByUserId = async (req, res) => {
   }
 };
 
-const getProjectByIssueId = async (req, res) => {
-  try {
-    const project = await projectController.getProjectsByIssueId(req.params.id);
-    res.status(200).json(project);
-  } catch (error) {
-    const statusMap = {
-      IssueNotFound: 404,
-      ProjectNotFound: 404,
-    };
-    const messageMap = {
-      IssueNotFound: "Issue not found",
-      ProjectNotFound: "Project not found",
-    };
-    res.status(statusMap[error.message] || 500).json({
-      message: messageMap[error.message] || "Error fetching project",
-    });
-  }
-};
-
 const getProjectsByDate = async (req, res) => {
   try {
     const projects = await projectController.getProjectsByDate(req.params.date);
@@ -89,25 +74,9 @@ const getProjectByStatus = async (req, res) => {
     res.status(500).json({ message: "Error fetching projects" });
   }
 };
-
-const getAllIssues = async (req, res) => {
+const deleteProject = async (req, res) => {
   try {
-    const issues = await projectController.getAllIssues(req.params.projectId);
-    if (!issues) {
-      return res
-        .status(404)
-        .json({ message: "Project not found or no issues" });
-    }
-    res.status(200).json(issues);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error fetching issues" });
-  }
-};
-
-const removeProject = async (req, res) => {
-  try {
-    await projectController.removeProject(req.params.id);
+    await projectController.deleteProject(req.params.id);
     res.status(200).json({ message: "Project deleted successfully" });
   } catch (error) {
     if (error.message === "ProjectNotFound") {
@@ -118,9 +87,9 @@ const removeProject = async (req, res) => {
   }
 };
 
-const updateProject = async (req, res) => {
+const editProject = async (req, res) => {
   try {
-    const project = await projectController.updateProject(
+    const project = await projectController.editProject(
       req.params.id,
       req.body
     );
@@ -143,6 +112,6 @@ export {
   getProjectsByDate,
   getProjectByStatus,
   getAllIssues,
-  removeProject,
-  updateProject,
+  deleteProject,
+  editProject,
 };
