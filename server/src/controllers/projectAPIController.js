@@ -76,6 +76,33 @@ const getProjectsByDate = async (req, res) => {
   }
 };
 
+const getProjectByStatus = async (req, res) => {
+  try {
+    const projects = await projectController.getProjectByStatus(
+      req.params.status
+    );
+    res.status(200).json(projects);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching projects" });
+  }
+};
+
+const getAllIssues = async (req, res) => {
+  try {
+    const issues = await projectController.getAllIssues(req.params.projectId);
+    if (!issues) {
+      return res
+        .status(404)
+        .json({ message: "Project not found or no issues" });
+    }
+    res.status(200).json(issues);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching issues" });
+  }
+};
+
 const removeProject = async (req, res) => {
   try {
     await projectController.removeProject(req.params.id);
@@ -112,6 +139,8 @@ export {
   getProjectsByUserId,
   getProjectByIssueId,
   getProjectsByDate,
+  getProjectByStatus,
+  getAllIssues,
   removeProject,
   updateProject,
 };
