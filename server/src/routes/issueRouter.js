@@ -1,7 +1,6 @@
 import {Router} from "express";
 import issueAPIController from "../controllers/issue/issueApiController.js"
 import { isLoggedInAPI} from "../middlewares/authMiddleware.js";
-import {isClient} from "../middlewares/clientMiddleware.js";
 
 const router = Router();
 

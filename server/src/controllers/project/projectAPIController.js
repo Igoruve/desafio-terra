@@ -103,15 +103,13 @@ const editProject = async (req, res) => {
   }
 };
 
-export {
+export default{
   createProject,
   getProjects,
   getProjectById,
   getProjectsByUserId,
-  getProjectByIssueId,
   getProjectsByDate,
   getProjectByStatus,
-  getAllIssues,
   deleteProject,
   editProject,
 };
