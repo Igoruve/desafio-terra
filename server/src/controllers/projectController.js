@@ -40,7 +40,7 @@ const getProjectsByUserId = async (userId) => {
     .populate("issues");
 };
 
-const getProjectByIssueId = async (issueId) => {
+const getProjectsByIssueId = async (issueId) => {
   const issue = await issueModel.findById(issueId.trim());
   if (!issue) throw new Error("IssueNotFound");
 
@@ -62,7 +62,7 @@ const getProjectsByDate = (date) =>
     .populate("manager")
     .populate("issues");
 
-const getProjectByStatus = async (status) => {
+const getProjectsByStatus = async (status) => {
   if (!validStatuses.includes(status)) {
     throw new Error("InvalidStatus");
   }
@@ -74,7 +74,7 @@ const getProjectByStatus = async (status) => {
     .populate("issues");
 };
 
-const getAllIssues = async (projectId) => {
+const getAllIssuesByProject = async (projectId) => {
   const project = await projectModel.findOne({ projectId }).populate("issues");
 
   if (!project) throw new Errors.ProjectNotFound();
@@ -139,10 +139,10 @@ export {
   getProjects,
   getProjectById,
   getProjectsByUserId,
-  getProjectByIssueId,
+  getProjectsByIssueId,
   getProjectsByDate,
-  getProjectByStatus,
-  getAllIssues,
+  getProjectsByStatus,
+  getAllIssuesByProject,
   updateProject,
   removeProject,
 };
