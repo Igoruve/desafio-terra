@@ -18,7 +18,7 @@ function isLoggedInAPI(req, res, next) {
     const decoded = verifyToken(token);
 
     req.user = {
-      _id: decoded._id,
+      userId: decoded.userId,
       role: decoded.role,
     };
 
