@@ -23,7 +23,7 @@ const projectSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "in progress", "completed", "cancelled"],
+    enum: ["in progress", "completed", "cancelled"],
     required: true,
   },
   client: {
