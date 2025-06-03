@@ -22,6 +22,7 @@ async function getIssuesByStatus(status){
     return issues;
 }
 
+
 async function getIssuesByDate(date){
     const issues = await issueModel.find({date:date}).populate("client");
     return issues;
