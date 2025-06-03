@@ -51,6 +51,20 @@ const getProjectsByDate = (date) =>
     .populate("manager")
     .populate("issues");
 
+const getProjectByStatus = (status) =>
+  projectModel
+    .find({ status: status })
+    .populate("clients")
+    .populate("manager")
+    .populate("issues");
+
+const getAllIssues = async (projectId) => {
+  const project = await projectModel
+    .findOne({ projectId: projectId })
+    .populate("issues");
+  return project.issues;
+};
+
 const createProject = async (data) => {
   let projectId;
   let exists;
@@ -95,6 +109,8 @@ export {
   getProjectsByUserId,
   getProjectByIssueId,
   getProjectsByDate,
+  getProjectByStatus,
+  getAllIssues,
   updateProject,
   removeProject,
 };
