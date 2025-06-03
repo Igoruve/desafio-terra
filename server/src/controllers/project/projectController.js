@@ -1,12 +1,10 @@
-import projectModel from "../models/projectModel.js";
+import projectModel from "../../models/projectModel.js";
 import userModel from "../../models/userModel.js";
-import issueModel from "../models/issueModel.js";
 
 import {
   ProjectTitleNotProvided,
   ProjectDescriptionNotProvided,
   ProjectNotFound,
-  ProjectDataMissing,
 } from "../../utils/errors/projectErrors.js";
 
 import { customAlphabet } from "nanoid";
@@ -93,7 +91,7 @@ const deleteProject = async (id) => {
   return project;
 };
 
-export {
+export default{ 
   createProject,
   getProjects,
   getProjectById,

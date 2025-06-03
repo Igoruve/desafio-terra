@@ -2,8 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import session from 'express-session';
 import cors from 'cors';
+import router from './routes/router.js';
 import cookieParser from 'cookie-parser';
-// import router from './routes/index.js';
 
 // Cargar variables de entorno
 dotenv.config();
