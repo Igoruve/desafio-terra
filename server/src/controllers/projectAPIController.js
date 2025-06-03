@@ -51,7 +51,7 @@ const getProjectsByUserId = async (req, res) => {
 
 const getProjectByIssueId = async (req, res) => {
   try {
-    const project = await projectController.getProjectByIssueId(req.params.id);
+    const project = await projectController.getProjectsByIssueId(req.params.id);
     res.status(200).json(project);
   } catch (error) {
     const statusMap = {
@@ -80,7 +80,7 @@ const getProjectsByDate = async (req, res) => {
 
 const getProjectByStatus = async (req, res) => {
   try {
-    const projects = await projectController.getProjectByStatus(
+    const projects = await projectController.getProjectsByStatus(
       req.params.status
     );
     res.status(200).json(projects);
