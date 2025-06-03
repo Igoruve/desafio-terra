@@ -5,6 +5,8 @@ import { customAlphabet } from "nanoid";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
+const validStatuses = ["pending", "in progress", "completed", "cancelled"];
+
 const getProjects = () =>
   projectModel
     .find()
@@ -51,27 +53,38 @@ const getProjectsByDate = (date) =>
     .populate("manager")
     .populate("issues");
 
-const getProjectByStatus = (status) =>
-  projectModel
-    .find({ status: status })
+const getProjectByStatus = async (status) => {
+  if (!validStatuses.includes(status)) {
+    throw new Error("InvalidStatus");
+  }
+
+  return projectModel
+    .find({ status })
     .populate("clients")
     .populate("manager")
     .populate("issues");
+};
 
 const getAllIssues = async (projectId) => {
-  const project = await projectModel
-    .findOne({ projectId: projectId })
-    .populate("issues");
+  const project = await projectModel.findOne({ projectId }).populate("issues");
+
+  if (!project) throw new Errors.ProjectNotFound();
   return project.issues;
 };
 
 const createProject = async (data) => {
   let projectId;
   let exists;
+  const MAX_ATTEMPTS = 5;
+  let attempts = 0;
 
   do {
+    if (attempts >= MAX_ATTEMPTS) {
+      throw new Error("Could not generate unique projectId");
+    }
     projectId = getRandomCode();
     exists = await projectModel.findOne({ projectId });
+    attempts++;
   } while (exists);
 
   const project = new projectModel({
