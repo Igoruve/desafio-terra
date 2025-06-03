@@ -6,13 +6,11 @@ import {
 } from "../utils/errors/authErrors.js";
 
 function isLoggedInAPI(req, res, next) {
-  const authorization = req.headers.authorization;
+  const token = req.cookies?.token;
 
-  if (!authorization || !authorization.startsWith("Bearer ")) {
+  if (!token) {
     return next(new UnauthorizedError("Authorization token not provided"));
   }
-
-  const token = authorization.split(" ")[1];
 
   try {
     const decoded = verifyToken(token);
