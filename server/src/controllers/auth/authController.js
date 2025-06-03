@@ -72,7 +72,6 @@ const newUser = new userModel({
   }
 
   return {
-    token,
     user: {
       id: newUser._id,
       userId: newUser.userId,
@@ -81,7 +80,7 @@ const newUser = new userModel({
       role: newUser.role,
       createdAt: newUser.createdAt,
     }
-};
+  };
 };
 
 export default { login, register };
