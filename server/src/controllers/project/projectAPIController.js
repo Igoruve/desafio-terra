@@ -1,4 +1,4 @@
-import * as projectController from "./projectController.js";
+import projectController from "./projectController.js";
 
 const createProject = async (req, res) => {
   try {
@@ -6,7 +6,7 @@ const createProject = async (req, res) => {
     if (role === "client") {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { data } = req.body;
+    const data = req.body;
     await projectController.createProject(data);
     res.status(201).json({ message: "Project created successfully" });
   } catch (error) {
@@ -22,7 +22,6 @@ const getProjects = async (req, res) => {
     const projects = await projectController.getProjects();
     res.status(200).json(projects);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Error fetching projects" });
   }
 };
@@ -55,7 +54,7 @@ const getProjectsByUserId = async (req, res) => {
 
 const getProjectsByDate = async (req, res) => {
   try {
-    const projects = await projectController.getProjectsByDate(req.params.date);
+    const projects = await projectController.getProjectsByDate(req.body.date);
     res.status(200).json(projects);
   } catch (error) {
     console.error(error);
@@ -66,7 +65,7 @@ const getProjectsByDate = async (req, res) => {
 const getProjectByStatus = async (req, res) => {
   try {
     const projects = await projectController.getProjectsByStatus(
-      req.params.status
+      req.body.status
     );
     res.status(200).json(projects);
   } catch (error) {

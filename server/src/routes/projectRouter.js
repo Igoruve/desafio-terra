@@ -28,7 +28,25 @@ router.put("/:id", isLoggedInAPI, projectAPIController.editProject);
 
 router.post("/", isLoggedInAPI, projectAPIController.createProject);
 
-router.delete("/:id", isLoggedInAPI, projectAPIController.deleteProject);
+router.get("/", isLoggedInAPI, projectAPIController.getProjects);
+
+router.get(
+  "/user/:id",
+  isLoggedInAPI,
+  projectAPIController.getProjectsByUserId
+);
+
+router.get(
+  "/date/:date",
+  isLoggedInAPI,
+  projectAPIController.getProjectsByDate
+);
+
+router.get(
+  "/status/:status",
+  isLoggedInAPI,
+  projectAPIController.getProjectByStatus
+);
 
 router.get("/:id", isLoggedInAPI, projectAPIController.getProjectById);
 

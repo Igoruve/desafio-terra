@@ -29,6 +29,7 @@ const issueSchema = new moongoose.Schema({
         type: String,
         enum: ["Desktop", "Mobile", "Tablet"],
         required: true,
+        default: "Desktop",
     },
     browser: {
         type: String,

@@ -34,11 +34,11 @@ async function getIssuesByDevice(device){
 }
 async function createIssue (projectId,data){
 
-    if(!data.issueType) throw issueTypeNotProvided();
-    if(!data.device) throw deviceNotProvided();
-    if(!data.browser) throw browserNotProvided();
-    if(!data.clientComment) throw clientCommentNotProvided();
-    if(!data.pageUrl) throw pageUrlNotProvided();
+    if(!data.issueType) throw new issueTypeNotProvided();
+    if(!data.device) throw new deviceNotProvided();
+    if(!data.browser) throw new browserNotProvided();
+    if(!data.clientComment) throw new clientCommentNotProvided();
+    if(!data.page) throw new pageUrlNotProvided();
 
     const code = getRandomCode();
     data.issueId = code;
@@ -55,13 +55,6 @@ async function createIssue (projectId,data){
 }
 
 async function editIssue(issueId,data){
-
-    if(!data.issueType) throw issueTypeNotProvided();
-    if(!data.device) throw deviceNotProvided();
-    if(!data.browser) throw browserNotProvided();
-    if(!data.clientComment) throw clientCommentNotProvided();
-    if(!data.pageUrl) throw pageUrlNotProvided();
-
     const issue = await issueModel.findOneAndUpdate({issueId:issueId},data,{new:true});
     return issue;
 }
