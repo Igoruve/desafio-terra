@@ -16,8 +16,9 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      required: true,
+      enum: ["project manager", "admin", "client"],
       trim: true,
+      default: "client",
     },
     apiKey: {
       type: String,
