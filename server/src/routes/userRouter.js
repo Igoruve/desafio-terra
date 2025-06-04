@@ -5,17 +5,17 @@ import { requireSuperadmin } from "../middlewares/roleMiddleware.js";
 
 const router = Router();
 
-router.get("/", requireSuperadmin, userApiController.getAllUsers);
-router.get("/:userId", requireSuperadmin, userApiController.getUserById);
+router.get("/users", requireSuperadmin, userApiController.getAllUsers);
+router.get("/users/:userId", requireSuperadmin, userApiController.getUserById);
 
-router.get("/project/:projectId", requireSPM, userApiController.getUserByProjectId);
+router.get("/projects/:projectId/user", requireSPM, userApiController.getUserByProjectId);
 
-router.post("/", requireSuperadmin, userApiController.createUser);
+router.post("/users", requireSuperadmin, userApiController.createUser);
 
-router.put("/:userId", requireSuperadmin, userApiController.updateUser);
+router.put("/users/:userId", requireSuperadmin, userApiController.updateUser);
 
-router.put("/:targetUserId/role", requireSuperadmin, userApiController.updateUserRole);
+router.put("/users/:targetUserId/role", requireSuperadmin, userApiController.updateUserRole);
 
-router.delete("/:userId", requireSuperadmin, userApiController.deleteUser);
+router.delete("/users/:userId", requireSuperadmin, userApiController.deleteUser);
 
 export default router;
