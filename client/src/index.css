@@ -1,19 +1,18 @@
 @import "tailwindcss";
-
-@font-face {
-    font-family: "UncutSans";
-    src: url("../assets/typographys/UncutSans-Variable.ttf") format("truetype");
-    font-weight: 100 900;
-    font-style: normal;
-    font-display: swap;
-  }
-  
+@import "@fontsource/uncut-sans";
 
 :root {
   --bg-color: #0f0f0f;
 }
 
 html {
-    font-family: "UncutSans", sans-serif;
-  }
+  font-family: "Uncut Sans", sans-serif;
+}
 
+h1{
+  font-weight: 200;
+}
+
+h2{
+  font-weight: 100;
+}

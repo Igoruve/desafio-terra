@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        uncut: ["UncutSans", "sans-serif"],
+        sans: ['"Uncut Sans"', "sans-serif"],
       },
     },
   },
