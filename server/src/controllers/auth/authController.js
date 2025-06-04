@@ -50,14 +50,6 @@ const register = async ({ userData }) => {
   if (!password) throw new UserPasswordNotProvided();
   if (!name) throw new UserNameNotProvided();
 
-  const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-
-  if (!pwdRegex.test(userData.password)) {
-      const error = new Error('The password must be at least 8 characters long, with letters and numbers');
-      error.statusCode = 400;
-      throw error;
-  }
-
 // Verificar si el email ya está en uso
   const existingEmail = await userModel.findOne({ email });
   if (existingEmail) throw new UserEmailAlreadyExists();
@@ -65,14 +57,6 @@ const register = async ({ userData }) => {
 // Hashear la contraseña
  /*  const hashedPassword = await hash(password, 10);*/
   const userId = getRandomCode(); 
-
-const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-
-if (!emailRegex.test(userData.email)) {
-    const error = new Error('The email is not valid');
-    error.statusCode = 400;
-    throw error;
-}
 
 const newUser = new userModel({
     userId: userId,
