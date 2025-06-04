@@ -10,9 +10,9 @@ router.get("/", isLoggedInAPI,projectAPIController.getProjects);
 
 router.get("/user/:id", isLoggedInAPI,projectAPIController.getProjectsByUserId);
 
-router.get("/date/:date", isLoggedInAPI,projectAPIController.getProjectsByDate);
+router.get("/date", isLoggedInAPI,projectAPIController.getProjectsByDate);
 
-router.get("/status/:status", isLoggedInAPI,projectAPIController.getProjectByStatus);
+router.get("/status", isLoggedInAPI,projectAPIController.getProjectByStatus);
 
 router.put("/:id", isLoggedInAPI,projectAPIController.editProject);
 

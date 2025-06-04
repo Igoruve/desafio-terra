@@ -1,4 +1,4 @@
-import * as projectController from "./projectController.js";
+import projectController from "./projectController.js";
 
 const createProject = async (req, res) => {
   try {
@@ -6,7 +6,8 @@ const createProject = async (req, res) => {
     if (role === "client") {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const { data } = req.body;
+    const data = req.body;
+    console.log(data);
     await projectController.createProject(data);
     res.status(201).json({ message: "Project created successfully" });
   } catch (error) {
@@ -29,6 +30,7 @@ const getProjects = async (req, res) => {
 
 const getProjectById = async (req, res) => {
   try {
+    console.log(req.params.id);
     const project = await projectController.getProjectById(req.params.id);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -55,7 +57,7 @@ const getProjectsByUserId = async (req, res) => {
 
 const getProjectsByDate = async (req, res) => {
   try {
-    const projects = await projectController.getProjectsByDate(req.params.date);
+    const projects = await projectController.getProjectsByDate(req.body.date);
     res.status(200).json(projects);
   } catch (error) {
     console.error(error);
@@ -66,7 +68,7 @@ const getProjectsByDate = async (req, res) => {
 const getProjectByStatus = async (req, res) => {
   try {
     const projects = await projectController.getProjectsByStatus(
-      req.params.status
+      req.body.status
     );
     res.status(200).json(projects);
   } catch (error) {

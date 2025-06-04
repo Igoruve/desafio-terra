@@ -18,6 +18,7 @@ const login = async ({ email, password }) => {
 
   // Comparar contraseñas
   const isMatch = await compare(password, user.password);
+  console.log(password, user.password);
   if (!isMatch) throw new InvalidCredentials();
 
   // Generar token
@@ -54,20 +55,21 @@ const register = async ({ userData }) => {
   if (existingEmail) throw new UserEmailAlreadyExists();
 
 // Hashear la contraseña
- /*  const hashedPassword = await hash(password, 10);
-  const userId = getRandomCode(); */
+ /*  const hashedPassword = await hash(password, 10);*/
+  const userId = getRandomCode(); 
 
 const newUser = new userModel({
     userId: userId,
     name: name,
     email: email,
-    password: hashedPassword
+    password: password
   });
 
   // Guardar en base de datos
   try {
     await newUser.save();
   } catch (error) {
+    console.error(error);
     throw new UserCreationFailed();
   }
 
