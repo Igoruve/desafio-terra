@@ -28,7 +28,7 @@ const getProjectsByUserId = async (userId) => {
   if (!user) throw new Error("UserNotFound");
 
   return projectModel
-    .find({ $or: [{ manager: user.userId }, { client: user.userId }] })
+    .find({ $or: [{ manager: user._id }, { client: user._id }] })
     .populate("client")
     .populate("manager")
     .populate("issues");
@@ -71,7 +71,7 @@ const createProject = async (data) => {
 
 const editProject = async (id, updateData) => {
   const project = await projectModel
-    .findOneAndUpdate(id, updateData, {
+    .findOneAndUpdate({projectId:id}, updateData, {
       new: true,
       runValidators: true,
     })
@@ -85,7 +85,7 @@ const editProject = async (id, updateData) => {
 };
 
 const deleteProject = async (id) => {
-  const project = await projectModel.findOneAndDelete(id);
+  const project = await projectModel.findOneAndDelete({projectId:id});
   if (!project) throw new ProjectNotFound();
 
   return project;
