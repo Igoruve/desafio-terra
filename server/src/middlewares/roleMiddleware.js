@@ -21,7 +21,7 @@ function requirePM(req, res, next) {
   next();
 }
 
-export default {
-                requirePM, 
-                requireAdmin
-              };
+export {
+  requirePM,
+  requireAdmin
+};

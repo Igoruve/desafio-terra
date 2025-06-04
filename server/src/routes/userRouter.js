@@ -1,21 +1,24 @@
 import { Router } from "express";
 import userApiController from "../controllers/user/userApiController.js";
 import { isLoggedInAPI } from "../middlewares/authMiddleware.js";
-import { requireSuperadmin } from "../middlewares/roleMiddleware.js"; 
+import { requireAdmin } from "../middlewares/roleMiddleware.js"; 
 
 const router = Router();
 
-router.get("/users", isLoggedInAPI, requireSuperadmin, userApiController.getAllUsers);
-router.get("/users/:userId", isLoggedInAPI, requireSuperadmin, userApiController.getUserById);
+router.get("/", isLoggedInAPI, requireAdmin, userApiController.getAllUsers);
 
-router.get("/projects/:projectId/user", isLoggedInAPI, requireSuperadmin, userApiController.getUserByProjectId);
+router.get("/name", isLoggedInAPI, userApiController.getUserByName);
 
-router.post("/users", isLoggedInAPI, requireSuperadmin, userApiController.createUser);
+router.get("/projects/:id", isLoggedInAPI, requireAdmin, userApiController.getUserByProjectId);
 
-router.put("/users/:userId", isLoggedInAPI, requireSuperadmin, userApiController.updateUser);
+router.post("/create", isLoggedInAPI, requireAdmin, userApiController.createUser);
 
-router.put("/users/:targetUserId/role", isLoggedInAPI, requireSuperadmin, userApiController.updateUserRole);
+router.put("/role", isLoggedInAPI, requireAdmin, userApiController.editUserRole);
 
-router.delete("/users/:userId", isLoggedInAPI, requireSuperadmin, userApiController.deleteUser);
+router.delete("/:id", isLoggedInAPI, requireAdmin, userApiController.deleteUser);
+
+router.put("/:id", isLoggedInAPI, userApiController.editUser);
+
+router.get("/:id", isLoggedInAPI, requireAdmin, userApiController.getUserById);
 
 export default router;

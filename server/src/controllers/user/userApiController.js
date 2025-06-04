@@ -1,9 +1,6 @@
-import userController from "./userController.js";
-import projectModel from "../models/projectModel.js";  
-import {isLoggedInAPI} from "../middleware/authMiddleware.js"; 
-import  requirePM from "../middlewares/roleMiddleware.js"; 
-import requireAdmin from "../middlewares/roleMiddleware.js";
-import ProjectNotFound from "../utils/errors/ProjectErrors.js";
+import userController from "./userController.js"; //MODIFICADO
+import projectModel from "../../models/projectModel.js";  
+import {ProjectNotFound} from "../../utils/errors/projectErrors.js";
 import {
   UserDoesNotExist,
   ApiKeyRequired,
@@ -11,16 +8,13 @@ import {
   RequestingUserNotFound,
   RoleChangeNotAllowed,
   UsersDoNotExist,
-} from "../utils/errors/UserErrors.js";
+} from "../../utils/errors/userErrors.js";
 
 
 
-const getUserByName = [
-  requirePM,
-  requireAdmin,
-  async (req, res) => {
+const getUserByName = async (req, res) => {
   try {
-    const user = await getUserByName(req.params.name);
+    const user = await userController.getUserByName(req.body.name);
     res.status(200).json(user);
   } catch (error) {
     if (error instanceof UserDoesNotExist) {
@@ -28,11 +22,9 @@ const getUserByName = [
     }
     res.status(500).json({ error: "Internal server error" });
   }
-}];
+};
 
-const getAllUsers = [  
-  requireAdmin,
-  async (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
     const users = await userController.getAll();
     res.status(200).json(users);
@@ -42,13 +34,11 @@ const getAllUsers = [
     }
     res.status(500).json({ error: "Internal server error" });
   }
-}];
+};
 
-const getUserById = [  
-  requireAdmin,
-  async (req, res) => {
+const getUserById = async (req, res) => {
   try {
-    const user = await userController.getUserById(req.params.userId);
+    const user = await userController.getUserById(req.params.id);
     res.status(200).json(user);
   } catch (error) {
     if (error instanceof UserDoesNotExist) {
@@ -56,11 +46,9 @@ const getUserById = [
     }
     res.status(500).json({ error: "Internal server error" });
   }
-}];
+};
 
-const createUser = [ 
-  requireAdmin,
-  async (req, res) => {
+const createUser = async (req, res) => {
   try {
     const user = await userController.createUser(req.body);
     res.status(201).json(user);
@@ -73,13 +61,11 @@ const createUser = [
     }
     res.status(500).json({ error: "Internal server error" });
   }
-}];
+};
 
-const editUser = 
-  isLoggedInAPI
-  async (req, res) => {
+const editUser = async (req, res) => {
   try {
-    const user = await userController.editUserById(req.params.userId, req.body);
+    const user = await userController.editUserById(req.params.id, req.body);
     res.status(200).json(user);
   } catch (error) {
     if (error instanceof UserDoesNotExist) {
@@ -89,11 +75,9 @@ const editUser =
   }
 };
 
-const deleteUser = [ 
-  requireAdmin,
-  async (req, res) => {
+const deleteUser = async (req, res) => {
   try {
-    const user = await userController.deleteUserById(req.params.userId);
+    const user = await userController.deleteUserById(req.params.id);
     res.status(200).json({ message: "User deleted successfully", user });
   } catch (error) {
     if (error instanceof UserDoesNotExist) {
@@ -101,12 +85,9 @@ const deleteUser = [
     }
     res.status(500).json({ error: "Internal server error" });
   }
-}];
+};
 
-const getUserByProjectId = [ 
-  requireAdmin,
-  
-  async (req, res) => {
+const getUserByProjectId = async (req, res) => {
   try {
     const project = await projectModel.findById(req.params.projectId);
     if (!project) {
@@ -123,39 +104,35 @@ const getUserByProjectId = [
     }
     res.status(500).json({ error: "Internal server error" });
   }
-}];
+};
 
-const updateUserRole = [
-  isloggedInAPI,
-  requireAdmin,
-  async (req, res) => {
-    try {
-      const callerUserId = req.user.userId; // del token
-      const { targetUserId } = req.params; //del path por onclick
-      const { newRole } = req.body; // del input
+const editUserRole = async (req, res) => {
+  try {
+    const adminUserId = req.user.userId;
+    const { userId, newRole } = req.body;
 
-      const user = await userController.editUserRole(callerUserId, targetUserId, newRole);
-      res.status(200).json(user);
-    } catch (error) {
-      if (
-        error instanceof UserDoesNotExist ||
-        error instanceof RequestingUserNotFound ||
-        error instanceof RoleChangeNotAllowed
-      ) {
-        return res.status(error.statusCode).json({ error: error.message });
-      }
-      res.status(500).json({ error: "Internal server error" });
+    const user = await userController.editUserRole(adminUserId, userId, newRole);
+    res.status(200).json(user);
+  } catch (error) {
+    if (
+      error instanceof UserDoesNotExist ||
+      error instanceof RequestingUserNotFound ||
+      error instanceof RoleChangeNotAllowed
+    ) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
+    res.status(500).json({ error: "Internal server error" });
   }
-];
+};
 
 
-export {
+export default{
   getAllUsers,
   getUserById,
+  getUserByName,
   createUser,
   editUser,
   deleteUser,
   getUserByProjectId,
-  updateUserRole,
+  editUserRole,
 };
