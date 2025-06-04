@@ -1,5 +1,5 @@
 import userModel from "../../models/userModel.js";
-import { hash, compare } from "./bcrypt.js";
+import { hash, compare } from "../../utils/bcrypt.js";
 import jwt from "jsonwebtoken";
 import { customAlphabet } from "nanoid";
 import { UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided, UserEmailAlreadyExists, UserCreationFailed, EmailNotFound, InvalidCredentials } from "../../utils/errors/authErrors.js";
