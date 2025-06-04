@@ -39,6 +39,6 @@ app.use(session({
 app.use('/', router);
 
 // Iniciar servidor
-app.listen(PORT, () => {
+app.listen(3000, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });

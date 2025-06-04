@@ -25,6 +25,7 @@ const projectSchema = new mongoose.Schema({
     type: String,
     enum: ["in progress", "completed", "cancelled"],
     required: true,
+    default: "in progress",
   },
   client: {
     type: mongoose.Schema.Types.ObjectId,
@@ -39,8 +40,7 @@ const projectSchema = new mongoose.Schema({
   issues: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Issue",
-      required: true,
+      ref: "Issue"
     },
   ],
 });

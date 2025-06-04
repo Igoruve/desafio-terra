@@ -1,7 +1,7 @@
 import { Router } from "express";
 import userApiController from "../controllers/user/userApiController.js";
-import { isLoggedInAPI } from "../middleware/authMiddleware.js";
-import { requireSuperadmin } from "../middleware/roleMiddleware.js"; 
+import { isLoggedInAPI } from "../middlewares/authMiddleware.js";
+import { requireSuperadmin } from "../middlewares/roleMiddleware.js"; 
 
 const router = Router();
 
