@@ -29,9 +29,10 @@ const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const handleRegister = async (email, password) => {
+  const handleRegister = async (name, email, password) => {
     try {
-      const result = await register(email, password);
+      const result = await register(name, email, password);
+
       if (result.error) {
         return result.error;
       } else {
@@ -68,7 +69,7 @@ const AuthProvider = ({ children }) => {
         let finalUserData = result.user;
         setUserData(finalUserData);
         saveToLocalStorage("userData", finalUserData);
-        navigate(`/project/user/`);
+        navigate("/"); //TODO: redirigir a la homepage?
         return null;
       }
     } catch (error) {

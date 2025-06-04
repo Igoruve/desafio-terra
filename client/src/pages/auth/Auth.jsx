@@ -1,6 +1,5 @@
 import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-
 import { AuthContext } from "../../context/AuthContext";
 
 function Auth({ isRegister }) {
@@ -12,29 +11,17 @@ function Auth({ isRegister }) {
     name: "",
   });
 
-  const handleUserPassword = (e) => {
-    const newPassword = e.target.value;
-    const newState = { ...userData, password: newPassword };
-    setUserData(newState);
-  };
-
-  const handleUserEmail = (e) => {
-    const newEmail = e.target.value;
-    const newState = { ...userData, email: newEmail };
-    setUserData(newState);
-  };
-
-  const handleUserName = (e) => {
-    const newName = e.target.value;
-    const newState = { ...userData, name: newName };
-    setUserData(newState);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const action = isRegister ? onRegister : onLogin;
-    //sacamos los datos del formulario:
-    const result = await action(userData.email, userData.password);
+    const result = isRegister
+      ? await onRegister(userData.name, userData.email, userData.password)
+      : await onLogin(userData.email, userData.password);
+
     setError(result);
   };
 
@@ -50,36 +37,23 @@ function Auth({ isRegister }) {
           onSubmit={handleSubmit}
           className="flex flex-col bg-gray-900 p-4 rounded-lg border border-gray-500/50 shadow-lg h-fit justify-around w-84 items-center"
         >
-          <div className="flex flex-col gap-4 ">
-            {!isRegister ? (
-              ""
-            ) : (
+          <div className="flex flex-col gap-4">
+            {isRegister && (
               <div className="flex flex-col gap-2">
-                <label className="text-white" htmlFor="email">
+                <label className="text-white" htmlFor="name">
                   Username:
                 </label>
                 <input
                   className="bg-gray-800 border border-white/50 rounded-sm text-white px-2 py-2"
                   type="text"
-                  id="text"
-                  name="text"
+                  id="name"
+                  name="name"
+                  value={userData.name}
+                  onChange={handleChange}
+                  required
                 />
               </div>
             )}
-            <div className="flex flex-col gap-2">
-              <label className="text-white" htmlFor="email">
-                Username:
-              </label>
-              <input
-                className="bg-gray-800 border border-white/50 rounded-sm text-white px-2 py-2"
-                type="text"
-                id="name"
-                name="name"
-                value={userData.name}
-                onChange={handleUserName}
-                required
-              />
-            </div>
             <div className="flex flex-col gap-2">
               <label className="text-white" htmlFor="email">
                 Email:
@@ -90,7 +64,7 @@ function Auth({ isRegister }) {
                 id="email"
                 name="email"
                 value={userData.email}
-                onChange={handleUserEmail}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -104,7 +78,7 @@ function Auth({ isRegister }) {
                 id="password"
                 name="password"
                 value={userData.password}
-                onChange={handleUserPassword}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -118,6 +92,7 @@ function Auth({ isRegister }) {
             </button>
           </div>
         </form>
+
         {isRegister ? (
           <>
             <p className="mt-4 text-white">Already have an account?</p>

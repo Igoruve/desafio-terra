@@ -16,18 +16,21 @@ async function login(email, password) {
   return result;
 }
 
-async function register(email, password) {
+async function register(name, email, password) {
+  const emailRegex = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
   // Control de errores
-  if (!email || !email.includes("@")) {
+  if (!email || !emailRegex.test(email)) {
     return { error: "Not valid email" };
   }
-  if (!password) {
+  const passwordRegex = /^(?=.[A-Za-z])(?=.\d)[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!password || !passwordRegex.test(password)) {
     return { error: "Please introduce the password" };
   }
 
   const data = {
     email,
     password,
+    name,
   };
 
   const result = await FetchData("/register", "POST", data);
@@ -36,7 +39,7 @@ async function register(email, password) {
     console.error("Register error", result);
   } else {
     console.log("You have been registered", {
-      usuario: result.user?.username || "desconocido",
+      usuario: result.user?.name || "desconocido",
     });
   }
 
