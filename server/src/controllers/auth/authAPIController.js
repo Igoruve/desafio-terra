@@ -1,4 +1,3 @@
-import { use } from "react";
 import authController from "./authController.js";
 
 const register = async (req, res, next) => {
