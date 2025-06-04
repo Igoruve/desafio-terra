@@ -7,7 +7,6 @@ const createProject = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const data = req.body;
-    console.log(data);
     await projectController.createProject(data);
     res.status(201).json({ message: "Project created successfully" });
   } catch (error) {
@@ -23,14 +22,12 @@ const getProjects = async (req, res) => {
     const projects = await projectController.getProjects();
     res.status(200).json(projects);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Error fetching projects" });
   }
 };
 
 const getProjectById = async (req, res) => {
   try {
-    console.log(req.params.id);
     const project = await projectController.getProjectById(req.params.id);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
