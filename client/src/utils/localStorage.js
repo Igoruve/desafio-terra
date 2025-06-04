@@ -25,7 +25,7 @@ function removeFromLocalStorage(key) {
   localStorage.removeItem(key);
 }
 
-function saveToken(token) {
+/* function saveToken(token) {
   if (token) {
     saveToLocalStorage("token", token);
   }
@@ -37,7 +37,7 @@ function getToken() {
 
 function removeToken() {
   removeFromLocalStorage("token");
-}
+} */
 
 function saveUser(user) {
   saveToLocalStorage("user", user);
@@ -54,9 +54,9 @@ function removeUser() {
 export {
   saveToLocalStorage,
   getFromLocalStorage,
-  saveToken,
+  /* saveToken,
   getToken,
-  removeToken,
+  removeToken, */
   saveUser,
   getUser,
   removeUser,

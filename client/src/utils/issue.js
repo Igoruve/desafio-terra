@@ -25,8 +25,9 @@ const getIssuesByDevice = async (device) => {
   return issues;
 };
 
-const createIssue = async (data) => {
-  const result = await FetchData("/issue", "POST", data);
+const createIssue = async (projectId, data) => {
+  console.log(projectId);
+  const result = await FetchData(`/issue/create/${projectId}`, "POST", data);
   return result;
 };
 
