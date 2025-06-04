@@ -5,17 +5,17 @@ import { requireSuperadmin } from "../middleware/roleMiddleware.js";
 
 const router = Router();
 
-router.get("/users", isLoggedInAPI, requireSuperadmin, userApiController.getAllUsers);
-router.get("/users/:userId", isLoggedInAPI, requireSuperadmin, userApiController.getUserById);
+router.get("/users", requireSuperadmin, userApiController.getAllUsers);
+router.get("/users/:userId", requireSuperadmin, userApiController.getUserById);
 
-router.get("/projects/:projectId/user", isLoggedInAPI, requireSuperadmin, userApiController.getUserByProjectId);
+router.get("/projects/:projectId/user", requireSPM, userApiController.getUserByProjectId);
 
-router.post("/users", isLoggedInAPI, requireSuperadmin, userApiController.createUser);
+router.post("/users", requireSuperadmin, userApiController.createUser);
 
-router.put("/users/:userId", isLoggedInAPI, requireSuperadmin, userApiController.updateUser);
+router.put("/users/:userId", requireSuperadmin, userApiController.updateUser);
 
-router.put("/users/:targetUserId/role", isLoggedInAPI, requireSuperadmin, userApiController.updateUserRole);
+router.put("/users/:targetUserId/role", requireSuperadmin, userApiController.updateUserRole);
 
-router.delete("/users/:userId", isLoggedInAPI, requireSuperadmin, userApiController.deleteUser);
+router.delete("/users/:userId", requireSuperadmin, userApiController.deleteUser);
 
 export default router;
