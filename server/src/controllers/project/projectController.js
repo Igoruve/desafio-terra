@@ -11,7 +11,9 @@ import { customAlphabet } from "nanoid";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
-const validStatuses = ["in progress", "completed", "cancelled"];
+const validStatuses = ["on hold", "in progress", "complete",
+  "post launch", "needs inputs", "ready to upload",
+  "duplicate comment", "N/A"];
 
 const getProjects = () =>
   projectModel.find()
@@ -103,6 +105,7 @@ const createProject = async (data) => {
 };
 
 const editProject = async (id, updateData) => {
+
   const project = await projectModel
     .findOneAndUpdate({ projectId: id }, updateData, {
       new: true,
@@ -123,6 +126,40 @@ const editProject = async (id, updateData) => {
   return project;
 };
 
+export const editProjectClients = async (id, newClients) => {
+  const project = await projectModel
+    .findOne({ projectId: id })
+    .populate({
+      path: "client",
+      select: "-password -apiKey"
+    })
+    .populate({
+      path: "manager",
+      select: "-password -apiKey"
+    })
+    .populate("issues");
+
+  if (!project) {
+    const error = new Error("ProjectNotFound");
+    error.message = "ProjectNotFound";
+    throw error;
+  }
+  const agregarClientes = (oldClients, newClients) => {
+    newClients.forEach(nuevo => {
+      const yaExiste = oldClients.some(clienteExistente => 
+        clienteExistente.equals(nuevo)
+      );
+      if (!yaExiste) {
+        oldClients.push(nuevo);
+      }
+    });
+  };
+  agregarClientes(project.client, newClients);
+  await project.save();
+
+  return project;
+};
+
 const deleteProject = async (id) => {
   const project = await projectModel.findOneAndDelete({ projectId: id });
   if (!project) throw new ProjectNotFound();
@@ -138,5 +175,6 @@ export default {
   getProjectsByDate,
   getProjectsByStatus,
   editProject,
+  editProjectClients,
   deleteProject,
 };

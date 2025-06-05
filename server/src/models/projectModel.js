@@ -23,15 +23,15 @@ const projectSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["in progress", "completed", "cancelled"],
+    enum: ["Complete", "In Progress", "Cancelled"],
     required: true,
-    default: "in progress",
+    default: "In Progress",
   },
-  client: {
+  client: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
-  },
+  }],
   manager: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
