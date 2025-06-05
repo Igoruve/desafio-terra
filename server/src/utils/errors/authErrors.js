@@ -77,6 +77,21 @@ class InvalidTokenError extends Error {
     this.statusCode = 401;
   }
 }
+class InvalidEmailFormat extends Error {
+  constructor() {
+    super("Invalid email format");
+    this.name = "InvalidEmailFormat";
+    this.statusCode = 400;
+  }
+}
+
+class InvalidPasswordFormat extends Error {
+  constructor() {
+    super("Invalid password format");
+    this.name = "InvalidPasswordFormat";
+    this.statusCode = 400;
+  }
+}
 
 export {
   UserEmailNotProvided,
@@ -88,5 +103,7 @@ export {
   InvalidCredentials,
   UnauthorizedError,
   TokenExpiredError,
-  InvalidTokenError
+  InvalidTokenError,
+  InvalidEmailFormat,
+  InvalidPasswordFormat
 };

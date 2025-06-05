@@ -1,4 +1,3 @@
-// errors/UserErrors.js
 
 class UserNameNotProvided extends Error {
   constructor() {
@@ -51,7 +50,7 @@ class UsersDoNotExist extends Error {
 
 class ApiKeyRequired extends Error {
   constructor() {
-    super("ClickUp API key is required for admins and superadmins");
+    super("ClickUp API key is required for project managers and admins");
     this.statusCode = 400;
   }
 }
@@ -65,7 +64,14 @@ class RequestingUserNotFound extends Error {
 
 class RoleChangeNotAllowed extends Error {
   constructor() {
-    super("Only a superadmin can change user roles");
+    super("Only an admin can change user roles");
+    this.statusCode = 403;
+  }
+}
+
+class ApiKeyChangeNotAllowed extends Error {
+  constructor() {
+    super("Only an admin can change user API keys");
     this.statusCode = 403;
   }
 }
@@ -81,4 +87,5 @@ export {
   ApiKeyRequired,
   RequestingUserNotFound,
   RoleChangeNotAllowed,
+  ApiKeyChangeNotAllowed
 };

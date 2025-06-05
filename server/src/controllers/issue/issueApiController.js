@@ -20,7 +20,7 @@ async function getAllIssues(req,res){
 
 async function getIssueById(req,res){
     try {
-        const issueId = req.params.issueId;
+        const issueId = req.params.id;
         const issue = await issueController.getIssueById(issueId);
         res.json(issue);
     } catch (error) {
@@ -84,7 +84,7 @@ async function createIssue(req,res){
 
 async function editIssue(req,res){
     try {
-        const issueId = req.params.issueId;
+        const issueId = req.params.id;
         const data = req.body;
         const issue = await issueController.editIssue(issueId,data);
         res.json(issue);
@@ -96,7 +96,7 @@ async function editIssue(req,res){
 
 async function deleteIssue(req,res){
     try {
-        const issueId = req.params.issueId;
+        const issueId = req.params.id;
         const issue = await issueController.deleteIssue(issueId);
         res.json(issue);
     } catch (error) {
