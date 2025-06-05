@@ -32,7 +32,6 @@ async function getIssueById(req,res){
 async function getIssuesByStatus(req,res){
     try {
         const status = req.body.status;
-        console.log(status);
         const issues = await issueController.getIssuesByStatus(status);
         res.json(issues);
     } catch (error) {
@@ -55,7 +54,6 @@ async function getIssuesByDate(req,res){
 async function getIssuesByDevice(req,res){
     try {
         const device = req.body.device;
-        console.log(device);
         const issues = await issueController.getIssuesByDevice(device);
         res.json(issues);
     } catch (error) {

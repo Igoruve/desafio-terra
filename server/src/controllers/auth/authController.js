@@ -54,8 +54,7 @@ const register = async ({ userData }) => {
   if (existingEmail) throw new UserEmailAlreadyExists();
 
 // Hashear la contraseña
- /*  const hashedPassword = await hash(password, 10);
-  console.log(password, hashedPassword); */
+ /*  const hashedPassword = await hash(password, 10);*/
   const userId = getRandomCode();
 
 const newUser = new userModel({

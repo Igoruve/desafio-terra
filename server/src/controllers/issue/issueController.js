@@ -26,7 +26,6 @@ async function getIssueById(issueId) {
 }
 
 async function getIssuesByStatus(status) {
-    console.log(status);
     const issues = await issueModel.find({ status }).populate({
         path: "client",
         select: "-password -apiKey"
