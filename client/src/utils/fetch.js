@@ -20,7 +20,7 @@ async function FetchData(route, method = "GET", data = null) {
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(data);
   }
-
+  
   try {
     const response = await fetch(url, options);
     const contentType = response.headers.get("content-type");
