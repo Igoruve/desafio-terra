@@ -22,7 +22,9 @@ async function register(name, email, password) {
   if (!email || !emailRegex.test(email)) {
     return { error: "Not valid email" };
   }
-  const passwordRegex = /^(?=.[A-Za-z])(?=.\d)[A-Za-z\d@$!%*?&]{8,}$/;
+
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+
   if (!password || !passwordRegex.test(password)) {
     return { error: "Please introduce the password" };
   }
