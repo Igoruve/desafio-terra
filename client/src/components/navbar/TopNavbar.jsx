@@ -61,16 +61,28 @@ function TopNavbar() {
           </div>
         </Link>
         <div className="hidden md:flex gap-8 items-center">
-          <Link className="hover:text-white hover:font-medium" to="/">
+          <Link
+            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
+            to="/"
+          >
             Projects
           </Link>
-          <Link className="hover:text-white hover:font-medium" to="/">
+          <Link
+            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
+            to="/"
+          >
             FAQ
           </Link>
-          <Link className="hover:text-white hover:font-medium" to="/">
+          <Link
+            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
+            to="/"
+          >
             Profile
           </Link>
-          <Link className="hover:text-white hover:font-medium" to="/logout">
+          <Link
+            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
+            to="/logout"
+          >
             Log Out
           </Link>
         </div>
