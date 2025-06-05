@@ -30,4 +30,6 @@ router.post("/", isLoggedInAPI, projectAPIController.createProject);
 
 router.get("/", isLoggedInAPI, projectAPIController.getProjects);
 
+router.get("/:id", isLoggedInAPI, projectAPIController.getProjectById);
+
 export default router;

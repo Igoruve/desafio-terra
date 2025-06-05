@@ -5,8 +5,8 @@ const getProjects = async () => {
   return projects;
 };
 
-const getProjectById = async (projectId) => {
-  const project = await FetchData(`/project/${projectId}`);
+const getProjectById = async (id) => {
+  const project = await FetchData(`/project/${id}`);
   return project;
 };
 
