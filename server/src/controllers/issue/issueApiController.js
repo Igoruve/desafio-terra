@@ -20,7 +20,7 @@ async function getAllIssues(req,res){
 
 async function getIssueById(req,res){
     try {
-        const issueId = req.params.issueId;
+        const issueId = req.params.id;
         const issue = await issueController.getIssueById(issueId);
         res.json(issue);
     } catch (error) {
@@ -32,6 +32,7 @@ async function getIssueById(req,res){
 async function getIssuesByStatus(req,res){
     try {
         const status = req.body.status;
+        console.log(status);
         const issues = await issueController.getIssuesByStatus(status);
         res.json(issues);
     } catch (error) {
@@ -54,6 +55,7 @@ async function getIssuesByDate(req,res){
 async function getIssuesByDevice(req,res){
     try {
         const device = req.body.device;
+        console.log(device);
         const issues = await issueController.getIssuesByDevice(device);
         res.json(issues);
     } catch (error) {
@@ -84,7 +86,7 @@ async function createIssue(req,res){
 
 async function editIssue(req,res){
     try {
-        const issueId = req.params.issueId;
+        const issueId = req.params.id;
         const data = req.body;
         const issue = await issueController.editIssue(issueId,data);
         res.json(issue);
@@ -96,7 +98,7 @@ async function editIssue(req,res){
 
 async function deleteIssue(req,res){
     try {
-        const issueId = req.params.issueId;
+        const issueId = req.params.id;
         const issue = await issueController.deleteIssue(issueId);
         res.json(issue);
     } catch (error) {

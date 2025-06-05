@@ -1,6 +1,4 @@
 import userModel from "../../models/userModel.js";
-import projectModel from "../models/projectModel.js"; 
-import authMiddleware from "../middleware/authMiddleware.js"; // TODO: verificar ruta de importación
 import { customAlphabet } from "nanoid";
 import bcrypt from "bcrypt";
 
@@ -11,7 +9,10 @@ import {
   RequestingUserNotFound,
   RoleChangeNotAllowed,
   UsersDoNotExist,
-} from "../utils/errors/UserErrors.js";
+  ApiKeyChangeNotAllowed
+} from "../../utils/errors/userErrors.js";
+
+import {UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided} from "../../utils/errors/authErrors.js";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
@@ -49,10 +50,19 @@ async function deleteUserById(userId) {
 }
 
 async function editUserById(userId, newData) {
+
+  const user = await userModel.findOne({ userId }).select("-password -apiKey");
+
   if (newData.password) {
     newData.password = await bcrypt.hash(newData.password, 10);
   }
-  const user = await userModel.findOneAndUpdate(
+  if (newData.role && user.role === "client"){
+    throw new RoleChangeNotAllowed()
+  }
+  if (newData.apiKey && user.role === "client") {
+    throw new ApiKeyChangeNotAllowed()
+  }
+  const newUser = await userModel.findOneAndUpdate(
     { userId },
     newData,
     { new: true, runValidators: true }
@@ -60,17 +70,22 @@ async function editUserById(userId, newData) {
   if (!user) {
     throw new UserDoesNotExist(userId);
   }
-  return user;
+  return newUser;
 }
 
 async function createUser(userData) {
   const { name, email, password, role, apiKey } = userData;
 
-  if ((role === "admin" || role === "project manager") && !apiKey) {
+  if (role === "project manager" && !apiKey) {
     throw new ApiKeyRequired();
   }
 
+    if (!email) throw new UserEmailNotProvided();
+    if (!password) throw new UserPasswordNotProvided();
+    if (!name) throw new UserNameNotProvided();
+
   const userId = getRandomCode();
+
   const hashedPassword = await bcrypt.hash(password, 10); // Hay que hacer hasheo explícito
 
   try {
@@ -123,12 +138,28 @@ async function editUserRole(callerUserId, targetUserId, newRole) {
   }
 }
 
-export {
+async function getUserByProjectId(projectId) {
+  const project = await projectModel.findOne({ projectId })
+    .populate("client").select("-password -apiKey")
+    .populate("manager").select("-password -apiKey");
+
+  if (!project) {
+    throw new Error(`Project with ID ${projectId} not found`);
+  }
+
+  return {
+    client: projectModel.client || null,
+    manager: projectModel.manager || null
+  };
+}
+
+export default{
   getAll,
   getUserById,
   deleteUserById,
   editUserById,
   createUser,
   editUserRole,
-  getUserByName
+  getUserByName,
+  getUserByProjectId
 };
