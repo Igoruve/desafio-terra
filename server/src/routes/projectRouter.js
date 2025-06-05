@@ -1,0 +1,33 @@
+import { Router } from "express";
+import projectAPIController from "../controllers/project/projectAPIController.js";
+import { isLoggedInAPI } from "../middlewares/authMiddleware.js";
+
+const router = Router();
+
+router.get("/", isLoggedInAPI, projectAPIController.getProjects);
+
+router.get(
+  "/user/:id",
+  isLoggedInAPI,
+  projectAPIController.getProjectsByUserId
+);
+
+router.get(
+  "/date/:date",
+  isLoggedInAPI,
+  projectAPIController.getProjectsByDate
+);
+
+router.get(
+  "/status/:status",
+  isLoggedInAPI,
+  projectAPIController.getProjectByStatus
+);
+
+router.put("/:id", isLoggedInAPI, projectAPIController.editProject);
+
+router.post("/", isLoggedInAPI, projectAPIController.createProject);
+
+router.get("/", isLoggedInAPI, projectAPIController.getProjects);
+
+export default router;

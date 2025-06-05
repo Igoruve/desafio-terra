@@ -1,18 +1,24 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import { connectMongoDB } from './config/mongo.js';
 import session from 'express-session';
 import cors from 'cors';
-// import router from './routes/index.js';
+import router from './routes/router.js';
+import cookieParser from 'cookie-parser';
 
 // Cargar variables de entorno
 dotenv.config();
 
+// Conectar a MongoDB
+connectMongoDB();
+
 // Crear servidor Express
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.APP_PORT || 3000;
 
 // Configurar middleware
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(express.static('src/public'));
@@ -30,9 +36,9 @@ app.use(session({
 }));
 
 // Configurar rutas
-// app.use('/', router);
+app.use('/', router);
 
 // Iniciar servidor
-app.listen(PORT, () => {
+app.listen(3000, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
