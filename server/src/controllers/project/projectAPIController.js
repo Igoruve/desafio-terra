@@ -102,6 +102,23 @@ const editProject = async (req, res) => {
   }
 };
 
+const editProjectClients = async (req, res) => {
+  try {
+    const newClients = req.body.clients;
+    const project = await projectController.editProjectClients(
+      req.params.id,
+      newClients
+    );
+    res.status(200).json(project);
+  } catch (error) {
+    if (error.message === "ProjectNotFound") {
+      return res.status(404).json({ message: "Project not found" });
+    }
+    console.error(error);
+    res.status(500).json({ message: "Error updating project" });
+  }
+};
+
 export default{
   createProject,
   getProjects,
@@ -111,4 +128,5 @@ export default{
   getProjectByStatus,
   deleteProject,
   editProject,
+  editProjectClients
 };

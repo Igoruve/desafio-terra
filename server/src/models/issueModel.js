@@ -3,12 +3,16 @@ import moongoose from "mongoose";
 const issueSchema = new moongoose.Schema({
     issueType: {
         type: String,
+        enum: ["Copy revision", "Requested Change", "New Item", 
+                "Bug Fix", "Design Issues", "Not Addressing"],
         required: true,
     },
     status: {
         type: String,
-        enum: ["in progress", "closed", "completed"],
-        default: "in progress",
+        enum: ["On Hold", "In Progress", "Complete", 
+            "Post Launch", "Needs Inputs", "Ready to upload",
+            "Duplicate Comment", "N/A"],
+        default: "On Hold",
     },
     issueId: {
         type: String,
