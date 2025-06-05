@@ -4,9 +4,12 @@ import { getToken } from "./localStorage";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL_PROD;
 
-async function FetchData(route, method = "GET", data = null) {
+async function FetchData(route, method = "GET", data = null
+
+) {
   const url = BASE_URL + route;
   const token = getToken();
+  console.log("token", token);
   const options = {
     method,
     headers: {},
@@ -20,6 +23,8 @@ async function FetchData(route, method = "GET", data = null) {
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(data);
   }
+
+  console.log("data", data);
   
   try {
     const response = await fetch(url, options);
