@@ -45,9 +45,9 @@ function Homepage() {
           </svg>
         </div>
         <div className="flex flex-col h-full justify-between">
-          <h1 className="text-start text-9xl font-[100]">easy</h1>
-          <h2 className="text-6xl font-[100]">
-            by <span className="font-[900]">terra</span>
+          <h1 className="text-start text-9xl font-black">easy</h1>
+          <h2 className="text-6xl font-extralight">
+            by <span className="font-bold">terra</span>
           </h2>
         </div>
       </div>
