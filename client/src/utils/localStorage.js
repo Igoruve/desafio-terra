@@ -8,7 +8,6 @@ function saveToLocalStorage(key, value) {
 
 function getFromLocalStorage(token, defaultValue = null) {
   const result = localStorage.getItem(token);
-  console.log("result", result);
   if (result) {
     try {
       return JSON.parse(result); //intentamos parsear el resultado

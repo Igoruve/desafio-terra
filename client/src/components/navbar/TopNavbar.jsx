@@ -7,7 +7,7 @@ function TopNavbar() {
 
   return (
     <section className="flex flex-row bg-[var(--bg-color)] border border-b-white h-16 w-full shadow-lg fixed top-0 z-50">
-      <nav className="flex flex-row justify-between items-center w-full px-2 md:px-6 text-white/80 text-xl shadow-md">
+      <nav className="flex flex-row justify-between items-center w-full px-2 md:px-6 text-white text-xl shadow-md">
         <Link to="/">
           <div className="flex flex-row items-center justify-center gap-2">
             <div className="flex flex-col items-end self-center">
