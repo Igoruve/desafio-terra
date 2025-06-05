@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // usa lucide-react para íconos
+import { Menu, X } from "lucide-react";
 
 function TopNavbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <section className="flex flex-row bg-[var(--bg-color)] border border-b-white h-16 w-full shadow-lg fixed top-0 z-50">
-      <nav className="flex flex-row justify-between items-center w-full px-2 md:px-6 text-white/80 text-xl">
+      <nav className="flex flex-row justify-between items-center w-full px-2 md:px-6 text-white/80 text-xl shadow-md">
         <Link to="/">
           <div className="flex flex-row items-center justify-center gap-2">
             <div className="flex flex-col items-end self-center">
@@ -85,30 +85,10 @@ function TopNavbar() {
 
       {isOpen && (
         <div className="md:hidden absolute top-16 right-0 w-fit bg-[var(--bg-color)] text-white flex flex-col gap-4 px-6 py-4 items-end text-xl rounded-md">
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-          >
-            Projects
-          </Link>
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-          >
-            FAQ
-          </Link>
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-          >
-            Profile
-          </Link>
-          <Link
-            to="/logout"
-            onClick={() => setIsOpen(false)}
-          >
-            Log Out
-          </Link>
+          <Link to="/">Projects</Link>
+          <Link to="/">FAQ</Link>
+          <Link to="/">Profile</Link>
+          <Link to="/logout">Log Out</Link>
         </div>
       )}
     </section>
