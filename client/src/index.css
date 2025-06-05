@@ -1,1 +1,11 @@
 @import "tailwindcss";
+@import "@fontsource/uncut-sans";
+
+:root {
+  --bg-color: #0f0f0f;
+}
+
+html {
+  font-family: "Uncut Sans", sans-serif;
+}
+
