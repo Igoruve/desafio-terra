@@ -18,7 +18,6 @@ const login = async ({ email, password }) => {
 
   // Comparar contraseñas
   const isMatch = await compare(password, user.password);
-  console.log(password, user.password);
   if (!isMatch) throw new InvalidCredentials();
 
   // Generar token
