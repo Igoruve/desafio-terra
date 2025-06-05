@@ -7,8 +7,8 @@ const issueSchema = new moongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["In progress", "closed", "completed"],
-        default: "In progress",
+        enum: ["in progress", "closed", "completed"],
+        default: "in progress",
     },
     issueId: {
         type: String,
@@ -16,7 +16,7 @@ const issueSchema = new moongoose.Schema({
         trim: true,
         unique: true
     },
-    date: {
+    createdAt: {
         type: Date,
         default: Date.now,
     },
