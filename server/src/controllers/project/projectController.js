@@ -14,13 +14,28 @@ const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 const validStatuses = ["in progress", "completed", "cancelled"];
 
 const getProjects = () =>
-  projectModel.find().populate("client").populate("manager").populate("issues");
+  projectModel.find()
+    .populate({
+      path: "client",
+      select: "-password -apiKey"
+    })
+    .populate({
+      path: "manager",
+      select: "-password -apiKey"
+    })
+    .populate("issues");
 
 const getProjectById = (id) =>
   projectModel
     .findOne({ projectId: id })
-    .populate("client")
-    .populate("manager")
+    .populate({
+      path: "client",
+      select: "-password -apiKey"
+    })
+    .populate({
+      path: "manager",
+      select: "-password -apiKey"
+    })
     .populate("issues");
 
 const getProjectsByUserId = async (userId) => {
@@ -29,15 +44,27 @@ const getProjectsByUserId = async (userId) => {
 
   return projectModel
     .find({ $or: [{ manager: user._id }, { client: user._id }] })
-    .populate("client")
-    .populate("manager")
+    .populate({
+      path: "client",
+      select: "-password -apiKey"
+    })
+    .populate({
+      path: "manager",
+      select: "-password -apiKey"
+    })
     .populate("issues");
 };
 const getProjectsByDate = (date) =>
   projectModel
     .find({ createdAt: { $gte: date } })
-    .populate("client")
-    .populate("manager")
+    .populate({
+      path: "client",
+      select: "-password -apiKey"
+    })
+    .populate({
+      path: "manager",
+      select: "-password -apiKey"
+    })
     .populate("issues");
 
 const getProjectsByStatus = async (status) => {
@@ -47,8 +74,14 @@ const getProjectsByStatus = async (status) => {
 
   return projectModel
     .find({ status })
-    .populate("client")
-    .populate("manager")
+    .populate({
+      path: "client",
+      select: "-password -apiKey"
+    })
+    .populate({
+      path: "manager",
+      select: "-password -apiKey"
+    })
     .populate("issues");
 };
 
@@ -71,12 +104,18 @@ const createProject = async (data) => {
 
 const editProject = async (id, updateData) => {
   const project = await projectModel
-    .findOneAndUpdate({projectId:id}, updateData, {
+    .findOneAndUpdate({ projectId: id }, updateData, {
       new: true,
       runValidators: true,
     })
-    .populate("client")
-    .populate("manager")
+    .populate({
+      path: "client",
+      select: "-password -apiKey"
+    })
+    .populate({
+      path: "manager",
+      select: "-password -apiKey"
+    })
     .populate("issues");
 
   if (!project) throw new ProjectNotFound();
@@ -85,13 +124,13 @@ const editProject = async (id, updateData) => {
 };
 
 const deleteProject = async (id) => {
-  const project = await projectModel.findOneAndDelete({projectId:id});
+  const project = await projectModel.findOneAndDelete({ projectId: id });
   if (!project) throw new ProjectNotFound();
 
   return project;
 };
 
-export default{ 
+export default {
   createProject,
   getProjects,
   getProjectById,
