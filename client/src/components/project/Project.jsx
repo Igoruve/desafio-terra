@@ -5,13 +5,13 @@ function Project() {
     const project = useLoaderData();    
     const { projectId } = useParams();
     const revalidator = useRevalidator();
+    
 
 return(
-    <section>
-        <div className="bg-white text-black w-10 h-10">Hola</div>
+    <section className="flex flex-col items-center justify-center h-screen bg-gray-800">
+        <div className="bg-white text-black w-fit h-fit"><p>{project.title}</p></div>
     </section>
 )
-
 }
 
 export default Project;
