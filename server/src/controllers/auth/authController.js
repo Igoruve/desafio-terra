@@ -2,7 +2,8 @@ import userModel from "../../models/userModel.js";
 import { hash, compare } from "../../utils/bcrypt.js";
 import jwt from "jsonwebtoken";
 import { customAlphabet } from "nanoid";
-import { UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided, UserEmailAlreadyExists, UserCreationFailed, EmailNotFound, InvalidCredentials } from "../../utils/errors/authErrors.js";
+import { UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided, 
+        UserEmailAlreadyExists, UserCreationFailed, EmailNotFound, InvalidCredentials, InvalidEmailFormat, InvalidPasswordFormat } from "../../utils/errors/authErrors.js";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
@@ -18,7 +19,6 @@ const login = async ({ email, password }) => {
 
   // Comparar contraseñas
   const isMatch = await compare(password, user.password);
-  console.log(password, user.password);
   if (!isMatch) throw new InvalidCredentials();
 
   // Generar token
@@ -50,16 +50,28 @@ const register = async ({ userData }) => {
   if (!password) throw new UserPasswordNotProvided();
   if (!name) throw new UserNameNotProvided();
 
-// Verificar si el email ya está en uso
+  // Verificar si el email ya está en uso
   const existingEmail = await userModel.findOne({ email });
   if (existingEmail) throw new UserEmailAlreadyExists();
 
-// Hashear la contraseña
- /*  const hashedPassword = await hash(password, 10);
-  console.log(password, hashedPassword); */
+ // Expresiones regulares para validar el email y la contraseña
+  const emailRegex = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
+  // Control de errores
+  if (!email || !emailRegex.test(email)) {
+    throw new InvalidEmailFormat();
+  }
+
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+
+  if (!password || !passwordRegex.test(password)) {
+    throw new InvalidPasswordFormat();
+  }
+
+  // Hashear la contraseña
+  /*  const hashedPassword = await hash(password, 10);*/
   const userId = getRandomCode();
 
-const newUser = new userModel({
+  const newUser = new userModel({
     userId: userId,
     name: name,
     email: email,
