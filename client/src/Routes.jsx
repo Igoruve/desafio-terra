@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Auth from "./pages/auth/Auth.jsx";
 import Root from "./pages/root/Root.jsx";
 import Homepage from "./pages/home/Homepage.jsx";
+import Layout from "./components/layout/Layout.jsx";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,14 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Auth isRegister={true} />,
+      },
+      {
+        path: "/logout",
+        element: <Homepage />,
+      },
+      {
+        path: "/layout",
+        element: <Layout />,
       },
     ],
   },
