@@ -6,8 +6,8 @@ function TopNavbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <section className="flex flex-row bg-[var(--bg-color)] border border-b-white h-16 w-full shadow-lg fixed top-0 z-50">
-      <nav className="flex flex-row justify-between items-center w-full px-2 md:px-6 text-white/80 text-xl shadow-md">
+    <section className="flex flex-row bg-[var(--bg-color)] h-fit w-full fixed top-0 z-50">
+      <nav className="flex flex-row justify-between items-center w-full px-2 md:px-12 py-4 text-white/80 text-xl">
         <Link to="/">
           <div className="flex flex-row items-center justify-center gap-2">
             <div className="flex flex-col items-end self-center">
@@ -48,6 +48,15 @@ function TopNavbar() {
             </div>
           </div>
         </Link>
+        <div>
+          <button
+            className="text-[var(--bg-color)] bg-white px-8 py-3 rounded-[50px] transition-all duration-300 ease-in-out cursor-pointer font-bold"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            Menu!
+          </button>
+        </div>
+        {/*}
         <div className="hidden md:flex gap-8 items-center">
           <Link
             className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
@@ -86,17 +95,46 @@ function TopNavbar() {
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
+        </button> */}
       </nav>
 
       {isOpen && (
+        <nav className="absolute top-18 right-0 w-full bg-[var(--bg-color)] font-bold text-white flex flex-col px-6 py-4 text-4xl text-center sm:text-6xl h-screen gap-6 items-center justify-center">
+          <Link
+            className=" border-[5px] border-[#F96E43] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            to="/"
+          >
+            projects
+          </Link>
+          <Link
+            className=" border-[5px] border-[#7CE55E] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            to="/"
+          >
+            FAQ
+          </Link>
+          <Link
+            className=" border-[5px] border-[#3D9DD8] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            to="/"
+          >
+            profile
+          </Link>
+          <Link
+            className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            to="/logout"
+          >
+            log out
+          </Link>
+        </nav>
+      )}
+
+      {/* {isOpen && (
         <div className="md:hidden absolute top-16 right-0 w-fit bg-[var(--bg-color)] text-white flex flex-col gap-4 px-6 py-4 items-end text-xl rounded-md">
           <Link to="/">Projects</Link>
           <Link to="/">FAQ</Link>
           <Link to="/">Profile</Link>
           <Link to="/logout">Log Out</Link>
         </div>
-      )}
+      )} */}
     </section>
   );
 }

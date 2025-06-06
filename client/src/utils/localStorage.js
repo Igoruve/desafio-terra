@@ -37,7 +37,7 @@ function getToken() {
 
 function removeToken() {
   removeFromLocalStorage("token");
-}
+} 
 
 function saveUser(user) {
   saveToLocalStorage("user", user);

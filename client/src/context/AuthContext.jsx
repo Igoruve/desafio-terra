@@ -23,6 +23,7 @@ const AuthProvider = ({ children }) => {
 
   //cargar los datos del usuario al inicio si existe
   useEffect(() => {
+    
     const savedUserData = getFromLocalStorage("userData");
     if (savedUserData) {
       setUserData(savedUserData);
