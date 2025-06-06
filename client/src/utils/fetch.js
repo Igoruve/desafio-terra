@@ -1,22 +1,22 @@
-import { getToken } from "./localStorage";
-
-// const BASE_URL = "http://localhost:3013";
+/* import { getToken } from "./localStorage"; */
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL_PROD;
 
 async function FetchData(route, method = "GET", data = null) {
   const url = BASE_URL + route;
-  const token = getToken();
-  console.log("token", token);
+
+  /* const token = getToken();
+  console.log("token", token); */
+
   const options = {
     method,
     headers: {},
     credentials: "include",
   };
 
-  if (token) {
+  /* if (token) {
     options.headers["Authorization"] = `Bearer ${token}`;
-  }
+  } */
 
   if (data) {
     options.headers["Content-Type"] = "application/json";
@@ -25,7 +25,9 @@ async function FetchData(route, method = "GET", data = null) {
 
   try {
     const response = await fetch(url, options);
+
     console.log("response", response);
+    
     const contentType = response.headers.get("content-type");
 
     let responseData;
