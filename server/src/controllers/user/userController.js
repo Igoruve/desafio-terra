@@ -25,7 +25,7 @@ async function getAll() {
 }
 
 async function getUserById(userId) {
-  const user = await userModel.findOne({ userId }).select("-password -apiKey");
+  const user = await userModel.findById(userId).select("-password -apiKey");
   if (!user) {
     throw new UserDoesNotExist(userId);
   }
