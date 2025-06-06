@@ -21,7 +21,14 @@ function Auth({ isRegister }) {
     const result = isRegister
       ? await onRegister(userData.name, userData.email, userData.password)
       : await onLogin(userData.email, userData.password);
-    setError(result);
+
+      if (result.error) {
+        setError(result);
+      }else{
+        setError(null);
+        // redireccionar si quieres, por ejemplo:
+      // navigate("/dashboard");
+      }
   };
 
   return (
@@ -29,7 +36,7 @@ function Auth({ isRegister }) {
       <h2 className="text-4xl font-bold text-white pt-38 pb-8">
         {isRegister ? "Register" : "Log in"}
       </h2>
-      {error && <p className="text-red-500">{error}</p>}
+      {error?.message && <p className="text-red-500">{error.message}</p>}
 
       <section className="flex flex-col items-center justify-center w-full max-w-md mx-auto h-full">
         <form
