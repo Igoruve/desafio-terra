@@ -14,6 +14,8 @@ router.get("/device",isLoggedInAPI,issueAPIController.getIssuesByDevice)
 
 router.put("/:id/edit", isLoggedInAPI, issueAPIController.editIssue);
 
+router.post("/create/:projectId",isLoggedInAPI,issueAPIController.createIssue)
+
 router.get("/:id", issueAPIController.getIssueById);
 
 router.delete("/:id/delete",isLoggedInAPI,issueAPIController.deleteIssue)

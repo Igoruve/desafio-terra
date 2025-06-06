@@ -36,6 +36,21 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    workspaceId: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    spaceId: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    folderId: {
+      type: String,
+      required: false,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
