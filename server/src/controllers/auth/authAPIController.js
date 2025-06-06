@@ -23,8 +23,8 @@ const login = async (req, res) => {
 
     res.cookie("token", data.token, {
       httpOnly: true,
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "strict",
+      maxAge: 10 * 60 * 60 * 1000,
       secure: process.env.NODE_ENV === "production",
     });
 
@@ -44,7 +44,7 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
   });
 

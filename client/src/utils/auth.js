@@ -1,5 +1,5 @@
 import FetchData from "./fetch.js";
-/* import { saveToken, saveUser } from "../utils/localStorage.js"; */
+import { saveUser } from "../utils/localStorage.js"; 
 
 async function login(email, password) {
   if (!email) return { error: "Not valid email" };
@@ -9,8 +9,8 @@ async function login(email, password) {
   const result = await FetchData("/login", "POST", data);
 
   if (!result.error) {
-    /* saveToken(result.token); */
-    saveUser(result.user);
+    const { email, ...userWithoutEmail } = result.user;
+    saveUser(userWithoutEmail);
   }
 
   return result;

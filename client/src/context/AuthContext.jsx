@@ -67,7 +67,7 @@ const AuthProvider = ({ children }) => {
         } */
         let finalUserData = result.user;
         setUserData(finalUserData);
-        saveToLocalStorage("userData", finalUserData);
+        /* saveToLocalStorage("userData", finalUserData); */
         navigate("/"); //TODO: redirigir a la homepage?
         return null;
       }
