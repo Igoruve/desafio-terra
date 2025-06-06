@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import Icons from "../home/Icons";
 
 function Auth({ isRegister }) {
   const [error, setError] = useState(null);
@@ -10,6 +11,8 @@ function Auth({ isRegister }) {
     password: "",
     name: "",
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,35 +25,38 @@ function Auth({ isRegister }) {
       ? await onRegister(userData.name, userData.email, userData.password)
       : await onLogin(userData.email, userData.password);
 
-      if (result.error) {
-        setError(result);
-      }else{
-        setError(null);
-        // redireccionar si quieres, por ejemplo:
-      // navigate("/dashboard");
-      }
+    if (!result) {
+      navigate("/project");
+    } else {
+      setError(result);
+    }
   };
 
   return (
-    <section className="flex flex-col items-center justify-center h-screen bg-gray-800">
-      <h2 className="text-4xl font-bold text-white pt-38 pb-8">
-        {isRegister ? "Register" : "Log in"}
-      </h2>
-      {error?.message && <p className="text-red-500">{error.message}</p>}
+    <section className="h-full w-screen bg-[var(--bg-color)] text-white font-uncut flex flex-col justify-center items-center pb-12">
+      <div className="w-full">
+        <Icons />
+      </div>
 
-      <section className="flex flex-col items-center justify-center w-full max-w-md mx-auto h-full">
+      <div className="flex flex-col items-center justify-center h-full pt-12">
+        <h2 className="text-6xl font-black mb-8">
+          {isRegister ? "Register" : "Log In"}
+        </h2>
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col bg-gray-900 p-4 rounded-lg border border-gray-500/50 shadow-lg h-fit justify-around w-84 items-center"
+          className="flex flex-col bg-transparent p-6 rounded-lg border-2 border-white/50 w-full max-w-md"
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             {isRegister && (
               <div className="flex flex-col gap-2">
-                <label className="text-white" htmlFor="name">
+                <label className="text-lg font-bold" htmlFor="name">
                   Username:
                 </label>
                 <input
-                  className="bg-gray-800 border border-white/50 rounded-sm text-white px-2 py-2"
+                  className="bg-transparent border-2 border-white/50 rounded-[8px] text-white px-4 py-2 focus:outline-none focus:border-white transition-all duration-300"
                   type="text"
                   id="name"
                   name="name"
@@ -61,11 +67,11 @@ function Auth({ isRegister }) {
               </div>
             )}
             <div className="flex flex-col gap-2">
-              <label className="text-white" htmlFor="email">
+              <label className="text-lg font-bold" htmlFor="email">
                 Email:
               </label>
               <input
-                className="bg-gray-800 border border-white/50 rounded-sm text-white px-2 py-2"
+                className="bg-transparent border-2 border-white/50 rounded-[8px] text-white px-4 py-2 focus:outline-none focus:border-white transition-all duration-300"
                 type="email"
                 id="email"
                 name="email"
@@ -75,11 +81,11 @@ function Auth({ isRegister }) {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-white" htmlFor="password">
+              <label className="text-lg font-bold" htmlFor="password">
                 Password:
               </label>
               <input
-                className="bg-gray-800 border border-white/50 rounded-sm text-white px-2 py-2"
+                className="bg-transparent border-2 border-white/50 rounded-[8px] text-white px-4 py-2 focus:outline-none focus:border-white transition-all duration-300"
                 type="password"
                 id="password"
                 name="password"
@@ -89,36 +95,36 @@ function Auth({ isRegister }) {
               />
             </div>
           </div>
-          <div>
-            <button
-              type="submit"
-              className="w-fit self-center font-bold px-6 py-2 rounded-lg bg-gradient-to-r from-[#f56b79] via-[#f78a6b] to-[#fcab51] mt-10 hover:opacity-90 shadow-lg text-white cursor-pointer"
-            >
-              {isRegister ? "Register" : "Log in"}
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-32 self-center text-white py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] bg-transparent font-bold text-lg mt-8 transition-all duration-300 ease-in-out"
+          >
+            {isRegister ? "Register" : "Log In"}
+          </button>
         </form>
 
-        {isRegister ? (
-          <>
-            <p className="mt-4 text-white">Already have an account?</p>
-            <Link to="/login">
-              <button className="underline text-[#f56b79] cursor-pointer">
-                Go to Log In
-              </button>
-            </Link>
-          </>
-        ) : (
-          <>
-            <p className="mt-4 text-white">Don't have an account?</p>
-            <Link to="/register">
-              <button className="underline text-[#f56b79] cursor-pointer">
-                Register
-              </button>
-            </Link>
-          </>
-        )}
-      </section>
+        <div className="flex flex-col items-center mt-6 gap-2">
+          {isRegister ? (
+            <>
+              <p className="text-lg font-light">Already have an account?</p>
+              <Link to="/login">
+                <button className="w-32 text-white py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] w-40 bg-transparent font-bold text-lg transition-all duration-300 ease-in-out">
+                  Go to Log In
+                </button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-lg font-light">Don't have an account?</p>
+              <Link to="/register">
+                <button className="w-32 text-[#0f0f0f] py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] bg-white font-bold text-lg transition-all duration-300 ease-in-out">
+                  Register
+                </button>
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
     </section>
   );
 }
