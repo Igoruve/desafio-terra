@@ -18,7 +18,7 @@ const validStatuses = ["on hold", "in progress", "complete",
 const getProjects = () =>
   projectModel.find()
     .populate({
-      path: "client",
+      path: "clients",
       select: "-password -apiKey"
     })
     .populate({
@@ -31,7 +31,7 @@ const getProjectById = (id) =>
   projectModel
     .findOne({ projectId: id })
     .populate({
-      path: "client",
+      path: "clients",
       select: "-password -apiKey"
     })
     .populate({
@@ -41,13 +41,13 @@ const getProjectById = (id) =>
     .populate("issues");
 
 const getProjectsByUserId = async (userId) => {
-  const user = await userModel.findOne({ userId: userId.trim() });
+  const user = await userModel.findById( userId.trim());
   if (!user) throw new Error("UserNotFound");
 
   return projectModel
-    .find({ $or: [{ manager: user._id }, { client: user._id }] })
+    .find({ $or: [{ manager: user._id }, { clients: user._id }] })
     .populate({
-      path: "client",
+      path: "clients",
       select: "-password -apiKey"
     })
     .populate({
@@ -60,7 +60,7 @@ const getProjectsByDate = (date) =>
   projectModel
     .find({ createdAt: { $gte: date } })
     .populate({
-      path: "client",
+      path: "clients",
       select: "-password -apiKey"
     })
     .populate({
@@ -77,7 +77,7 @@ const getProjectsByStatus = async (status) => {
   return projectModel
     .find({ status })
     .populate({
-      path: "client",
+      path: "clients",
       select: "-password -apiKey"
     })
     .populate({
@@ -112,7 +112,7 @@ const editProject = async (id, updateData) => {
       runValidators: true,
     })
     .populate({
-      path: "client",
+      path: "clients",
       select: "-password -apiKey"
     })
     .populate({
@@ -130,7 +130,7 @@ export const editProjectClients = async (id, newClients) => {
   const project = await projectModel
     .findOne({ projectId: id })
     .populate({
-      path: "client",
+      path: "clients",
       select: "-password -apiKey"
     })
     .populate({
@@ -154,7 +154,7 @@ export const editProjectClients = async (id, newClients) => {
       }
     });
   };
-  agregarClientes(project.client, newClients);
+  agregarClientes(project.clients, newClients);
   await project.save();
 
   return project;
