@@ -73,6 +73,7 @@ async function createIssue(req,res){
 
         const projectId = req.params.projectId;
         const data = req.body;
+        data.client = "6841a0d3afd7556ceea0ef1d"; //TODO CAMBIAR ESTO PARA QUE PILLE DEL CLIENT
         const issue = await issueController.createIssue(projectId,data);
         res.json(issue);
 

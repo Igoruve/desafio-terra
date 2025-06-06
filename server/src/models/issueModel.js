@@ -4,7 +4,7 @@ const issueSchema = new moongoose.Schema({
     issueType: {
         type: String,
         enum: ["Copy revision", "Requested Change", "New Item", 
-                "Bug Fix", "Design Issues", "Not Addressing"],
+                "Bug Fix", "Design Issues", "Not Addressing", "Other"],
         required: true,
     },
     status: {
