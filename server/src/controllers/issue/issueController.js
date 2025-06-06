@@ -66,11 +66,9 @@ async function createIssue(projectId, data) {
 
   const newIssue = await issueModel.create(data);
   newIssue.save();
-  console.log(projectId, "mensajito");
   project.issues.push(newIssue);
   project.save();
 
-  
   return newIssue;
 }
 

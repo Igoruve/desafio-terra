@@ -8,6 +8,8 @@ async function FetchData(route, method = "GET", data = null) {
   /* const token = getToken();
   console.log("token", token); */
 
+console.log("url", url);
+
   const options = {
     method,
     headers: {},
