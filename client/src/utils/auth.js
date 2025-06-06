@@ -1,5 +1,5 @@
 import FetchData from "./fetch.js";
-import { saveToken, saveUser } from "../utils/localStorage.js";
+import { saveUser } from "../utils/localStorage.js"; 
 
 async function login(email, password) {
   if (!email) return { error: "Not valid email" };
@@ -7,11 +7,6 @@ async function login(email, password) {
 
   const data = { email, password };
   const result = await FetchData("/login", "POST", data);
-
-  if (!result.error) {
-    saveToken(result.token);
-    saveUser(result.user);
-  }
 
   return result;
 }
@@ -50,7 +45,16 @@ async function register(name, email, password) {
 
 async function logout() {
   const result = await FetchData("/logout", "POST");
+  if (!result.error) {
+    // Limpiar localStorage o estado donde guardas info del usuario
+    localStorage.removeItem("user");
+    // Si tienes algún estado global, actualizarlo para reflejar logout
+  }
   return result;
 }
 
-export { login, register, logout };
+async function getMe() {
+  return await FetchData("/me", "GET");
+}
+
+export { login, register, logout, getMe };

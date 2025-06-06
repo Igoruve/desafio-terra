@@ -1,9 +1,7 @@
-import userController from "./userController.js";
-import projectModel from "../models/projectModel.js";
-import {isLoggedInAPI} from "../middleware/authMiddleware.js"; 
-import  requirePM from "../middlewares/roleMiddleware.js"; 
-import requireAdmin from "../middlewares/roleMiddleware.js";
-import ProjectNotFound from "../utils/errors/ProjectErrors.js";
+
+import userController from "./userController.js"; //MODIFICADO
+import projectModel from "../../models/projectModel.js";  
+import {ProjectNotFound} from "../../utils/errors/projectErrors.js";
 import {
   UserDoesNotExist,
   ApiKeyRequired,
@@ -11,13 +9,13 @@ import {
   RequestingUserNotFound,
   RoleChangeNotAllowed,
   UsersDoNotExist,
-} from "../utils/errors/UserErrors.js";
+} from "../../utils/errors/userErrors.js";
 
 
 
 const getUserByName = async (req, res) => {
   try {
-    const user = await getUserByName(req.params.name);
+    const user = await userController.getUserByName(req.body.name);
     res.status(200).json(user);
   } catch (error) {
     if (error instanceof UserDoesNotExist) {
@@ -41,7 +39,7 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const user = await userController.getUserById(req.params.userId);
+    const user = await userController.getUserById(req.params.id);
     res.status(200).json(user);
   } catch (error) {
     if (error instanceof UserDoesNotExist) {
@@ -68,7 +66,7 @@ const createUser = async (req, res) => {
 
 const editUser = async (req, res) => {
   try {
-    const user = await userController.editUserById(req.params.userId, req.body);
+    const user = await userController.editUserById(req.params.id, req.body);
     res.status(200).json(user);
   } catch (error) {
     if (error instanceof UserDoesNotExist) {
@@ -80,7 +78,7 @@ const editUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const user = await userController.deleteUserById(req.params.userId);
+    const user = await userController.deleteUserById(req.params.id);
     res.status(200).json({ message: "User deleted successfully", user });
   } catch (error) {
     if (error instanceof UserDoesNotExist) {
@@ -109,13 +107,12 @@ const getUserByProjectId = async (req, res) => {
   }
 };
 
-const updateUserRole = async (req, res) => {
+const editUserRole = async (req, res) => {
   try {
-    const callerUserId = req.user.userId; // del token
-    const { targetUserId } = req.params; //del path por onclick
-    const { newRole } = req.body; // del input
+    const adminUserId = req.user.userId;
+    const { userId, newRole } = req.body;
 
-    const user = await userController.editUserRole(callerUserId, targetUserId, newRole);
+    const user = await userController.editUserRole(adminUserId, userId, newRole);
     res.status(200).json(user);
   } catch (error) {
     if (
@@ -130,12 +127,13 @@ const updateUserRole = async (req, res) => {
 };
 
 
-export {
+export default{
   getAllUsers,
   getUserById,
+  getUserByName,
   createUser,
   editUser,
   deleteUser,
   getUserByProjectId,
-  updateUserRole,
+  editUserRole,
 };

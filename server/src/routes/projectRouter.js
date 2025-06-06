@@ -28,7 +28,9 @@ router.put("/:id", isLoggedInAPI, projectAPIController.editProject);
 
 router.post("/", isLoggedInAPI, projectAPIController.createProject);
 
-router.get("/", isLoggedInAPI, projectAPIController.getProjects);
+router.put("/:id/clients", isLoggedInAPI,projectAPIController.editProjectClients);
+
+router.delete("/:id", isLoggedInAPI,projectAPIController.deleteProject);
 
 router.get("/:id", isLoggedInAPI, projectAPIController.getProjectById);
 

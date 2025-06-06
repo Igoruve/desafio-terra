@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
+import Icons from "./Icons";
 
 function Homepage() {
   return (
     <section className="h-screen w-screen bg-[var(--bg-color)] text-white font-uncut flex flex-col justify-center p-4">
+      <div className="absolute top-0 right-0 left-0 w-full">
+        <Icons />
+      </div>
       <div className="flex flex-row items-center justify-center gap-2 sm:gap-6">
         <div className="flex flex-col items-center sm:items-end justify-end self-end">
           <svg
