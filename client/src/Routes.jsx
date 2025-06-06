@@ -3,9 +3,9 @@ import { createBrowserRouter } from "react-router-dom";
 import ProjectList from "./components/project/ProjectList.jsx";
 import Project from "./components/project/Project.jsx";
 
-import { getProjectsByUserId, getProjectById} from "./utils/project.js";
+import { getProjectsByUserId, getProjectById } from "./utils/project.js";
 
-import {createIssue} from "./utils/issue.js";
+import { createIssue } from "./utils/issue.js";
 
 import Auth from "./pages/auth/Auth.jsx";
 import Root from "./pages/root/Root.jsx";
@@ -45,11 +45,14 @@ const router = createBrowserRouter([
           {
             path: "/project/:id",
             element: <Project />,
-            loader: async ({ params}) => getProjectById(params.id),
+            loader: async ({ params }) => getProjectById(params.id),
           },
           {
-            path: "/issue",
+            path: "/issue/create/:projectId",
             element: <Form />,
+            loader: async ({ params }) => {
+              return { projectId: params.projectId };
+            },
           },
         ],
       },
