@@ -1,4 +1,5 @@
 import authController from "./authController.js";
+import userController from "../user/userController.js";
 
 const register = async (req, res, next) => {
   try {
@@ -51,6 +52,23 @@ const logout = async (req, res) => {
   res.status(200).json({
     message: "Logout successful",
   });
+};
+
+// Nueva función: obtener info del usuario autenticado
+const getMe = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+
+    const user = await userController.getUserById(userId); // Este método lo implementas tú en authController.js
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export default {

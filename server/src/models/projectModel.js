@@ -27,7 +27,7 @@ const projectSchema = new mongoose.Schema({
     required: true,
     default: "In Progress",
   },
-  client: [{
+  clients: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
