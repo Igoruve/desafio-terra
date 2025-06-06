@@ -20,4 +20,6 @@ router.delete("/:id/delete",isLoggedInAPI,issueAPIController.deleteIssue)
 
 router.get("/:id", isLoggedInAPI,issueAPIController.getIssueById)
 
+router.post("/create/:projectId", isLoggedInAPI,issueAPIController.createIssue)
+
 export default router;
