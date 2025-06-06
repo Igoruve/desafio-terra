@@ -63,8 +63,10 @@ function Form() {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center h-ful bg-[var(--bg-color)] text-white pt-24">
-      <h2 className="text-4xl font-bold ">Create an Issue</h2>
+    <section className="flex flex-col items-center justify-center h-ful bg-[var(--bg-color)] text-white pt-24 relative overflow-hidden">
+      <h2 className="text-8xl font-bold top-42 left-24 w-72 fixed">
+        Create a new Issue!
+      </h2>
       <form
         onSubmit={handleSubmitForm}
         action=""
