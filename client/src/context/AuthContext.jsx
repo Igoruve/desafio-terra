@@ -2,8 +2,8 @@ import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-  saveToken,
-  removeToken,
+  /* saveToken,
+  removeToken, */
   saveToLocalStorage,
   getFromLocalStorage,
 } from "../utils/localStorage";
@@ -36,21 +36,19 @@ const AuthProvider = ({ children }) => {
       if (result.error) {
         return result.error;
       } else {
-        if (result.token) {
+         // NO guardar token (no viene en respuesta o no usamos)
+        /* if (result.token) {
           //si existe token, lo guarda
-          saveToken(result.token);
-        }
-        if (result.user) {
-          //y si existe user guarda sus datos
+          saveToken(result.token); */
+          if (result.user) {
           setUserData(result.user);
           saveToLocalStorage("userData", result.user);
         }
-
-        navigate(`/login`);
+        navigate(`/login`); //tras registro, ir a login para iniciar sesion
         return null;
       }
     } catch (error) {
-      console.error("Register error: ", error);
+      console.error("Error registering: ", error);
       return "Error processing the register.";
     }
   };
@@ -58,17 +56,18 @@ const AuthProvider = ({ children }) => {
   const handleLogin = async (email, password) => {
     try {
       const result = await login(email, password);
+
       if ("error" in result && result.error) {
-        removeToken();
         return result.error;
       } else {
-        if (result.token) {
+        // Solo guardar usuario, NO token
+        /* if (result.token) {
           //si existe token, lo guarda
           saveToken(result.token);
-        }
+        } */
         let finalUserData = result.user;
         setUserData(finalUserData);
-        saveToLocalStorage("userData", finalUserData);
+        /* saveToLocalStorage("userData", finalUserData); */
         navigate("/"); //TODO: redirigir a la homepage?
         return null;
       }
@@ -80,12 +79,13 @@ const AuthProvider = ({ children }) => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout(); //Limpia cookie en backend
     } catch (error) {
       console.error("Error loggint out: ", error);
     } finally {
       //siempre limpia los datos locales independientemente de la respuesta del servidor
-      removeToken();
+      //Siempre limpiar usuario local y localStorage
+      /* removeToken(); */
       localStorage.removeItem("userData");
       setUserData(null);
       navigate("/");
@@ -95,7 +95,7 @@ const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        userData: userData,
+        /* userData:  */userData,
         onLogin: handleLogin,
         onLogout: handleLogout,
         onRegister: handleRegister,
