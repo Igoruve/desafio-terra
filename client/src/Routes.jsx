@@ -5,10 +5,13 @@ import Project from "./components/project/Project.jsx";
 
 import { getProjectsByUserId, getProjectById} from "./utils/project.js";
 
+import {createIssue} from "./utils/issue.js";
+
 import Auth from "./pages/auth/Auth.jsx";
 import Root from "./pages/root/Root.jsx";
 import Homepage from "./pages/home/Homepage.jsx";
 import Layout from "./components/layout/Layout.jsx";
+import Form from "./components/form/Form.jsx";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +46,10 @@ const router = createBrowserRouter([
             path: "/project/:id",
             element: <Project />,
             loader: async ({ params}) => getProjectById(params.id),
+          },
+          {
+            path: "/issue",
+            element: <Form />,
           },
         ],
       },
