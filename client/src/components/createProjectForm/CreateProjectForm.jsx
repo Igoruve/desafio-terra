@@ -43,7 +43,7 @@ function CreateProjectForm() {
     };
 
     const result = await createProject(data);
-    navigate(`/`); // TODO: cambiar ruta si hace falta
+    navigate(`/projects`); // TODO: cambiar ruta si hace falta
   };
 
   return (

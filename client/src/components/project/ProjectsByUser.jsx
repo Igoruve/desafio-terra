@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import FetchData from "../../utils/fetch";
+import { useNavigate } from "react-router-dom";
 
 const formatDate = (dateObj) => {
   const raw = dateObj?.$date || dateObj;
@@ -12,6 +13,8 @@ const ProjectsByUser = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userData === null) return;
@@ -134,7 +137,15 @@ const ProjectsByUser = () => {
               </div>
 
               <div className="md:w-1/2">
-                <h4 className="font-semibold text-lg mb-4">Issues</h4>
+                <div className="flex flex-row justify-between">
+                  <h4 className="font-semibold text-lg mb-4">Issues</h4>
+                  <div
+                    className=" rounded-full w-fit cursor-pointer"
+                    onClick={() => navigate(`/newissue/${p.projectId}`)}
+                  >
+                    <img src="/Plus.svg" alt="" />
+                  </div>
+                </div>
                 {p.issues?.length > 0 ? (
                   <div className="space-y-4">
                     {p.issues.map((issue, i) => (

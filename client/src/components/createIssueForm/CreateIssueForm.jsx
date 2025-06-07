@@ -57,7 +57,7 @@ function CreateIssueForm() {
       image: form.image.files[0] || null,
     };
     const result = await createIssue(projectId, data);
-    navigate(`/`); //TODO CAMBIAR RUTA
+    navigate(`/projects`); //TODO CAMBIAR RUTA
   };
 
   const handleIssueTypeChange = (e) => {
