@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 
 function TopNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const closeMenu = () => setIsOpen(false);
 
   return (
     <section className="flex flex-row bg-[var(--bg-color)] h-fit w-full fixed top-0 z-50">
@@ -56,69 +57,33 @@ function TopNavbar() {
             Menu!
           </button>
         </div>
-        {/*}
-        <div className="hidden md:flex gap-8 items-center">
-          <Link
-            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
-            to="/"
-          >
-            Projects
-          </Link>
-          <Link
-            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
-            to="/"
-          >
-            FAQ
-          </Link>
-          <Link
-            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
-            to="/"
-          >
-            Profile
-          </Link>
-          <Link
-            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
-            to="/"
-          >
-            Stats
-          </Link>
-          <Link
-            className="hover:text-white hover:font-medium transition-all duration-300 ease-in-out"
-            to="/logout"
-          >
-            Log Out
-          </Link>
-        </div>
-
-        <button
-          className="md:hidden flex items-center"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button> */}
       </nav>
 
       {isOpen && (
         <nav className="absolute top-18 right-0 w-full bg-[var(--bg-color)] font-bold text-white flex flex-col px-6 py-4 text-4xl text-center sm:text-6xl h-screen gap-6 items-center justify-center">
           <Link
+            onClick={closeMenu}
             className=" border-[5px] border-[#F96E43] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
-            to="/"
+            to="/projects"
           >
             projects
           </Link>
           <Link
+            onClick={closeMenu}
             className=" border-[5px] border-[#7CE55E] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
-            to="/"
+            to="/faq"
           >
             FAQ
           </Link>
           <Link
+            onClick={closeMenu}
             className=" border-[5px] border-[#3D9DD8] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
-            to="/"
+            to="/profile"
           >
             profile
           </Link>
           <Link
+            onClick={closeMenu}
             className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
             to="/logout"
           >
@@ -126,15 +91,6 @@ function TopNavbar() {
           </Link>
         </nav>
       )}
-
-      {/* {isOpen && (
-        <div className="md:hidden absolute top-16 right-0 w-fit bg-[var(--bg-color)] text-white flex flex-col gap-4 px-6 py-4 items-end text-xl rounded-md">
-          <Link to="/">Projects</Link>
-          <Link to="/">FAQ</Link>
-          <Link to="/">Profile</Link>
-          <Link to="/logout">Log Out</Link>
-        </div>
-      )} */}
     </section>
   );
 }
