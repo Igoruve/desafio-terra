@@ -14,7 +14,8 @@ import Layout from "./components/layout/Layout.jsx";
 import ProjectsByUser from "./components/project/ProjectsByUser.jsx";
 import AllProjectsByUser from "./components/project/AllProjectsByUser.jsx";
 import Form from "./components/form/Form.jsx";
- 
+import Profile from "./components/profile/Profile.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
           {
             path: "/myprojects",
             element: <ProjectsByUser />,
+          },
+          {
+            path: "/profile",
+            element: <Profile />,
           },
           {
             path: "/project",
