@@ -150,7 +150,7 @@ const ProjectsByUser = () => {
       <main className="px-8 md:px-24 py-12 text-black">
         {userData.role === "admin" && (
           <div
-            className="flex flex-row gap-4 items-center bg-black/5 w-fit px-12 py-6 rounded-[50px] backdrop-blur-md fixed bottom-8 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
+            className="flex flex-row gap-4 items-center bg-black/5 w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky mb-12 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
             onClick={() => navigate(`/newproject`)}
           >
             <h2 className="text-2xl font-bold">New Project</h2>
