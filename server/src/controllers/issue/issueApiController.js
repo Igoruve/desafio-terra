@@ -73,6 +73,7 @@ async function createIssue(req,res){
 
         const projectId = req.params.projectId;
         const data = req.body;
+        data.client = req.user.userId;
         const issue = await issueController.createIssue(projectId,data);
         res.json(issue);
 

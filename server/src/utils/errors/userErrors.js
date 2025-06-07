@@ -76,6 +76,13 @@ class ApiKeyChangeNotAllowed extends Error {
   }
 }
 
+class WorkspaceAlreadyAssigned extends Error {
+  constructor() {
+    super("User is already assigned to this workspace");
+    this.statusCode = 400;
+  }
+}
+
 export {
   UserNameNotProvided,
   UserEmailNotProvided,
@@ -87,5 +94,6 @@ export {
   ApiKeyRequired,
   RequestingUserNotFound,
   RoleChangeNotAllowed,
-  ApiKeyChangeNotAllowed
+  ApiKeyChangeNotAllowed,
+  WorkspaceAlreadyAssigned
 };
