@@ -13,6 +13,7 @@ import AllProjectsByUser from "./components/project/AllProjectsByUser.jsx";
 import CreateIssueForm from "./components/createIssueForm/CreateIssueForm.jsx";
 import CreateProjectForm from "./components/createProjectForm/CreateProjectForm.jsx";
 import FAQ from "./components/FAQ/FAQ.jsx";
+import IssueById from "./components/issue/IssueById.jsx";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,13 @@ const router = createBrowserRouter([
             element: <ProjectsByUser />,
             loader: getProjectsByUserId,
           },
+          // {
+          //   path: "/issue/:issueId",
+          //   element: <IssueById />,
+          //   loader: async ({ params }) => {
+          //     return { issueId: params.issueId };
+          //   },
+          // },
           {
             path: "/faq",
             element: <FAQ />,
