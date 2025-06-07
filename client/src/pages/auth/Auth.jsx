@@ -97,7 +97,9 @@ function Auth({ isRegister }) {
           </div>
           <button
             type="submit"
-            className="w-32 self-center text-white py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] bg-transparent font-bold text-lg mt-8 transition-all duration-300 ease-in-out"
+            className={`w-32 self-center py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] font-bold text-lg mt-8 transition-all duration-300 ease-in-out ${
+              isRegister ? "bg-white text-black" : "bg-transparent text-white"
+            }`}
           >
             {isRegister ? "Register" : "Log In"}
           </button>
