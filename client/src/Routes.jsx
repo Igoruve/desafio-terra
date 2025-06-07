@@ -1,8 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import ProjectList from "./components/project/ProjectList.jsx";
-import Project from "./components/project/Project.jsx";
-
 import { getProjectsByUserId, getProjectById } from "./utils/project.js";
 
 import { createIssue } from "./utils/issue.js";
