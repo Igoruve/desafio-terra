@@ -51,7 +51,7 @@ function TopNavbar() {
         </Link>
         <div>
           <button
-            className="text-[var(--bg-color)] bg-white px-8 py-3 rounded-[50px] transition-all duration-300 ease-in-out cursor-pointer font-bold"
+            className="text-[var(--bg-color)] bg-white px-8 py-3 rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out cursor-pointer font-bold"
             onClick={() => setIsOpen(!isOpen)}
           >
             Menu!
