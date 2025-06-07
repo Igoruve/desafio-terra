@@ -26,7 +26,7 @@ function Auth({ isRegister }) {
       : await onLogin(userData.email, userData.password);
 
     if (!result) {
-      navigate("/project");
+      navigate("/projects");
     } else {
       setError(result);
     }
