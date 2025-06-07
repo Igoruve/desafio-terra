@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import FetchData from "../../utils/fetch";
 import { useNavigate } from "react-router-dom";
+import { deleteProject } from "../../utils/project";
 
 const formatDate = (dateObj) => {
   const raw = dateObj?.$date || dateObj;
@@ -15,6 +16,17 @@ const ProjectsByUser = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+
+  const handleRemoveProject = async (projectId) => {
+    try {
+      await deleteProject(projectId);
+      setProjects((prevProjects) =>
+        prevProjects.filter((project) => project.projectId !== projectId)
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     if (userData === null) return;
@@ -93,7 +105,7 @@ const ProjectsByUser = () => {
     );
 
   return (
-    <section className="pt-18">
+    <section className="py-18">
       <header className="bg-[var(--bg-color)] text-white py-4 grid grid-cols-1 custom-xl:grid-cols-3">
         <h2 className="text-[64px] sm:text-[96px] md:text-[140px] lg:text-[180px] xl:text-[220px] 2xl:text-[250px] font-bold mb-4 leading-[0.75] custom-xl:col-span-2 max-w-[12ch] break-words">
           my
@@ -106,6 +118,17 @@ const ProjectsByUser = () => {
       </header>
 
       <main className="px-8 md:px-24 py-12 text-black">
+        {userData.role === "admin" && (
+          <div className="flex flex-row gap-4 items-center bg-black/5 w-fit px-12 py-6 rounded-[50px] backdrop-blur-md fixed bottom-8 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out">
+            <h2 className="text-2xl font-bold">New Project</h2>
+            <div
+              className=" rounded-full w-fit "
+              onClick={() => navigate(`/newproject`)}
+            >
+              <img src="/Plus.svg" alt="" />
+            </div>
+          </div>
+        )}
         <div className="space-y-12">
           {projects.map((p, index) => (
             <div
@@ -113,9 +136,19 @@ const ProjectsByUser = () => {
               className="flex flex-col md:flex-row gap-6 px-8 py-10 rounded-[20px] shadow-2xs bg-[#F7F8F4]"
             >
               <div className="md:w-1/2">
-                <h3 className="text-4xl font-bold">
-                  {p.title || "Untitled Project"}
-                </h3>
+                <div className="flex flex-row gap-4 items-center">
+                  <h3 className="text-4xl font-bold">
+                    {p.title || "Untitled Project"}
+                  </h3>
+                  {userData.role === "admin" && (
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleRemoveProject(p.projectId)}
+                    >
+                      <img src="/Trash.svg" alt="" />
+                    </div>
+                  )}
+                </div>
                 <p className="italic text-lg text-gray-700">
                   {p.status || "N/A"}
                 </p>
