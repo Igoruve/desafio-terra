@@ -7,9 +7,6 @@ import {
     clientCommentNotProvided, pageUrlNotProvided
 } from "../../utils/errors/issueErrors.js";
 
-import { customAlphabet } from "nanoid";
-
-const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 async function getAllIssues() {
     const issues = await issueModel.find().populate({
         path: "client",
@@ -57,10 +54,15 @@ async function createIssue(projectId, data) {
     if (!data.clientComment) throw new clientCommentNotProvided();
     if (!data.page) throw new pageUrlNotProvided();
 
-    const code = getRandomCode();
-    data.issueId = code;
-
-    const project = await projectModel.findOne({ projectId: projectId }).populate("issues");
+    const project = await projectModel.findOne({ projectId: projectId })
+        .populate({
+            path: "manager",
+            select: "-password"
+        })
+        .populate("issues");
+    const apiKey = project.manager.apiKey;
+    const newEasyTask = createEasyTask(projectId, apiKey, data);
+    data.issueId = newEasyTask.id;
 
     const newIssue = await issueModel.create(data);
     newIssue.save();

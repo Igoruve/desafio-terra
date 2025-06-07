@@ -1,5 +1,6 @@
 import projectModel from "../../models/projectModel.js";
 import userModel from "../../models/userModel.js";
+import { createEasyProject } from "../../utils/clickUpApi/apiFunctions.js";
 
 import {
   ProjectTitleNotProvided,
@@ -7,13 +8,9 @@ import {
   ProjectNotFound,
 } from "../../utils/errors/projectErrors.js";
 
-import { customAlphabet } from "nanoid";
-
-const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
-
-const validStatuses = ["on hold", "in progress", "complete",
-  "post launch", "needs inputs", "ready to upload",
-  "duplicate comment", "N/A"];
+const validStatuses = ["On Hold", "In Progress", "Complete",
+  "Post Launch", "Needs Inputs", "Ready to upload",
+  "Duplicate Comment", "N/A"];
 
 const getProjects = () =>
   projectModel.find()
@@ -87,7 +84,7 @@ const getProjectsByStatus = async (status) => {
     .populate("issues");
 };
 
-const createProject = async (data) => {
+const createProject = async (userId, data) => {
   if (!data.title || data.title.trim() === "") {
     throw new ProjectTitleNotProvided();
   }
@@ -96,8 +93,12 @@ const createProject = async (data) => {
     throw new ProjectDescriptionNotProvided();
   }
 
-  const code = getRandomCode();
-  data.projectId = code;
+  const user = await userModel.findOne({userId});
+  
+  if (!user) throw new Error("UserNotFound");
+
+  const newEasyProject = createEasyProject(user.folderId, user.apiKey, data.title);
+  data.projectId = newEasyProject.id;
 
   const project = await projectModel.create(data);
 
@@ -144,17 +145,18 @@ export const editProjectClients = async (id, newClients) => {
     error.message = "ProjectNotFound";
     throw error;
   }
-  const agregarClientes = (oldClients, newClients) => {
-    newClients.forEach(nuevo => {
-      const yaExiste = oldClients.some(clienteExistente => 
-        clienteExistente.equals(nuevo)
+  const addClients = (oldClients, newClients) => {
+    newClients.forEach(newClient => {
+      const exist = oldClients.some(client => 
+        client.equals(newClient)
       );
-      if (!yaExiste) {
-        oldClients.push(nuevo);
+      if (!exist) {
+        oldClients.push(newClient);
       }
     });
   };
-  agregarClientes(project.clients, newClients);
+
+  addClients(project.clients, newClients);
   await project.save();
 
   return project;

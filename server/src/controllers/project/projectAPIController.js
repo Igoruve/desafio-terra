@@ -3,11 +3,12 @@ import projectController from "./projectController.js";
 const createProject = async (req, res) => {
   try {
     const role = req.user?.role;
+    const userId = req.user?.id;
     if (role === "client") {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const data = req.body;
-    await projectController.createProject(data);
+    await projectController.createProject(userId, data);
     res.status(201).json({ message: "Project created successfully" });
   } catch (error) {
     console.error(error);
