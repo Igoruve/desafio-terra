@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import FetchData from "../../utils/fetch";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { deleteProject } from "../../utils/project";
+import { deleteIssue } from "../../utils/issue";
 
 const formatDate = (dateObj) => {
   const raw = dateObj?.$date || dateObj;
@@ -22,6 +23,24 @@ const ProjectsByUser = () => {
       await deleteProject(projectId);
       setProjects((prevProjects) =>
         prevProjects.filter((project) => project.projectId !== projectId)
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRemoveIssue = async (projectId, issueId) => {
+    try {
+      await deleteIssue(projectId, issueId);
+      setProjects((prevProjects) =>
+        prevProjects.map((project) => {
+          if (project.projectId === projectId) {
+            project.issues = project.issues.filter(
+              (issue) => issue.issueId !== issueId
+            );
+          }
+          return project;
+        })
       );
     } catch (err) {
       console.error(err);
@@ -119,12 +138,12 @@ const ProjectsByUser = () => {
 
       <main className="px-8 md:px-24 py-12 text-black">
         {userData.role === "admin" && (
-          <div className="flex flex-row gap-4 items-center bg-black/5 w-fit px-12 py-6 rounded-[50px] backdrop-blur-md fixed bottom-8 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out">
+          <div
+            className="flex flex-row gap-4 items-center bg-black/5 w-fit px-12 py-6 rounded-[50px] backdrop-blur-md fixed bottom-8 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
+            onClick={() => navigate(`/newproject`)}
+          >
             <h2 className="text-2xl font-bold">New Project</h2>
-            <div
-              className=" rounded-full w-fit "
-              onClick={() => navigate(`/newproject`)}
-            >
+            <div className=" rounded-full w-fit ">
               <img src="/Plus.svg" alt="" />
             </div>
           </div>
@@ -186,35 +205,42 @@ const ProjectsByUser = () => {
                         key={issue._id?.$oid || issue._id || i}
                         className="bg-white p-4 rounded-[30px] shadow-sm  text-sm text-[var(--bg-color)] space-y-1"
                       >
-                        <div className="flex flex-wrap gap-2">
-                          <p className="font-bold">ID:</p>
-                          <p>{issue.issueId || "N/A"}</p>
-
-                          <p className="font-bold">Type:</p>
-                          <p>{issue.issueType || "N/A"}</p>
-
-                          <p className="font-bold">Status:</p>
-                          <p>{issue.status || "N/A"}</p>
-
-                          <p className="font-bold">Client:</p>
-                          <p>{issue.client || "N/A"}</p>
-
-                          <p className="font-bold">Device:</p>
-                          <p>{issue.device || "N/A"}</p>
-
-                          <p className="font-bold">Browser:</p>
-                          <p>{issue.browser || "N/A"}</p>
-
-                          <p className="font-bold">Page:</p>
-                          <p>{issue.page || "N/A"}</p>
+                        <div className="grid grid-cols-[40px_1fr] gap-4">
+                          <div className="w-[40px] max-w-[40px]">
+                            <img
+                              src="/Trash.svg"
+                              alt="Delete"
+                              className="cursor-pointer w-[24px] h-[24px]"
+                              onClick={() =>
+                                handleRemoveIssue(p.projectId, issue.issueId)
+                              }
+                            />
+                            <img src="/Edit.svg" alt="" onClick={()=>handleEditIssue()} />
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            <p className="font-bold">ID:</p>
+                            <p>{issue.issueId || "N/A"}</p>
+                            <p className="font-bold">Type:</p>
+                            <p>{issue.issueType || "N/A"}</p>
+                            <p className="font-bold">Status:</p>
+                            <p>{issue.status || "N/A"}</p>
+                            <p className="font-bold">Client:</p>
+                            <p>{issue.client || "N/A"}</p>
+                            <p className="font-bold">Device:</p>
+                            <p>{issue.device || "N/A"}</p>
+                            <p className="font-bold">Browser:</p>
+                            <p>{issue.browser || "N/A"}</p>
+                            <p className="font-bold">Page:</p>
+                            <p>{issue.page || "N/A"}</p>
+                            <p>
+                              <span className="font-bold">Comment:</span>{" "}
+                              {issue.clientComment || "No comment"}
+                            </p>
+                            <p className="text-gray-500 text-xs">
+                              Created: {formatDate(issue.createdAt)}
+                            </p>
+                          </div>
                         </div>
-                        <p>
-                          <span className="font-bold">Comment:</span>{" "}
-                          {issue.clientComment || "No comment"}
-                        </p>
-                        <p className="text-gray-500 text-xs">
-                          Created: {formatDate(issue.createdAt)}
-                        </p>
                       </div>
                     ))}
                   </div>
