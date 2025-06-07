@@ -1,5 +1,4 @@
 import userModel from "../../models/userModel.js";
-import { customAlphabet } from "nanoid";
 import bcrypt from "bcrypt";
 
 import {
@@ -14,10 +13,10 @@ import {
 
 import {UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided} from "../../utils/errors/authErrors.js";
 
-const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
+// const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
 async function getAll() {
-  const users = await userModel.find().select("-password -apiKey"); //para que no devuelva el pwd del user
+  const users = await userModel.find().select("-password -apiKey");
   if (!users || users.length === 0) {
     throw new UsersDoNotExist();
   }
@@ -32,7 +31,6 @@ async function getUserById(userId) {
   return user;
 }
 
-
 async function getUserByName(name) {
   const user = await userModel.findOne({ name }).select("-password -apiKey");
   if (!user) {
@@ -42,7 +40,8 @@ async function getUserByName(name) {
 }
 
 async function deleteUserById(userId) {
-  const user = await userModel.findOneAndDelete({ userId }).select("-password -apiKey");
+  // const user = await userModel.findOneAndDelete({ userId }).select("-password -apiKey");
+  const user = await userModel.findByIdAndDelete(userId).select("-password -apiKey");
   if (!user) {
     throw new UserDoesNotExist(userId);
   }
@@ -50,26 +49,31 @@ async function deleteUserById(userId) {
 }
 
 async function editUserById(userId, newData) {
-
-  const user = await userModel.findOne({ userId }).select("-password -apiKey");
+  // const user = await userModel.findOne({ userId }).select("-password -apiKey");
+  const user = await userModel.findById(userId).select("-password -apiKey");
+  if (!user) {
+    throw new UserDoesNotExist(userId);
+  }
 
   if (newData.password) {
     newData.password = await bcrypt.hash(newData.password, 10);
   }
-  if (newData.role && user.role === "client"){
-    throw new RoleChangeNotAllowed()
+  if (newData.role && user.role === "client") {
+    throw new RoleChangeNotAllowed();
   }
   if (newData.apiKey && user.role === "client") {
-    throw new ApiKeyChangeNotAllowed()
+    throw new ApiKeyChangeNotAllowed();
   }
-  const newUser = await userModel.findOneAndUpdate(
-    { userId },
+  // const newUser = await userModel.findOneAndUpdate(
+  //   { userId },
+  //   newData,
+  //   { new: true, runValidators: true }
+  // ).select("-password -apiKey");
+  const newUser = await userModel.findByIdAndUpdate(
+    userId,
     newData,
     { new: true, runValidators: true }
   ).select("-password -apiKey");
-  if (!user) {
-    throw new UserDoesNotExist(userId);
-  }
   return newUser;
 }
 
@@ -80,26 +84,26 @@ async function createUser(userData) {
     throw new ApiKeyRequired();
   }
 
-    if (!email) throw new UserEmailNotProvided();
-    if (!password) throw new UserPasswordNotProvided();
-    if (!name) throw new UserNameNotProvided();
+  if (!email) throw new UserEmailNotProvided();
+  if (!password) throw new UserPasswordNotProvided();
+  if (!name) throw new UserNameNotProvided();
 
-  const userId = getRandomCode();
-
-  const hashedPassword = await bcrypt.hash(password, 10); // Hay que hacer hasheo explícito
+  // const userId = getRandomCode();
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     const user = await userModel.create({
-      userId,
+      // userId,
       name,
       email,
       password: hashedPassword,
       role,
       apiKey,
     });
-    return await userModel.findOne({ userId }).select("-password -apiKey");
+    // return await userModel.findOne({ userId }).select("-password -apiKey");
+    return await userModel.findById(user._id).select("-password -apiKey");
   } catch (error) {
-    if (error.code === 11000) { // Error de duplicado
+    if (error.code === 11000) {
       throw new UserEmailAlreadyExists();
     }
     throw error;
@@ -112,7 +116,8 @@ async function editUserRole(callerUserId, targetUserId, newRole) {
     throw new Error("Invalid role");
   }
 
-  const caller = await userModel.findOne({ userId: callerUserId }).select("-password -apiKey");
+  // const caller = await userModel.findOne({ userId: callerUserId }).select("-password -apiKey");
+  const caller = await userModel.findById(callerUserId).select("-password -apiKey");
   if (!caller) {
     throw new RequestingUserNotFound();
   }
@@ -120,22 +125,20 @@ async function editUserRole(callerUserId, targetUserId, newRole) {
     throw new RoleChangeNotAllowed();
   }
 
-  try {
-    const user = await userModel.findOneAndUpdate(
-      { userId: targetUserId },
-      { role: newRole },
-      { new: true, runValidators: true }
-    ).select("-password -apiKey");
-    if (!user) {
-      throw new UserDoesNotExist(targetUserId);
-    }
-    return user;
-  } catch (error) {
-    if (error.code === 11000) {
-      throw new UserEmailAlreadyExists();
-    }
-    throw error;
+  // const user = await userModel.findOneAndUpdate(
+  //   { userId: targetUserId },
+  //   { role: newRole },
+  //   { new: true, runValidators: true }
+  // ).select("-password -apiKey");
+  const user = await userModel.findByIdAndUpdate(
+    targetUserId,
+    { role: newRole },
+    { new: true, runValidators: true }
+  ).select("-password -apiKey");
+  if (!user) {
+    throw new UserDoesNotExist(targetUserId);
   }
+  return user;
 }
 
 async function getUserByProjectId(projectId) {
@@ -148,12 +151,12 @@ async function getUserByProjectId(projectId) {
   }
 
   return {
-    client: projectModel.client || null,
-    manager: projectModel.manager || null
+    client: project.client || null,
+    manager: project.manager || null
   };
 }
 
-export default{
+export default {
   getAll,
   getUserById,
   deleteUserById,
