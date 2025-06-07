@@ -77,7 +77,7 @@ const AllProjectsByUser = () => {
               </p>
               <p className="mt-1">
                 Issues: {project.issues && project.issues.length > 0
-                  ? project.issues[0].issueType
+                  ? project.issues[0].issueType 
                   : "No issues"}
               </p>
             </li>
