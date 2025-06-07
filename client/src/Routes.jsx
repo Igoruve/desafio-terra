@@ -41,15 +41,20 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           {
-            path: "/issue/create/:projectId",
+            path: "/newissue/:projectId",
             element: <CreateIssueForm />,
             loader: async ({ params }) => {
               return { projectId: params.projectId };
             },
           },
           {
-            path: "/project",
+            path: "/newproject",
             element: <CreateProjectForm />,
+          },
+          {
+            path: "/projects",
+            element: <ProjectsByUser />,
+            loader: getProjectsByUserId,
           },
         ],
       },
