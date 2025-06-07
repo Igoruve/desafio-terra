@@ -47,6 +47,17 @@ const ProjectsByUser = () => {
     }
   };
 
+  const formatDate = (dateObj) => {
+    const raw = dateObj?.$date || dateObj;
+    if (!raw) return "N/A";
+    const date = new Date(raw);
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    });
+  };
+
   useEffect(() => {
     if (userData === null) return;
 
@@ -152,9 +163,9 @@ const ProjectsByUser = () => {
           {projects.map((p, index) => (
             <div
               key={p.projectId || p._id || index}
-              className="flex flex-col md:flex-row gap-6 px-8 py-10 rounded-[20px] shadow-2xs bg-[#F7F8F4]"
+              className="flex flex-col md:flex-row gap-12  "
             >
-              <div className="md:w-1/2">
+              <div className="md:w-1/2 bg-[#F7F8F4] rounded-[20px] px-8 py-10 shadow-2xs">
                 <div className="flex flex-row gap-4 items-center">
                   <h3 className="text-4xl font-bold">
                     {p.title || "Untitled Project"}
@@ -168,14 +179,13 @@ const ProjectsByUser = () => {
                     </div>
                   )}
                 </div>
-                <p className="italic text-lg text-gray-700">
-                  {p.status || "N/A"}
+                <p className="pt-2 text-lg text-[var(--bg-color)]">
+                  Status: {p.status || "N/A"}
                 </p>
-                <p className="mt-2">{p.description || "No description"}</p>
-                <p className="mt-1 text-sm text-gray-600">
-                  Created: {formatDate(p.createdAt)}
+                <p className="pt-1 text-lg text-[var(--bg-color)]">
+                  Creation Date: {formatDate(p.createdAt)}
                 </p>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-lg text-[var(--bg-color)]">
                   Client(s):{" "}
                   {p.clients?.length > 0
                     ? p.clients
@@ -183,21 +193,23 @@ const ProjectsByUser = () => {
                         .join(", ")
                     : "None"}
                 </p>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-lg text-[var(--bg-color)]">
                   Manager: {p.manager?.name || "N/A"}
+                </p>
+                <p className="pt-2 text-xl">
+                  {p.description || "No description"}
                 </p>
               </div>
 
-              <div className="md:w-1/2">
-                <div className="flex flex-row justify-between">
-                  <h4 className="font-semibold text-lg mb-4">Issues</h4>
-                  <div
-                    className=" rounded-full w-fit cursor-pointer"
-                    onClick={() => navigate(`/newissue/${p.projectId}`)}
-                  >
-                    <img src="/Plus.svg" alt="" />
-                  </div>
+              <div className="md:w-1/2 bg-[#F7F8F4] rounded-[20px] px-8 py-10 shadow-2xs ">
+                <div
+                  className="rounded-full w-fit cursor-pointer flex flex-row gap-2 items-end justify-end pb-8"
+                  onClick={() => navigate(`/newissue/${p.projectId}`)}
+                >
+                  <img src="/Plus.svg" alt="" />
+                  <h4 className="text-2xl font-bold">New Issue</h4>
                 </div>
+
                 {p.issues?.length > 0 ? (
                   <div className="space-y-4">
                     {p.issues.map((issue, i) => (
@@ -205,8 +217,41 @@ const ProjectsByUser = () => {
                         key={issue._id?.$oid || issue._id || i}
                         className="bg-white p-4 rounded-[30px] shadow-sm  text-sm text-[var(--bg-color)] space-y-1"
                       >
-                        <div className="grid grid-cols-[40px_1fr] gap-4">
-                          <div className="w-[40px] max-w-[40px]">
+                        <div className="grid grid-cols-[1fr_40px] gap-4">
+                          <div className="flex flex-wrap gap-2 text-lg">
+                            {/* <p className="font-bold">ID:</p>
+                            <p>{issue.issueId || "N/A"}</p> */}
+                            <p className="font-bold">Type:</p>
+                            <p>{issue.issueType || "N/A"}</p>
+                            <p className="font-bold">Status:</p>
+                            <p>{issue.status || "N/A"}</p>
+                            {/* <p className="font-bold">Client:</p>
+                            <p>{issue.client || "N/A"}</p> */}
+                            <p className="font-bold">Device:</p>
+                            <p>{issue.device || "N/A"}</p>
+                            <p className="font-bold">Browser:</p>
+                            <p>{issue.browser || "N/A"}</p>
+                            {/* <p className="font-bold">Page:</p>
+                            <p>{issue.page || "N/A"}</p> */}
+                            {/* <p>
+                              <span className="font-bold">Comment:</span>{" "}
+                              {issue.clientComment || "No comment"}
+                            </p> */}
+                            <p className="font-bold"> Created: </p>
+                            <p className="text-[var(--bg-color)]">
+                              {formatDate(issue.createdAt)}
+                            </p>
+                          </div>
+
+                          <div className="w-[40px] max-w-[40px] flex flex-col justify-between">
+                            {/* <img
+                              src="/See.svg"
+                              alt=""
+                              className="cursor-pointer w-[24px] h-[24px]"
+                              onClick={() =>
+                                navigate(`/issue/${issue.issueId}`)
+                              }
+                            /> */}
                             <img
                               src="/Trash.svg"
                               alt="Delete"
@@ -215,30 +260,7 @@ const ProjectsByUser = () => {
                                 handleRemoveIssue(p.projectId, issue.issueId)
                               }
                             />
-                            <img src="/Edit.svg" alt="" onClick={()=>handleEditIssue()} />
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            <p className="font-bold">ID:</p>
-                            <p>{issue.issueId || "N/A"}</p>
-                            <p className="font-bold">Type:</p>
-                            <p>{issue.issueType || "N/A"}</p>
-                            <p className="font-bold">Status:</p>
-                            <p>{issue.status || "N/A"}</p>
-                            <p className="font-bold">Client:</p>
-                            <p>{issue.client || "N/A"}</p>
-                            <p className="font-bold">Device:</p>
-                            <p>{issue.device || "N/A"}</p>
-                            <p className="font-bold">Browser:</p>
-                            <p>{issue.browser || "N/A"}</p>
-                            <p className="font-bold">Page:</p>
-                            <p>{issue.page || "N/A"}</p>
-                            <p>
-                              <span className="font-bold">Comment:</span>{" "}
-                              {issue.clientComment || "No comment"}
-                            </p>
-                            <p className="text-gray-500 text-xs">
-                              Created: {formatDate(issue.createdAt)}
-                            </p>
+                            <img src="/Edit.svg" alt="" />
                           </div>
                         </div>
                       </div>
