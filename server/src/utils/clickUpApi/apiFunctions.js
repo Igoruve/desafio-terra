@@ -38,7 +38,7 @@ async function createEasySpace(workspaceId, apiKey) {
         .then(res => {
             //console.log(res);
             return res;
-          })
+        })
         .catch(err => console.error(err));
 
     return response;
@@ -60,7 +60,7 @@ async function createEasyFolder(spaceId, apiKey) {
         .then(res => {
             //console.log(res);
             return res;
-          })
+        })
         .catch(err => console.error(err));
 
     return response;
@@ -86,15 +86,15 @@ async function createEasyProject(folderId, apiKey, projectName) {
     const response = await fetch(`https://api.clickup.com/api/v2/folder/${folderId}/list`, options)
         .then(res => res.json())
         .then(res => {
-            console.log(res);
+            //console.log(res);
             return res;
-          })
+        })
         .catch(err => console.error(err));
 
     return response;
 }
 
-async function createTask(projectId, apiKey, data) {
+async function createEasyTask(projectId, apiKey, data) {
 
     const client = await userModel.findById({ _id: data.client });
     if (!client) {
@@ -110,17 +110,16 @@ async function createTask(projectId, apiKey, data) {
         },
         body: JSON.stringify({
             name: data.issueType,
-            description: `Client: ${client.name} Device: ${data.device} Browser: ${data.browser} Page: ${data.page}\n
-                        Comment: ${data.clientComment}`,
+            description: `Client: ${client.name}\nDevice: ${data.device}\nBrowser: ${data.browser}\nPage: ${data.page}\nComment: ${data.clientComment}`,
         })
     };
 
     const response = await fetch(`https://api.clickup.com/api/v2/list/${projectId}/task`, options)
         .then(res => res.json())
         .then(res => {
-            console.log(res);
+            //console.log(res);
             return res;
-          })
+        })
         .catch(err => console.error(err));
 
     return response;
@@ -141,9 +140,9 @@ async function getSpaces(workspaceId, apiKey) {
     const response = await fetch(`https://api.clickup.com/api/v2/team/${workspaceId}/space`, options)
         .then(res => res.json())
         .then(res => {
-            console.log(res);
+            //console.log(res);
             return res;
-          })
+        })
         .catch(err => console.error(err));
 
     console.log(response);
@@ -163,9 +162,9 @@ async function getFolders(spaceId, apiKey) {
     const response = await fetch(`https://api.clickup.com/api/v2/space/${spaceId}/folder`, options)
         .then(res => res.json())
         .then(res => {
-            console.log(res);
+            //console.log(res);
             return res;
-          })
+        })
         .catch(err => console.error(err));
 
     return response;
@@ -183,9 +182,9 @@ async function getEasySpace(spaceId, apiKey) {
     const response = await fetch(`https://api.clickup.com/api/v2/space/${spaceId}`, options)
         .then(res => res.json())
         .then(res => {
-            console.log(res);
+            //console.log(res);
             return res;
-          })
+        })
         .catch(err => console.error(err));
 
     return response;
@@ -203,10 +202,110 @@ async function getEasyFolder(folderId, apiKey) {
     const response = await fetch(`https://api.clickup.com/api/v2/folder/${folderId}`, options)
         .then(res => res.json())
         .then(res => {
+            //console.log(res);
+            return res;
+        })
+        .catch(err => console.error(err));
+
+    return response;
+}
+
+//================= DELETE FUNCTIONS ====================
+//=======================================================
+
+async function deleteProject(projectId, apiKey) {
+    const options = {
+        method: 'DELETE',
+        headers: {
+            accept: 'application/json',
+            Authorization: apiKey
+        }
+    };
+
+    const response = await fetch(`https://api.clickup.com/api/v2/list/${projectId}`, options)
+        .then(res => res.json())
+        .then(res => {
             console.log(res);
             return res;
-          })
+        })
         .catch(err => console.error(err));
+
+    return response;
+}
+
+async function deleteTask(taskId, apiKey) {
+    const options = {
+        method: 'DELETE',
+        headers: {
+            accept: 'application/json',
+            Authorization: apiKey
+        }
+    };
+
+    const response = await fetch(`https://api.clickup.com/api/v2/task/${taskId}`, options)
+        .then(res => res.json())
+        .then(res => {
+            console.log(res);
+            return res;
+        })
+        .catch(err => console.error(err));
+
+    return response;
+}
+
+//================= EDIT FUNCTIONS ======================
+//=======================================================
+
+async function editProject(projectId, apiKey, data) {
+    const options = {
+        method: 'PUT',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: apiKey
+        },
+        body: JSON.stringify({name: data.title})
+    };
+
+    const response = await fetch(`https://api.clickup.com/api/v2/list/${projectId}`, options)
+        .then(res => res.json())
+        .then(res => {
+            console.log(res);
+            return res;
+        })
+        .catch(err => console.error(err));
+
+    return response;
+}
+
+async function editTask(taskId, apiKey, data) {
+    let editedData = {}
+
+    if (data.title){
+        editedData.name = data.title;
+    }
+
+    if (data.description){
+        editedData.description = data.description;
+    }
+
+    const options = {
+        method: 'PUT',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: apiKey
+        },
+        body: JSON.stringify(editedData)
+    };
+
+    const response = await fetch(`https://api.clickup.com/api/v2/task/${taskId}`, options)
+        .then(res => res.json())
+        .then(res => {
+            console.log(res);
+            return res;
+        })
+        .catch(err => console.error(err));   
 
     return response;
 }
@@ -216,9 +315,13 @@ export {
     createEasyFolder,
     createEasySpaceAndFolder,
     createEasyProject,
-    createTask,
+    createEasyTask,
     getSpaces,
     getFolders,
     getEasySpace,
-    getEasyFolder
+    getEasyFolder,
+    deleteProject,
+    deleteTask,
+    editProject,
+    editTask
 };

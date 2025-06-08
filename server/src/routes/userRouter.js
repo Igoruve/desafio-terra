@@ -19,7 +19,7 @@ router.delete("/:id", isLoggedInAPI, requireAdmin, userApiController.deleteUser)
 
 router.put("/:id", isLoggedInAPI, userApiController.editUser);
 
-router.put("/workspace/:id", isLoggedInAPI, requirePM, userApiController.editUserWorkspace);
+router.put("/workspace/", isLoggedInAPI, requirePM, userApiController.editUserWorkspace);
 
 router.get("/:id", isLoggedInAPI, requireAdmin, userApiController.getUserById);
 

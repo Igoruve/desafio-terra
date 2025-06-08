@@ -7,6 +7,8 @@ import {
     clientCommentNotProvided, pageUrlNotProvided
 } from "../../utils/errors/issueErrors.js";
 
+import { createEasyTask } from "../../utils/clickUpApi/apiFunctions.js";
+
 async function getAllIssues() {
     const issues = await issueModel.find().populate({
         path: "client",
@@ -61,7 +63,7 @@ async function createIssue(projectId, data) {
         })
         .populate("issues");
     const apiKey = project.manager.apiKey;
-    const newEasyTask = createEasyTask(projectId, apiKey, data);
+    const newEasyTask = await createEasyTask(projectId, apiKey, data);
     data.issueId = newEasyTask.id;
 
     const newIssue = await issueModel.create(data);
