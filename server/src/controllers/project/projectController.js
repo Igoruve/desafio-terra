@@ -97,7 +97,7 @@ const createProject = async (userId, data) => {
   
   if (!user) throw new Error("UserNotFound");
 
-  const newEasyProject = createEasyProject(user.folderId, user.apiKey, data.title);
+  const newEasyProject = await createEasyProject(user.folderId, user.apiKey, data.title);
   data.projectId = newEasyProject.id;
 
   const project = await projectModel.create(data);
@@ -127,7 +127,7 @@ const editProject = async (id, updateData) => {
   return project;
 };
 
-export const editProjectClients = async (id, newClients) => {
+const editProjectClients = async (id, newClients) => {
   const project = await projectModel
     .findOne({ projectId: id })
     .populate({
@@ -163,6 +163,7 @@ export const editProjectClients = async (id, newClients) => {
 };
 
 const deleteProject = async (id) => {
+  
   const project = await projectModel.findOneAndDelete({ projectId: id });
   if (!project) throw new ProjectNotFound();
 
