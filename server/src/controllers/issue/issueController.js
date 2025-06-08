@@ -85,6 +85,33 @@ async function editIssue(issueId, data) {
   return issue;
 }
 
+async function replaceIssueScreenshot(issueId, screenshot) {
+  const issue = await issueModel.findById(issueId);
+  if (!issue) {
+    return null;
+  }
+  if (!screenshot) {
+    throw new Error("No screenshot provided");
+  }
+  if(issue.screenshot){
+    //Borramos la anterior
+    const uploadDir = path.join(process.cwd(), "uploads");
+    const oldFilePath = path.join(uploadDir, issue.screenshot);
+
+    try {
+      await fs.unlink(oldFilePath);
+      console.log("Archivo borrado:", oldFilePath); // ✅ Añade esto para ver si llega
+    } catch (error) {
+      console.warn("Error deleting screenshot file:", error);
+    }
+    }
+
+    //GUarda la imagen nueva
+    issue.screenshot = screenshot.filename;
+    await issue.save();
+    return issue;
+  }
+
 async function deleteIssue(issueId) {
   const issue = await issueModel.findOneAndDelete({ issueId: issueId });
   return issue;
@@ -124,6 +151,7 @@ export default {
   getIssuesByDevice,
   createIssue,
   editIssue,
+  replaceIssueScreenshot,
   deleteIssue,
   deleteIssueScreenshot
 };

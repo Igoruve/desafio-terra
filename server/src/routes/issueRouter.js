@@ -15,6 +15,8 @@ router.get("/device",isLoggedInAPI,issueAPIController.getIssuesByDevice)
 
 router.put("/:id/edit", isLoggedInAPI, issueAPIController.editIssue);
 
+router.put("/:id/screenshot", isLoggedInAPI, upload.single("screenshot"),issueAPIController.replaceIssueScreenshot)
+
 router.get("/:id", issueAPIController.getIssueById);
 
 router.delete("/:id/delete",isLoggedInAPI,issueAPIController.deleteIssue)
