@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getIssueById } from "../../utils/issue";
 
 const formatDate = (dateObj) => {
   const raw = dateObj?.$date || dateObj;
@@ -12,86 +13,121 @@ const formatDate = (dateObj) => {
   });
 };
 
+const statusBorderColor = {
+  "On Hold": "border-[#ffb410]",
+  "In Progress": "border-[#3D9DD8]",
+  Complete: "border-[#7ce55e]",
+  "Post Launch": "border-[#B679F7]",
+  "Needs Inputs": "border-[#F77241]",
+  "Ready to upload": "border-[#3EE3EB]",
+  "Duplicate Comment": "border-[#F78BD8]",
+  "N/A": "border-[var(--bg-color)]",
+};
+
 function IssueById() {
-  const { issueId } = useParams(); // Obtener el id del issue de la url
+  const { issueId } = useParams();
   const navigate = useNavigate();
-  const [issues, setIssues] = useState([]);
+  const [issue, setIssue] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Simula cargar issues (aquí harías fetch a backend real)
   useEffect(() => {
     async function fetchIssues() {
       setLoading(true);
-      // Aquí debería ir tu llamada fetch para obtener issues de ese proyecto o issue
-      // Por ejemplo:
-      // const data = await fetch(`/api/issues/${issueId}`).then(res => res.json());
-      // setIssues(data.issues);
 
-      // Por ahora pongo dummy data para que pruebes la UI:
-      setIssues([
-        {
-          issueId: issueId,
-          issueType: "Bug",
-          status: "Open",
-          device: "Desktop",
-          browser: "Chrome",
-          createdAt: new Date().toISOString(),
-        },
-      ]);
+      const data = await getIssueById(issueId);
+      setIssue(data);
       setLoading(false);
     }
     fetchIssues();
   }, [issueId]);
 
-  if (loading) return <div>Cargando issues...</div>;
-  if (!issues.length) return <div>No se encontraron issues.</div>;
+  if (loading) return <div>Loading issue...</div>;
+  if (!issue) return <div>Issue not found.</div>;
 
   return (
-    <section className="py-18">
+    <section className="pt-18">
       <header className="bg-[var(--bg-color)] text-white py-4 grid grid-cols-1 custom-xl:grid-cols-3">
         <h2 className="text-[64px] sm:text-[96px] md:text-[140px] lg:text-[180px] xl:text-[220px] 2xl:text-[250px] font-bold mb-4 leading-[0.75] custom-xl:col-span-2 max-w-[12ch] break-words">
           project
           <br />
-          <span className="pl-24">issues</span>
+          <span className="pl-24">issue</span>
         </h2>
         <div className="flex justify-end items-start pt-12 font-bold custom-xl:items-end pr-8">
-          <p className="text-2xl">Manage your project issues</p>
+          <p className="text-2xl">Review your project issue</p>
         </div>
       </header>
-      <main>
-        <div className="space-y-4">
-          {issues.map((issue, i) => (
-            <div
-              key={issue.issueId || i}
-              className="bg-white p-4 rounded-[30px] shadow-sm  text-sm text-[var(--bg-color)] space-y-1"
-            >
-              <div className="grid grid-cols-[1fr_40px] gap-4">
-                <div className="flex flex-wrap gap-2 text-lg">
-                  <p className="font-bold">Type:</p>
-                  <p>{issue.issueType || "N/A"}</p>
-                  <p className="font-bold">Status:</p>
-                  <p>{issue.status || "N/A"}</p>
-                  <p className="font-bold">Device:</p>
-                  <p>{issue.device || "N/A"}</p>
-                  <p className="font-bold">Browser:</p>
-                  <p>{issue.browser || "N/A"}</p>
-                  <p className="text-[var(--bg-color)]">
-                    Created: {formatDate(issue.createdAt)}
-                  </p>
-                </div>
 
-                <div className="w-[40px] max-w-[40px] flex flex-col justify-between">
-                  <img
-                    src="/See.svg"
-                    alt=""
-                    className="cursor-pointer w-[24px] h-[24px]"
-                    onClick={() => navigate(`/issue/${issue.issueId}`)}
-                  />
-                  {/* Aquí puedes agregar otros botones */}
-                </div>
+      <main className="flex flex-col container py-12 items-center justify-center relative">
+        <img src="/Back.svg" alt="" className="absolute top-4 left-4 sm:top-8 sm:left-8 cursor-pointer" onClick={() => navigate(-1)}/>
+        <div className="bg-white p-8 rounded-[30px] shadow-sm w-full sm:max-w-[50%] sm:mx-4 mx-4">
+          <div className="flex justify-between gap-6">
+            <div className="flex-1">
+              <p className="text-xl pb-6">
+                Issue ID: {issue.issueId || issue._id || "N/A"}
+              </p>
+              <div className="flex flex-wrap gap-4 text-lg">
+                <p
+                  className={`border-3 w-fit rounded-[50px] px-4 py-2 ${
+                    statusBorderColor[issue.status] ||
+                    "border-[var(--bg-color)]"
+                  }`}
+                >
+                  Status:{" "}
+                  <span className="font-medium">{issue.status || "N/A"}</span>
+                </p>
+                <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                  Type:{" "}
+                  <span className="font-medium">
+                    {issue.issueType || "N/A"}
+                  </span>
+                </p>
+                <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                  Device:{" "}
+                  <span className="font-medium">{issue.device || "N/A"}</span>
+                </p>
+                <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                  Browser:{" "}
+                  <span className="font-medium">{issue.browser || "N/A"}</span>
+                </p>
+                <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                  Created:{" "}
+                  <span className="font-medium">
+                    {formatDate(issue.createdAt)}
+                  </span>
+                </p>
+                {issue.page && (
+                  <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                    Page URL: <span className="font-medium">{issue.page}</span>
+                  </p>
+                )}
+                {issue.screenshot && (
+                  <div className="mt-4">
+                    <img
+                      src={issue.screenshot}
+                      alt="Issue Screenshot"
+                      className="rounded-lg max-w-full"
+                    />
+                  </div>
+                )}
+                {issue.terraComments && (
+                  <>
+                    <p className="pt-8 text-lg ">Terra Comments:</p>
+                    <p>{issue.terraComments}</p>
+                  </>
+                )}
               </div>
+              <p className="pt-8 text-lg ">Client Comment:</p>
+              <p>{issue.clientComment}</p>
             </div>
-          ))}
+
+            <div className="flex-none">
+              <img
+                src="/Edit.svg"
+                alt="Edit icon"
+                className=" object-contain cursor-pointer"
+              />
+            </div>
+          </div>
         </div>
       </main>
     </section>

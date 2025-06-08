@@ -161,13 +161,14 @@ const ProjectsByUser = () => {
       <main className="px-8 md:px-24 py-12 text-black">
         {userData.role === "admin" && (
           <div
-            className="flex flex-row gap-4 items-center bg-black/5 w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky mb-12 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
+            className="flex flex-row gap-4 items-center bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky mb-12 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
             onClick={() => navigate(`/newproject`)}
           >
-            <h2 className="text-2xl font-bold">New Project</h2>
             <div className=" rounded-full w-fit ">
-              <img src="/Plus.svg" alt="" />
+            <img src="/Plus.svg" alt="" className="invert brightness-0 saturate-0" />
+
             </div>
+            <h2 className="text-2xl font-bold">New Project</h2>
           </div>
         )}
         <div className="space-y-12">
@@ -177,7 +178,7 @@ const ProjectsByUser = () => {
               className="flex flex-col md:flex-row gap-12  "
             >
               <div className="md:w-1/2 bg-[#F7F8F4] rounded-[20px] px-8 py-10 shadow-2xs">
-                <div className="flex flex-row gap-4 items-center">
+                <div className="grid grid-cols-[1fr_40px] gap-4">
                   <h3 className="text-4xl font-bold">
                     {p.title || "Untitled Project"}
                   </h3>
@@ -213,16 +214,18 @@ const ProjectsByUser = () => {
               </div>
 
               <div className="md:w-1/2 bg-[#F7F8F4] rounded-[20px] px-8 py-10 shadow-2xs ">
-                <div
-                  className="rounded-full w-fit cursor-pointer flex flex-row gap-2 items-end justify-end pb-8"
-                  onClick={() => navigate(`/newissue/${p.projectId}`)}
-                >
-                  <img src="/Plus.svg" alt="" />
-                  <h4 className="text-2xl font-bold">New Issue</h4>
+                <div className="flex justify-end">
+                  <div
+                    className="bg-white px-6 py-3 flex items-center gap-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[50px] hover:rounded-[8px] shadow-sm"
+                    onClick={() => navigate(`/newissue/${p.projectId}`)}
+                  >
+                    <img src="/Plus.svg" alt="" />
+                    <h4 className="text-2xl font-bold">New Issue</h4>
+                  </div>
                 </div>
 
                 {p.issues?.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 mt-6">
                     {p.issues.map((issue, i) => (
                       <div
                         key={issue._id?.$oid || issue._id || i}
@@ -261,14 +264,14 @@ const ProjectsByUser = () => {
                           </div>
 
                           <div className="w-[40px] max-w-[40px] flex flex-col justify-between">
-                            {/* <img
+                            <img
                               src="/See.svg"
                               alt=""
                               className="cursor-pointer w-[24px] h-[24px]"
                               onClick={() =>
                                 navigate(`/issue/${issue.issueId}`)
                               }
-                            /> */}
+                            />
                             <img
                               src="/Trash.svg"
                               alt="Delete"
@@ -277,7 +280,6 @@ const ProjectsByUser = () => {
                                 handleRemoveIssue(p.projectId, issue.issueId)
                               }
                             />
-                            <img src="/Edit.svg" alt="" />
                           </div>
                         </div>
                       </div>

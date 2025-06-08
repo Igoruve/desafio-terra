@@ -55,13 +55,13 @@ const router = createBrowserRouter([
             element: <ProjectsByUser />,
             loader: getProjectsByUserId,
           },
-          // {
-          //   path: "/issue/:issueId",
-          //   element: <IssueById />,
-          //   loader: async ({ params }) => {
-          //     return { issueId: params.issueId };
-          //   },
-          // },
+          {
+            path: "/issue/:issueId",
+            element: <IssueById />,
+            loader: async ({ params }) => {
+              return { issueId: params.issueId };
+            },
+          },
           {
             path: "/faq",
             element: <FAQ />,
