@@ -7,7 +7,7 @@ import {
     clientCommentNotProvided, pageUrlNotProvided
 } from "../../utils/errors/issueErrors.js";
 
-import { createEasyTask } from "../../utils/clickUpApi/apiFunctions.js";
+import { createEasyTask, deleteEasyTask } from "../../utils/clickUpApi/apiFunctions.js";
 
 async function getAllIssues() {
     const issues = await issueModel.find().populate({
@@ -82,6 +82,17 @@ async function editIssue(issueId, data) {
 
 async function deleteIssue(issueId) {
     const issue = await issueModel.findOneAndDelete({ issueId: issueId });
+    const updatedProject = await projectModel.findOneAndUpdate(
+        { issues: issue._id },
+        { $pull: { issues: issue._id } },
+        { new: true }
+    ).populate({
+        path: 'manager',
+        select: '-password'
+    });
+
+    await deleteEasyTask(issue.issueId, updatedProject.manager.apiKey);
+
     return issue;
 }
 

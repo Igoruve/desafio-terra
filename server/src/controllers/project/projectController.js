@@ -1,6 +1,6 @@
 import projectModel from "../../models/projectModel.js";
 import userModel from "../../models/userModel.js";
-import { createEasyProject } from "../../utils/clickUpApi/apiFunctions.js";
+import { createEasyProject, deleteEasyProject } from "../../utils/clickUpApi/apiFunctions.js";
 
 import {
   ProjectTitleNotProvided,
@@ -164,8 +164,20 @@ const editProjectClients = async (id, newClients) => {
 
 const deleteProject = async (id) => {
   
-  const project = await projectModel.findOneAndDelete({ projectId: id });
+  const project = await projectModel.findOne({ projectId: id })
+    .populate({
+      path: 'manager',
+      select: '-password'
+    });
+
   if (!project) throw new ProjectNotFound();
+
+  if (project.issues.length > 0) {
+    await issueModel.deleteMany({ _id: { $in: project.issues } });
+  }
+
+  await projectModel.deleteOne({ _id: project._id });
+  await deleteEasyProject(project.projectId, project.manager.apiKey);
 
   return project;
 };
