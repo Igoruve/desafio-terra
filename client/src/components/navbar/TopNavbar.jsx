@@ -51,10 +51,22 @@ function TopNavbar() {
         </Link>
         <div>
           <button
-            className="text-[var(--bg-color)] bg-white px-8 py-3 rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out cursor-pointer font-bold"
+            className="text-[var(--bg-color)] bg-white px-8 py-3 min-w-[120px] text-center rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out cursor-pointer font-bold flex justify-center items-center"
             onClick={() => setIsOpen(!isOpen)}
           >
-            Menu!
+            {!isOpen ? (
+              "Menu!"
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="28"
+                viewBox="0 0 384 512"
+                fill="currentColor"
+                className="text-[var(--bg-color)]"
+              >
+                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+              </svg>
+            )}
           </button>
         </div>
       </nav>
@@ -63,28 +75,28 @@ function TopNavbar() {
         <nav className="absolute top-18 right-0 w-full bg-[var(--bg-color)] font-bold text-white flex flex-col px-6 py-4 text-4xl text-center sm:text-6xl h-screen gap-6 items-center justify-center">
           <Link
             onClick={closeMenu}
-            className=" border-[5px] border-[#F96E43] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            className="border-[5px] border-[#F96E43] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out"
             to="/projects"
           >
             projects
           </Link>
           <Link
             onClick={closeMenu}
-            className=" border-[5px] border-[#7CE55E] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            className=" border-[5px] border-[#7CE55E] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
             to="/faq"
           >
             FAQ
           </Link>
           <Link
             onClick={closeMenu}
-            className=" border-[5px] border-[#3D9DD8] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            className=" border-[5px] border-[#3D9DD8] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
             to="/profile"
           >
             profile
           </Link>
           <Link
             onClick={closeMenu}
-            className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
             to="/logout"
           >
             log out
