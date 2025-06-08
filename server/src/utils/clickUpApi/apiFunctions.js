@@ -310,6 +310,35 @@ async function editEasyTask(taskId, apiKey, data) {
     return response;
 }
 
+//================= OTHER FUNCTIONS =====================
+//=======================================================
+
+
+/* async function uploadImageToTask(taskId, apiKey){
+    const form = new FormData();
+    form.append('attachment', fs.createReadStream('./prueba.png'), 'prueba.png');
+
+    const options = {
+        method: 'POST',
+        headers: {
+            Authorization: apiKey,
+            ...form.getHeaders()
+        },
+        body: form
+    };
+
+    const response = await fetch(`https://api.clickup.com/api/v2/task/${taskId}/attachment`, options)
+        .then(res => res.json())
+        .then(res => {
+            console.log(res);
+            return res;
+        })
+        .catch(err => console.error(err));
+
+    return response;
+
+} */
+
 export {
     createEasySpace,
     createEasyFolder,
@@ -323,5 +352,6 @@ export {
     deleteEasyProject,
     deleteEasyTask,
     editEasyProject,
-    editEasyTask
+    editEasyTask,
+    uploadImageToTask
 };
