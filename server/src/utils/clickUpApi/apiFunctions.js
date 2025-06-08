@@ -213,7 +213,7 @@ async function getEasyFolder(folderId, apiKey) {
 //================= DELETE FUNCTIONS ====================
 //=======================================================
 
-async function deleteProject(projectId, apiKey) {
+async function deleteEasyProject(projectId, apiKey) {
     const options = {
         method: 'DELETE',
         headers: {
@@ -233,7 +233,7 @@ async function deleteProject(projectId, apiKey) {
     return response;
 }
 
-async function deleteTask(taskId, apiKey) {
+async function deleteEasyTask(taskId, apiKey) {
     const options = {
         method: 'DELETE',
         headers: {
@@ -256,7 +256,7 @@ async function deleteTask(taskId, apiKey) {
 //================= EDIT FUNCTIONS ======================
 //=======================================================
 
-async function editProject(projectId, apiKey, data) {
+async function editEasyProject(projectId, apiKey, data) {
     const options = {
         method: 'PUT',
         headers: {
@@ -264,7 +264,7 @@ async function editProject(projectId, apiKey, data) {
             'content-type': 'application/json',
             Authorization: apiKey
         },
-        body: JSON.stringify({name: data.title})
+        body: JSON.stringify({ name: data.title })
     };
 
     const response = await fetch(`https://api.clickup.com/api/v2/list/${projectId}`, options)
@@ -278,14 +278,14 @@ async function editProject(projectId, apiKey, data) {
     return response;
 }
 
-async function editTask(taskId, apiKey, data) {
+async function editEasyTask(taskId, apiKey, data) {
     let editedData = {}
 
-    if (data.title){
+    if (data.title) {
         editedData.name = data.title;
     }
 
-    if (data.description){
+    if (data.description) {
         editedData.description = data.description;
     }
 
@@ -305,7 +305,7 @@ async function editTask(taskId, apiKey, data) {
             console.log(res);
             return res;
         })
-        .catch(err => console.error(err));   
+        .catch(err => console.error(err));
 
     return response;
 }
@@ -320,8 +320,8 @@ export {
     getFolders,
     getEasySpace,
     getEasyFolder,
-    deleteProject,
-    deleteTask,
-    editProject,
-    editTask
+    deleteEasyProject,
+    deleteEasyTask,
+    editEasyProject,
+    editEasyTask
 };
