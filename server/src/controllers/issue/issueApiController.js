@@ -1,4 +1,5 @@
 import issueController from "./issueController.js";
+import { sendIssueStatusEmail } from "../../utils/mailer.js";
 
 async function getAllIssues(req, res) {
   try {
