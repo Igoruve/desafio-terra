@@ -134,6 +134,17 @@ const ProjectsByUser = () => {
       </div>
     );
 
+  const statusBorderColor = {
+    "On Hold": "border-[#ffb410]",
+    "In Progress": "border-[#3D9DD8]",
+    Complete: "border-[#7ce55e]",
+    "Post Launch": "border-[#B679F7]",
+    "Needs Inputs": "border-[#F77241]",
+    "Ready to upload": "border-[#3EE3EB]",
+    "Duplicate Comment": "border-[#F78BD8]",
+    "N/A": "border-[var(--bg-color)]",
+  };
+
   return (
     <section className="py-18">
       <header className="bg-[var(--bg-color)] text-white py-4 grid grid-cols-1 custom-xl:grid-cols-3">
@@ -218,28 +229,34 @@ const ProjectsByUser = () => {
                         className="bg-white p-4 rounded-[30px] shadow-sm  text-sm text-[var(--bg-color)] space-y-1"
                       >
                         <div className="grid grid-cols-[1fr_40px] gap-4">
-                          <div className="flex flex-wrap gap-2 text-lg">
-                            {/* <p className="font-bold">ID:</p>
-                            <p>{issue.issueId || "N/A"}</p> */}
-                            <p className="font-bold">Type:</p>
-                            <p>{issue.issueType || "N/A"}</p>
-                            <p className="font-bold">Status:</p>
-                            <p>{issue.status || "N/A"}</p>
-                            {/* <p className="font-bold">Client:</p>
-                            <p>{issue.client || "N/A"}</p> */}
-                            <p className="font-bold">Device:</p>
-                            <p>{issue.device || "N/A"}</p>
-                            <p className="font-bold">Browser:</p>
-                            <p>{issue.browser || "N/A"}</p>
-                            {/* <p className="font-bold">Page:</p>
-                            <p>{issue.page || "N/A"}</p> */}
-                            {/* <p>
-                              <span className="font-bold">Comment:</span>{" "}
-                              {issue.clientComment || "No comment"}
-                            </p> */}
-                            <p className="font-bold"> Created: </p>
-                            <p className="text-[var(--bg-color)]">
-                              {formatDate(issue.createdAt)}
+                          <div className="flex flex-wrap gap-4 text-lg">
+                            <p
+                              className={` border-3 w-fit rounded-[50px] px-4 py-2 ${
+                                statusBorderColor[issue.status] ||
+                                "border-[var(--bg-color)]"
+                              }`}
+                            >
+                              Status:{" "}
+                              <span className="font-medium">
+                                {" "}
+                                {issue.status || "N/A"}
+                              </span>
+                            </p>
+                            <p className=" border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                              Type:
+                              <span className="font-medium">
+                                {" "}
+                                {issue.issueType || "N/A"}
+                              </span>
+                            </p>
+
+                            <p className=" border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                              {" "}
+                              Created:{" "}
+                              <span className="font-medium">
+                                {" "}
+                                {formatDate(issue.createdAt)}
+                              </span>{" "}
                             </p>
                           </div>
 
