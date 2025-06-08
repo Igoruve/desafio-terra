@@ -20,9 +20,15 @@ console.log("url", url);
     options.headers["Authorization"] = `Bearer ${token}`;
   } */
 
+  // Si data existe y es FormData, NO añadir Content-Type, fetch lo hace automáticamente
   if (data) {
-    options.headers["Content-Type"] = "application/json";
-    options.body = JSON.stringify(data);
+    if(data instanceof FormData){
+      options.body = data;
+      //no ponemos headers['Content-Type']
+    }else{
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify(data);
+    }
   }
 
   try {
