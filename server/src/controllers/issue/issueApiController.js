@@ -100,6 +100,25 @@ async function editIssue(req, res) {
   }
 }
 
+async function replaceIssueScreenshot(req, res) {
+  try {
+    const issueId = req.params.id;
+
+    if(!req.file){
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const issue = await issueController.replaceIssueScreenshot(issueId, req.file);
+    if (!issue) {
+      return res.status(404).json({ error: "Issue not found" });
+    }
+    res.json({message: "Screenshot updated successfully"});
+  } catch (error) {
+    console.error("Error replacing screenshot:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 async function deleteIssue(req, res) {
   try {
     const issueId = req.params.id;
@@ -140,6 +159,7 @@ export default {
   getIssuesByDevice,
   createIssue,
   editIssue,
+  replaceIssueScreenshot,
   deleteIssue,
   deleteIssueScreenshot
 };
