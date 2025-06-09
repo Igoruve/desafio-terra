@@ -9,6 +9,7 @@ function Auth({ isRegister }) {
   const [userData, setUserData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     name: "",
   });
 
@@ -21,9 +22,16 @@ function Auth({ isRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isRegister && userData.password !== userData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     const result = isRegister
       ? await onRegister(userData.name, userData.email, userData.password)
       : await onLogin(userData.email, userData.password);
+
       if (result) {
         setError(result);
       }
@@ -91,7 +99,24 @@ function Auth({ isRegister }) {
                 required
               />
             </div>
+            {isRegister && (
+              <div className="flex flex-col gap-2">
+                <label className="text-lg font-bold" htmlFor="confirmPassword">
+                  Repeat Password:
+                </label>
+                <input
+                  className="bg-transparent border-2 border-white/50 rounded-[8px] text-white px-4 py-2 focus:outline-none focus:border-white transition-all duration-300"
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={userData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            )}
           </div>
+          
           <button
             type="submit"
             className={`w-32 self-center py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] font-bold text-lg mt-8 transition-all duration-300 ease-in-out ${
