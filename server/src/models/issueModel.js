@@ -1,10 +1,10 @@
-import moongoose from "mongoose";
+import mongoose from "mongoose";
 
-const issueSchema = new moongoose.Schema({
+const issueSchema = new mongoose.Schema({
     issueType: {
         type: String,
         enum: ["Copy revision", "Requested Change", "New Item", 
-                "Bug Fix", "Design Issues", "Not Addressing"],
+                "Bug Fix", "Design Issues", "Not Addressing", "Other"],
         required: true,
     },
     status: {
@@ -25,7 +25,7 @@ const issueSchema = new moongoose.Schema({
         default: Date.now,
     },
     client: {
-        type: moongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
     },
@@ -56,4 +56,4 @@ const issueSchema = new moongoose.Schema({
     },
 });
 
-export default moongoose.model("Issue", issueSchema);
+export default mongoose.model("Issue", issueSchema);

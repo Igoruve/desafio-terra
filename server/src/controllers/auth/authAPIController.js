@@ -75,4 +75,5 @@ export default {
   register,
   login,
   logout,
+  getMe
 };

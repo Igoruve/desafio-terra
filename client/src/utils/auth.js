@@ -8,11 +8,6 @@ async function login(email, password) {
   const data = { email, password };
   const result = await FetchData("/login", "POST", data);
 
-  if (!result.error) {
-    const { email, ...userWithoutEmail } = result.user;
-    saveUser(userWithoutEmail);
-  }
-
   return result;
 }
 
@@ -58,4 +53,8 @@ async function logout() {
   return result;
 }
 
-export { login, register, logout };
+async function getMe() {
+  return await FetchData("/me", "GET");
+}
+
+export { login, register, logout, getMe };
