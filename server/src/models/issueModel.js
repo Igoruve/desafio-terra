@@ -11,7 +11,7 @@ const issueSchema = new mongoose.Schema({
         type: String,
         enum: ["On Hold", "In Progress", "Complete", 
             "Post Launch", "Needs Inputs", "Ready to upload",
-            "Duplicate Comment", "N/A"],
+            "Duplicate Comment", "Other"],
         default: "On Hold",
     },
     issueId: {

@@ -1,7 +1,10 @@
 import projectModel from "../../models/projectModel.js";
 import userModel from "../../models/userModel.js";
 import issueModel from "../../models/issueModel.js";
-import { createEasyProject, deleteEasyProject } from "../../utils/clickUpApi/apiFunctions.js";
+import {
+  createEasyProject,
+  deleteEasyProject,
+} from "../../utils/clickUpApi/apiFunctions.js";
 
 import {
   ProjectTitleNotProvided,
@@ -9,19 +12,27 @@ import {
   ProjectNotFound,
 } from "../../utils/errors/projectErrors.js";
 
-const validStatuses = ["On Hold", "In Progress", "Complete",
-  "Post Launch", "Needs Inputs", "Ready to upload",
-  "Duplicate Comment", "N/A"];
+const validStatuses = [
+  "On Hold",
+  "In Progress",
+  "Complete",
+  "Post Launch",
+  "Needs Inputs",
+  "Ready to upload",
+  "Duplicate Comment",
+  "N/A",
+];
 
 const getProjects = () =>
-  projectModel.find()
+  projectModel
+    .find()
     .populate({
       path: "clients",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate("issues");
 
@@ -30,27 +41,27 @@ const getProjectById = (id) =>
     .findOne({ projectId: id })
     .populate({
       path: "clients",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate("issues");
 
 const getProjectsByUserId = async (userId) => {
-  const user = await userModel.findById( userId.trim());
+  const user = await userModel.findById(userId.trim());
   if (!user) throw new Error("UserNotFound");
 
   return projectModel
     .find({ $or: [{ manager: user._id }, { clients: user._id }] })
     .populate({
       path: "clients",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate("issues");
 };
@@ -59,11 +70,11 @@ const getProjectsByDate = (date) =>
     .find({ createdAt: { $gte: date } })
     .populate({
       path: "clients",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate("issues");
 
@@ -76,11 +87,11 @@ const getProjectsByStatus = async (status) => {
     .find({ status })
     .populate({
       path: "clients",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate("issues");
 };
@@ -93,14 +104,35 @@ const createProject = async (userId, data) => {
   if (!data.description || data.description.trim() === "") {
     throw new ProjectDescriptionNotProvided();
   }
+console.log(data.clientsNames);
+  const user = await userModel.findById({ _id: userId });
+  const getClients = async () => {
+    const promises = data.clientsNames.map(async (client) => {
+      let clientModel = await userModel.findOne({ name: client });
 
-  const user = await userModel.findById({_id: userId});
+      return clientModel?._id;
+    });
 
-  console.log( "User: ", user);
-  
-  if (!user) throw new Error("UserNotFound");
+    const clientIds = await Promise.all(promises);
+    return clientIds.filter(Boolean); 
+  };
 
-  const newEasyProject = await createEasyProject(user.folderId, user.apiKey, data.title);
+  const clientsList = await getClients();
+  console.log("Hola Asier", clientsList);
+
+  if (clientsList.length === 0) {
+    throw new Error("Client Not Found");
+  }
+
+  data.clients = clientsList;
+
+  if (!user) throw new Error("User Not Found");
+
+  const newEasyProject = await createEasyProject(
+    user.folderId,
+    user.apiKey,
+    data.title
+  );
   data.projectId = newEasyProject.id;
 
   const project = await projectModel.create(data);
@@ -109,7 +141,6 @@ const createProject = async (userId, data) => {
 };
 
 const editProject = async (id, updateData) => {
-
   const project = await projectModel
     .findOneAndUpdate({ projectId: id }, updateData, {
       new: true,
@@ -117,11 +148,11 @@ const editProject = async (id, updateData) => {
     })
     .populate({
       path: "clients",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate("issues");
 
@@ -135,11 +166,11 @@ const editProjectClients = async (id, newClients) => {
     .findOne({ projectId: id })
     .populate({
       path: "clients",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate("issues");
 
@@ -149,10 +180,8 @@ const editProjectClients = async (id, newClients) => {
     throw error;
   }
   const addClients = (oldClients, newClients) => {
-    newClients.forEach(newClient => {
-      const exist = oldClients.some(client => 
-        client.equals(newClient)
-      );
+    newClients.forEach((newClient) => {
+      const exist = oldClients.some((client) => client.equals(newClient));
       if (!exist) {
         oldClients.push(newClient);
       }
@@ -166,12 +195,10 @@ const editProjectClients = async (id, newClients) => {
 };
 
 const deleteProject = async (id) => {
-  
-  const project = await projectModel.findOne({ projectId: id })
-    .populate({
-      path: 'manager',
-      select: '-password'
-    });
+  const project = await projectModel.findOne({ projectId: id }).populate({
+    path: "manager",
+    select: "-password",
+  });
 
   if (!project) throw new ProjectNotFound();
 
