@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login, register, logout, getMe } from "../utils/auth";
+import { removeToken } from "../utils/localStorage";
 
 const AuthContext = createContext({
   userData: null,
@@ -41,9 +42,20 @@ const AuthProvider = ({ children }) => {
       const result = await register(name, email, password);
       if (result.error) {
         return result.error;
+      } else {
+        if (result.token) {
+          //si existe token, lo guarda
+          saveToken(result.token);
+        }
+        if (result.user) {
+          //y si existe user guarda sus datos
+          setUserData(result.user);
+        }
+
+        navigate(`/login`);
+        return null;
       }
-      navigate("/login");
-      return null;
+       
     } catch (error) {
       console.error("Register error:", error);
       return "Error processing the register.";
@@ -55,14 +67,19 @@ const AuthProvider = ({ children }) => {
       setLoading(true);
       const result = await login(email, password);
       if ("error" in result && result.error) {
+        removeToken();
         return result.error;
-      }
-      if (result.user && result.user.role) {
-        setUserData(result.user);
-        navigate("/");
+      } else {
+        if (result.token) {
+          //si existe token, lo guarda
+          saveToken(result.token);
+        }
+        let finalUserData = result.user;
+        setUserData(finalUserData);
+        navigate("/projects"); 
         return null;
       }
-      return "Invalid user data";
+      
     } catch (error) {
       console.error("Error logging in:", error);
       return "Error processing the login.";

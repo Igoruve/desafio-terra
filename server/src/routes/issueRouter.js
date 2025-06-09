@@ -1,6 +1,7 @@
 import { Router } from "express";
 import issueAPIController from "../controllers/issue/issueApiController.js";
 import { isLoggedInAPI } from "../middlewares/authMiddleware.js";
+import upload from "../middlewares/multer.js";
 
 const router = Router();
 
@@ -17,12 +18,17 @@ router.put("/:id/edit", isLoggedInAPI, issueAPIController.editIssue);
 router.get("/user/:userId", isLoggedInAPI, issueAPIController.getIssuesByUser); //cambio
 
 /* router.get("/:id", issueAPIController.getIssueById); */ // duplicado? sin middleware?
+router.put("/:id/screenshot", isLoggedInAPI, upload.single("screenshot"),issueAPIController.replaceIssueScreenshot)
+
+router.get("/:id", issueAPIController.getIssueById);
 
 router.delete("/:id/delete",isLoggedInAPI,issueAPIController.deleteIssue)
 
+router.delete("/:id/delete/screenshot",isLoggedInAPI,issueAPIController.deleteIssueScreenshot)
+
 router.get("/:id", isLoggedInAPI,issueAPIController.getIssueById)
 
-router.post("/create/:projectId", isLoggedInAPI,issueAPIController.createIssue)
+router.post("/create/:projectId", isLoggedInAPI, upload.single("screenshot"),issueAPIController.createIssue)
 
 
 export default router;

@@ -1,8 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import ProjectList from "./components/project/ProjectList.jsx";
-import Project from "./components/project/Project.jsx";
-
 import { getProjectsByUserId, getProjectById } from "./utils/project.js";
 
 import { createIssue } from "./utils/issue.js";
@@ -18,6 +15,10 @@ import Profile from "./components/profile/Profile.jsx";
 import EditProject from "./components/editProject/EditProject.jsx"; 
 import EditIssue from "./components/editIssue/EditIssue.jsx";
 
+import CreateIssueForm from "./components/createIssueForm/CreateIssueForm.jsx";
+import CreateProjectForm from "./components/createProjectForm/CreateProjectForm.jsx";
+import FAQ from "./components/FAQ/FAQ.jsx";
+import IssueById from "./components/issue/IssueById.jsx";
 
 const router = createBrowserRouter([
   {
@@ -71,9 +72,33 @@ const router = createBrowserRouter([
           {
             path: "/issue/create/:projectId",
             element: <Form />,
+            path: "/newissue/:projectId",
+            element: <CreateIssueForm />,
             loader: async ({ params }) => {
               return { projectId: params.projectId };
             },
+          },
+          {
+            path: "/newproject",
+            element: <CreateProjectForm />,
+          },
+          {
+            path: "/projects",
+            element: <ProjectsByUser />,
+/*             loader: getProjectsByUserId => {
+              return { getProjectsByUserId };
+            }, */
+          },
+          {
+            path: "/issue/:issueId",
+            element: <IssueById />,
+            loader: async ({ params }) => {
+              return { issueId: params.issueId };
+            },
+          },
+          {
+            path: "/faq",
+            element: <FAQ />,
           },
         ],
       },

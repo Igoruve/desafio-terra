@@ -4,11 +4,13 @@ import mongoose from "mongoose";
 const createProject = async (req, res) => {
   try {
     const role = req.user?.role;
+    const userId = req.user?.userId;
+  console.log("User ID: ", userId);
     if (role === "client") {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const data = req.body;
-    await projectController.createProject(data);
+    await projectController.createProject(userId, data);
     res.status(201).json({ message: "Project created successfully" });
   } catch (error) {
     console.error(error);
