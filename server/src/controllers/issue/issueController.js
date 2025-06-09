@@ -57,6 +57,7 @@ async function getIssuesByDevice(device) {
   return issues;
 }
 async function createIssue(projectId, data) {
+
   if (!data.issueType) throw new issueTypeNotProvided();
   if (!data.device) throw new deviceNotProvided();
   if (!data.browser) throw new browserNotProvided();

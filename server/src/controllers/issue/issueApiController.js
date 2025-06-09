@@ -65,12 +65,11 @@ async function createIssue(req, res) {
   try {
     const role = req.user?.role;
 
-    if (role === "project manager") {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    // if (role === "project manager") {
+    //   return res.status(401).json({ error: "Unauthorized" });
+    // }
 
     const projectId = req.params.projectId;
-    console.log(projectId, "hola asier");
     const data = req.body;
     data.client = req.user.userId; //TODO CAMBIAR ESTO PARA QUE PILLE DEL CLIENT
     
