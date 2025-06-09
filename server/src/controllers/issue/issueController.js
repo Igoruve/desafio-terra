@@ -1,5 +1,8 @@
 import issueModel from "../../models/issueModel.js";
 import projectModel from "../../models/projectModel.js";
+import path from "path";
+import fs from "fs/promises";
+import { fileURLToPath } from "url";
 
 import {
   issueTypeNotProvided,
@@ -10,6 +13,9 @@ import {
 } from "../../utils/errors/issueErrors.js";
 
 import { customAlphabet } from "nanoid";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 async function getAllIssues() {
@@ -79,10 +85,63 @@ async function editIssue(issueId, data) {
   return issue;
 }
 
+async function replaceIssueScreenshot(issueId, screenshot) {
+  const issue = await issueModel.findById(issueId);
+  if (!issue) {
+    return null;
+  }
+  if (!screenshot) {
+    throw new Error("No screenshot provided");
+  }
+  if(issue.screenshot){
+    //Borramos la anterior
+    const uploadDir = path.join(process.cwd(), "uploads");
+    const oldFilePath = path.join(uploadDir, issue.screenshot);
+
+    try {
+      await fs.unlink(oldFilePath);
+      console.log("Archivo borrado:", oldFilePath); // ✅ Añade esto para ver si llega
+    } catch (error) {
+      console.warn("Error deleting screenshot file:", error);
+    }
+    }
+
+    //GUarda la imagen nueva
+    issue.screenshot = screenshot.filename;
+    await issue.save();
+    return issue;
+  }
+
 async function deleteIssue(issueId) {
   const issue = await issueModel.findOneAndDelete({ issueId: issueId });
   return issue;
 }
+
+async function deleteIssueScreenshot(_id) {
+  const issue = await issueModel.findById(_id);
+  if (!issue) {
+    return null;
+  }
+
+  if (issue.screenshot) {
+    const uploadDir = path.join(process.cwd(), "uploads");
+    /* const fileName = path.basename(issue.screenshot); */
+    const filePath = path.join(uploadDir, issue.screenshot);
+
+    try {
+      await fs.unlink(filePath);
+      console.log("Archivo borrado:", filePath); // ✅ Añade esto para ver si llega
+
+    } catch (error) {
+      console.error("Error deleting screenshot file:", error);
+    }
+    
+    issue.screenshot = null;
+    await issue.save();
+  }
+  return issue;
+}
+
 
 export default {
   getAllIssues,
@@ -92,5 +151,7 @@ export default {
   getIssuesByDevice,
   createIssue,
   editIssue,
+  replaceIssueScreenshot,
   deleteIssue,
+  deleteIssueScreenshot
 };

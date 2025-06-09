@@ -1,4 +1,5 @@
 import issueController from "./issueController.js";
+import fs from "fs/promises";
 
 async function getAllIssues(req, res) {
   try {
@@ -72,6 +73,13 @@ async function createIssue(req, res) {
     console.log(projectId, "hola asier");
     const data = req.body;
     data.client = req.user.userId; //TODO CAMBIAR ESTO PARA QUE PILLE DEL CLIENT
+    
+    //Si hay archivo, añaddir ruta al data para guardar en BD
+    if(req.file){
+      //Guarda la ruta donde subio la imagen
+      data.screenshot = req.file.filename; 
+    }
+
     const issue = await issueController.createIssue(projectId, data);
     res.json(issue);
   } catch (error) {
@@ -92,11 +100,51 @@ async function editIssue(req, res) {
   }
 }
 
+async function replaceIssueScreenshot(req, res) {
+  try {
+    const issueId = req.params.id;
+
+    if(!req.file){
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const issue = await issueController.replaceIssueScreenshot(issueId, req.file);
+    if (!issue) {
+      return res.status(404).json({ error: "Issue not found" });
+    }
+    res.json({message: "Screenshot updated successfully"});
+  } catch (error) {
+    console.error("Error replacing screenshot:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 async function deleteIssue(req, res) {
   try {
     const issueId = req.params.id;
     const issue = await issueController.deleteIssue(issueId);
     res.json(issue);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function deleteIssueScreenshot(req, res) {
+  try {
+    const issueId = req.params.id;
+    const issue = await issueController.deleteIssueScreenshot(issueId);
+    if (!issue) {
+      return res.status(404).json({ error: "Issue not found" });
+    }
+    /* if (issue.screenshot) {
+      const filePath = path.join(process.cwd(), issue.screenshot);
+      await fs.unlink(filePath);
+    }
+    issue.screenshot = null;
+    await issue.save(); */
+
+    res.json({ message: "Screenshot deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -111,5 +159,7 @@ export default {
   getIssuesByDevice,
   createIssue,
   editIssue,
+  replaceIssueScreenshot,
   deleteIssue,
+  deleteIssueScreenshot
 };
