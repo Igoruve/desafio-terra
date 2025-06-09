@@ -54,6 +54,34 @@ const logout = async (req, res) => {
   });
 };
 
+const recoverPassword = async (req,res, next) => {
+  try {
+    const { email } = req.body;
+    await authController.recoverPassword(email);
+    res.status(200).json({ message: "Email sent successfully" });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(error.statusCode || 500).json({
+      error: error.message || "Error sending email",
+    });
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    console.log("Token:", token);
+    console.log("New Password:", newPassword);
+
+    const result = await authController.resetPassword(token, newPassword);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Nueva función: obtener info del usuario autenticado
 const getMe = async (req, res, next) => {
   try {
@@ -75,5 +103,7 @@ export default {
   register,
   login,
   logout,
-  getMe
+  getMe,
+  recoverPassword,
+  resetPassword
 };
