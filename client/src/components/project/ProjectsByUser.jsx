@@ -84,7 +84,7 @@ const ProjectsByUser = () => {
           setLoading(false);
           return;
         }
-
+        console.log("route", route);
         const result = await FetchData(route);
 
         if (result.error) {
@@ -127,12 +127,7 @@ const ProjectsByUser = () => {
     );
   if (error)
     return <div className="text-red-500 text-center py-4">Error: {error}</div>;
-  if (projects.length === 0)
-    return (
-      <div className="border-2 border-red-500 text-red-500 p-6 mt-20 text-center">
-        No projects found for your user.
-      </div>
-    );
+
 
   const statusBorderColor = {
     "On Hold": "border-[#ffb410]",
@@ -146,7 +141,9 @@ const ProjectsByUser = () => {
   };
 
   return (
+
     <section className="py-18">
+
       <header className="bg-[var(--bg-color)] text-white py-4 grid grid-cols-1 custom-xl:grid-cols-3">
         <h2 className="text-[64px] sm:text-[96px] md:text-[140px] lg:text-[180px] xl:text-[220px] 2xl:text-[250px] font-bold mb-4 leading-[0.75] custom-xl:col-span-2 max-w-[12ch] break-words">
           my
@@ -157,15 +154,15 @@ const ProjectsByUser = () => {
           <p className="text-2xl">Manage your projects</p>
         </div>
       </header>
-
+      
       <main className="px-8 md:px-24 py-12 text-black">
-        {userData.role === "admin" && (
+        {userData.role !== "client" && (
           <div
             className="flex flex-row gap-4 items-center bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky mb-12 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
             onClick={() => navigate(`/newproject`)}
           >
             <div className=" rounded-full w-fit ">
-            <img src="/Plus.svg" alt="" className="invert brightness-0 saturate-0" />
+              <img src="/Plus.svg" alt="" className="invert brightness-0 saturate-0" />
 
             </div>
             <h2 className="text-2xl font-bold">New Project</h2>
@@ -201,8 +198,8 @@ const ProjectsByUser = () => {
                   Client(s):{" "}
                   {p.clients?.length > 0
                     ? p.clients
-                        .map((c) => c.name || "Unknown Client")
-                        .join(", ")
+                      .map((c) => c.name || "Unknown Client")
+                      .join(", ")
                     : "None"}
                 </p>
                 <p className="mt-1 text-lg text-[var(--bg-color)]">
@@ -214,7 +211,8 @@ const ProjectsByUser = () => {
               </div>
 
               <div className="md:w-1/2 bg-[#F7F8F4] rounded-[20px] px-8 py-10 shadow-2xs ">
-                <div className="flex justify-end">
+                <div className={`flex justify-end ${userData.role === "project manager" ? "hidden" : ""}`}>
+
                   <div
                     className="bg-white px-6 py-3 flex items-center gap-2 cursor-pointer transition-all duration-300 ease-in-out rounded-[50px] hover:rounded-[8px] shadow-sm"
                     onClick={() => navigate(`/newissue/${p.projectId}`)}
@@ -234,10 +232,9 @@ const ProjectsByUser = () => {
                         <div className="grid grid-cols-[1fr_40px] gap-4">
                           <div className="flex flex-wrap gap-4 text-lg">
                             <p
-                              className={` border-3 w-fit rounded-[50px] px-4 py-2 ${
-                                statusBorderColor[issue.status] ||
+                              className={` border-3 w-fit rounded-[50px] px-4 py-2 ${statusBorderColor[issue.status] ||
                                 "border-[var(--bg-color)]"
-                              }`}
+                                }`}
                             >
                               Status:{" "}
                               <span className="font-medium">
