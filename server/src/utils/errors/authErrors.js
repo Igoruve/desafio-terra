@@ -93,6 +93,14 @@ class InvalidPasswordFormat extends Error {
   }
 }
 
+class AccountLockedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "AccountLockedError";
+    this.statusCode = 423;
+  }
+}
+
 export {
   UserEmailNotProvided,
   UserPasswordNotProvided,
@@ -105,5 +113,6 @@ export {
   TokenExpiredError,
   InvalidTokenError,
   InvalidEmailFormat,
-  InvalidPasswordFormat
+  InvalidPasswordFormat,
+  AccountLockedError
 };
