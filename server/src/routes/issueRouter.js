@@ -14,12 +14,15 @@ router.get("/device",isLoggedInAPI,issueAPIController.getIssuesByDevice)
 
 router.put("/:id/edit", isLoggedInAPI, issueAPIController.editIssue);
 
-router.get("/:id", issueAPIController.getIssueById);
+router.get("/user/:userId", isLoggedInAPI, issueAPIController.getIssuesByUser); //cambio
+
+/* router.get("/:id", issueAPIController.getIssueById); */ // duplicado? sin middleware?
 
 router.delete("/:id/delete",isLoggedInAPI,issueAPIController.deleteIssue)
 
 router.get("/:id", isLoggedInAPI,issueAPIController.getIssueById)
 
 router.post("/create/:projectId", isLoggedInAPI,issueAPIController.createIssue)
+
 
 export default router;

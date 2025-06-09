@@ -15,6 +15,9 @@ import ProjectsByUser from "./components/project/ProjectsByUser.jsx";
 import AllProjectsByUser from "./components/project/AllProjectsByUser.jsx";
 import Form from "./components/form/Form.jsx";
 import Profile from "./components/profile/Profile.jsx";
+import EditProject from "./components/editProject/EditProject.jsx"; 
+import EditIssue from "./components/editIssue/EditIssue.jsx";
+
 
 const router = createBrowserRouter([
   {
@@ -45,6 +48,10 @@ const router = createBrowserRouter([
             element: <ProjectsByUser />,
           },
           {
+            path: "/project/edit",
+            element: <EditProject />,
+          },
+          {
             path: "/profile",
             element: <Profile />,
           },
@@ -56,6 +63,10 @@ const router = createBrowserRouter([
             path: "/project/:id",
             element: <Project />,
             loader: async ({ params }) => getProjectById(params.id),
+          },
+          {
+            path: "/issues/edit",
+            element: <EditIssue />,
           },
           {
             path: "/issue/create/:projectId",

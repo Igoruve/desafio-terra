@@ -12,6 +12,16 @@ import {
 import { customAlphabet } from "nanoid";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
+
+//CAMBIO
+
+async function getIssuesByUser(userId) {
+  const issues = await issueModel.find({ client: userId }).populate({
+    path: "client",
+    select: "-password -apiKey",
+  });
+  return issues;
+}
 async function getAllIssues() {
   const issues = await issueModel.find().populate({
     path: "client",
@@ -93,4 +103,5 @@ export default {
   createIssue,
   editIssue,
   deleteIssue,
+  getIssuesByUser,
 };

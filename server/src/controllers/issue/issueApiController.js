@@ -1,5 +1,21 @@
 import issueController from "./issueController.js";
 
+//cambio
+
+async function getIssuesByUser(req, res) {
+  try {
+    const userId = req.params.userId;
+    if (req.user.userId !== userId && req.user.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const issues = await issueController.getIssuesByUser(userId);
+    res.json(issues);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 async function getAllIssues(req, res) {
   try {
     const role = req.user?.role;
@@ -112,4 +128,5 @@ export default {
   createIssue,
   editIssue,
   deleteIssue,
+  getIssuesByUser,
 };

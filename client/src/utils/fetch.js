@@ -8,8 +8,6 @@ async function FetchData(route, method = "GET", data = null) {
   /* const token = getToken();
   console.log("token", token); */
 
-console.log("url", url);
-
   const options = {
     method,
     headers: {},
@@ -21,15 +19,19 @@ console.log("url", url);
   } */
 
   if (data) {
-    options.headers["Content-Type"] = "application/json";
-    options.body = JSON.stringify(data);
-  }
+    if (data instanceof FormData) {
+      options.body = data;
+    } else {
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify(data);
+    }
+  }  
 
   try {
     const response = await fetch(url, options);
 
     console.log("response", response);
-    
+
     const contentType = response.headers.get("content-type");
 
     let responseData;
