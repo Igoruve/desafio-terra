@@ -105,7 +105,7 @@ function CreateIssueForm() {
             <Arrow />
           </div>
 
-          {expanded && (
+          {/* {expanded && (
             <>
               <label htmlFor="" className="pb-4">
                 Specify the issue
@@ -116,7 +116,7 @@ function CreateIssueForm() {
                 className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 h-fit max-h-60 w-full cursor-text"
               ></textarea>
             </>
-          )}
+          )} */}
 
           <label htmlFor="status" className="pb-4">
             Status*
