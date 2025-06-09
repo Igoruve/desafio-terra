@@ -1,13 +1,14 @@
 import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { login, register, logout, getMe } from "../utils/auth";
 
-/* import {
-  /* saveToken,
-  removeToken, 
+import {
+  saveToken,
+  removeToken,
   saveToLocalStorage,
   getFromLocalStorage,
-} from "../utils/localStorage"; */
+} from "../utils/localStorage";
+
+import { login, register, logout } from "../utils/auth";
 
 const AuthContext = createContext({
   userData: null,
@@ -20,19 +21,13 @@ const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
 
-   // Al cargar, pedir datos al backend
+  //cargar los datos del usuario al inicio si existe
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const result = await getMe();
-        if (result?.user) {
-          setUserData(result.user);
-        }
-      } catch (err) {
-        console.error("Not logged in or session expired.");
-      }
-    };
-    fetchUser();
+    
+    const savedUserData = getFromLocalStorage("userData");
+    if (savedUserData) {
+      setUserData(savedUserData);
+    }
   }, []);
 
   const handleRegister = async (name, email, password) => {
@@ -42,11 +37,20 @@ const AuthProvider = ({ children }) => {
       if (result.error) {
         return result.error;
       } else {
-        navigate(`/login`); //tras registro, ir a login para iniciar sesion
+        if (result.token) {
+          //si existe token, lo guarda
+          saveToken(result.token);
+        }
+        if (result.user) {
+          //y si existe user guarda sus datos
+          setUserData(result.user);
+        }
+
+        navigate(`/login`);
         return null;
       }
     } catch (error) {
-      console.error("Error registering: ", error);
+      console.error("Register error: ", error);
       return "Error processing the register.";
     }
   };
@@ -54,19 +58,18 @@ const AuthProvider = ({ children }) => {
   const handleLogin = async (email, password) => {
     try {
       const result = await login(email, password);
-
-      if (result.error) {
+      if ("error" in result && result.error) {
+        removeToken();
         return result.error;
-      } 
-      
-      //Pedimos al backend los datos del usuario autenticado
-      const me = await getMe();
-      if (me?.user) {
-        setUserData(me.user);
-        navigate("/");
+      } else {
+        if (result.token) {
+          //si existe token, lo guarda
+          saveToken(result.token);
+        }
+        let finalUserData = result.user;
+        setUserData(finalUserData);
+        navigate("/projects"); //TODO: redirigir a la homepage?
         return null;
-      }else {
-       return "Login successful, but failed to fetch user data.";
       }
     } catch (error) {
       console.error("Error logging in: ", error);
@@ -76,10 +79,13 @@ const AuthProvider = ({ children }) => {
 
   const handleLogout = async () => {
     try {
-      await logout(); //Limpia cookie en backend
+      await logout();
     } catch (error) {
       console.error("Error loggint out: ", error);
     } finally {
+      //siempre limpia los datos locales independientemente de la respuesta del servidor
+      removeToken();
+      localStorage.removeItem("userData");
       setUserData(null);
       navigate("/");
     }
@@ -88,7 +94,7 @@ const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        userData,
+        userData: userData,
         onLogin: handleLogin,
         onLogout: handleLogout,
         onRegister: handleRegister,

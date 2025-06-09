@@ -10,7 +10,7 @@ router.get("/",(req,res)=>{
     res.send("hola mundo")
 })
 
-router.use("/",authRouter);
+router.use("",authRouter);
 router.use("/issue",issueRouter);
 router.use("/project",projectRouter);
 router.use("/user",userRouter);
