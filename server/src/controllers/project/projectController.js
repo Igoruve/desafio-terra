@@ -1,5 +1,6 @@
 import projectModel from "../../models/projectModel.js";
-import userModel from "../../models/userModel.js";
+import userModel from "../../models/userModel.js";  
+import mongoose from "mongoose";
 
 import {
   ProjectTitleNotProvided,
@@ -40,7 +41,7 @@ const getProjectById = (id) =>
     })
     .populate("issues");
 
-const getProjectsByUserId = async (userId) => {
+/* const getProjectsByUserId = async (userId) => {
   const user = await userModel.findById( userId.trim());
   if (!user) throw new Error("UserNotFound");
 
@@ -55,7 +56,24 @@ const getProjectsByUserId = async (userId) => {
       select: "-password -apiKey"
     })
     .populate("issues");
+}; */
+const getProjectsByUserId = async (userId) => {
+  const user = await userModel.findById(userId.trim());
+  if (!user) throw new Error("UserNotFound"); //TO DO: cambiar a error personalizado
+
+  return projectModel
+    .find({ $or: [{ manager: user._id }, { clients: user._id }] })
+    .populate({
+      path: "clients",
+      select: "-password -apiKey"
+    })
+    .populate({
+      path: "manager",
+      select: "-password -apiKey"
+    })
+    .populate("issues");
 };
+
 const getProjectsByDate = (date) =>
   projectModel
     .find({ createdAt: { $gte: date } })
