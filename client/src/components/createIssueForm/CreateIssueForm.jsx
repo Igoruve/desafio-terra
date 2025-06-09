@@ -55,11 +55,12 @@ function CreateIssueForm() {
     formData.append("browser", form.browser.value);
     formData.append("clientComment", form.comment.value);
     formData.append("page", form.url.value);
+    
     if(form.screenshot.files[0]){
       formData.append("screenshot", form.screenshot.files[0]);
     }
     
-    const result = await createIssue(projectId, data);
+    const result = await createIssue(projectId, formData);
     navigate(`/projects`); //TODO CAMBIAR RUTA
   };
 
