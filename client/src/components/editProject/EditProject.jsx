@@ -1,369 +1,327 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import FetchWithFile from "../../utils/fetchWithFile";
+import FetchData from "../../utils/fetch";
 
-const issueTypes = [
-  "Copy revision",
-  "Requested Change",
-  "New Item",
-  "Bug Fix",
-  "Design Issues",
-  "Not Addressing",
-  "Other",
-];
-
-const statusOptions = [
-  "On Hold",
-  "In Progress",
-  "Complete",
-  "Post Launch",
-  "Needs Inputs",
-  "Ready to upload",
-  "Duplicate Comment",
-  "N/A",
-];
-
-const deviceOptions = ["Desktop", "Mobile", "Tablet"];
-
-const EditIssue = () => {
-  const { userData, loading: authLoading } = useContext(AuthContext);
-  const [issues, setIssues] = useState([]);
-  const [selectedIssue, setSelectedIssue] = useState(null);
+const EditProject = () => {
+  const { userData } = useContext(AuthContext);
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [formData, setFormData] = useState({});
-  const [touchedFields, setTouchedFields] = useState({});
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
+
+  const isAdmin = userData?.role === "admin";
+
+  const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
   useEffect(() => {
-    const fetchIssues = async () => {
+    console.log("User data:", { userData, isAdmin });
+
+    if (!userData || !isAdmin) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchData = async () => {
+      setLoading(true);
+      setMessage(null);
+
       try {
-/*         if (authLoading) return;
- */        if (!userData?.userId || !userData?.role) {
-          setError("You must be logged in");
+        // Fetch projects
+        const projectsResult = await FetchData("/project");
+        console.log("Response GET /project:", projectsResult);
+
+        if (projectsResult.error || projectsResult.status >= 400) {
+          setMessage({
+            type: "error",
+            text: projectsResult.message || "Error loading projects.",
+          });
+          setProjects([]);
           setLoading(false);
           return;
         }
 
-        let endpoint = "";
-        if (userData.role === "admin") {
-          endpoint = "/issue/";
-        } else if (
-          userData.role === "project manager" ||
-          userData.role === "client"
-        ) {
-          endpoint = `/issue/user/${userData.userId}`;
+        if (!Array.isArray(projectsResult)) {
+          setMessage({ type: "error", text: "Invalid response for projects." });
+          setProjects([]);
+          setLoading(false);
+          return;
+        }
+
+        setProjects(projectsResult);
+
+        // Fetch users
+        const usersResult = await FetchData("/user");
+        console.log("Response GET /user:", usersResult);
+
+        if (usersResult.error || usersResult.status >= 400) {
+          if (usersResult.status === 403) {
+            setMessage({ type: "error", text: "Access denied to users. Using project clients." });
+          } else {
+            setMessage({
+              type: "error",
+              text: usersResult.message || "Error loading users.",
+            });
+          }
+          setUsers([]);
+        } else if (Array.isArray(usersResult)) {
+          setUsers(usersResult);
         } else {
-          setError("Unauthorized access");
-          setLoading(false);
-          return;
+          setMessage({ type: "error", text: "Invalid response for users." });
+          setUsers([]);
         }
-
-        const data = await FetchWithFile(endpoint);
-
-        if (data.error) {
-          throw new Error(data.message || "Failed to fetch issues");
-        }
-
-        if (!Array.isArray(data)) {
-          throw new Error("Unexpected response format");
-        }
-
-        setIssues(data);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error("Unexpected error in fetch:", error);
+        setMessage({ type: "error", text: "Unexpected error occurred while fetching data." });
+        setProjects([]);
+        setUsers([]);
       }
+
+      setLoading(false);
     };
 
-    fetchIssues();
-  }, [userData, authLoading]);
+    fetchData();
+  }, [userData, isAdmin]);
 
-  const handleEditClick = (issue) => {
-    setSelectedIssue(issue);
+  const handleSelectProject = (project) => {
+    setSelectedProject(project);
     setFormData({
-      issueType: issue.issueType || "",
-      status: issue.status || "On Hold",
-      device: issue.device || "Desktop",
-      browser: issue.browser || "",
-      clientComment: issue.clientComment || "",
-      page: issue.page || "",
-      terraComments: issue.terraComments || "",
-      screenshot: issue.screenshot || "",
+      title: project.title || "",
+      description: project.description || "",
+      status: project.status || "In Progress",
+      clients: project.clients?.map(client => client._id) || [],
+      manager: project.manager?._id || "",
+      clientsManual: "",
     });
-    setTouchedFields({});
     setMessage(null);
-  };
-
-  const handleFocus = (field) => {
-    if (!touchedFields[field]) {
-      setFormData((prev) => ({ ...prev, [field]: "" }));
-      setTouchedFields((prev) => ({ ...prev, [field]: true }));
-    }
-  };
-
-  const handleBlur = (field) => {
-    if (!formData[field] && selectedIssue) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: selectedIssue[field] || "",
-      }));
-      setTouchedFields((prev) => ({ ...prev, [field]: false }));
-    }
   };
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "screenshot") {
-      setFormData((prev) => ({ ...prev, [name]: files[0] }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = async () => {
-    if (!selectedIssue) return;
+  // Ajuste en el manejo de selección de clients
+  const handleClientsChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions);
+    const selectedIds = selectedOptions
+      .map(option => option.value)
+      .filter(id => typeof id === "string" && id.trim() !== "");
+    console.log("Selected clients IDs:", selectedIds);
+    setFormData(prev => ({ ...prev, clients: selectedIds }));
+  };
 
-    setSaving(true);
+  const handleManualClientsChange = (e) => {
+    const ids = e.target.value.split(",").map(id => id.trim()).filter(id => id);
+    setFormData(prev => ({ ...prev, clientsManual: e.target.value, clients: ids }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setMessage(null);
-    setError(null);
+
+    if (!selectedProject || !selectedProject.projectId) {
+      setMessage({ type: "error", text: "Select a valid project with projectId." });
+      return;
+    }
+
+    if (!formData.title || !formData.description || !formData.clients.length || !formData.manager) {
+      setMessage({ type: "error", text: "All required fields must be filled." });
+      return;
+    }
+
+    if (!isValidObjectId(formData.manager)) {
+      setMessage({ type: "error", text: "Invalid Manager ObjectId." });
+      return;
+    }
+
+    if (!formData.clients.every(id => isValidObjectId(id))) {
+      setMessage({ type: "error", text: "One or more Client ObjectIds are invalid." });
+      return;
+    }
+
+    const payload = {
+      projectId: selectedProject.projectId,
+      title: formData.title,
+      description: formData.description,
+      status: formData.status,
+      clients: formData.clients,
+      manager: formData.manager,
+    };
 
     try {
-      let dataToSend;
-
-      if (formData.screenshot && typeof formData.screenshot !== "string") {
-        dataToSend = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-          if (key === "screenshot" && value instanceof File) {
-            dataToSend.append(key, value);
-          } else if (value !== undefined && value !== null) {
-            dataToSend.append(key, value);
-          }
-        });
+      const response = await FetchData(`/project/${selectedProject.projectId}`, "PUT", payload);
+      console.log("Response PUT /project:", response);
+      if (response.error || response.status >= 400) {
+        setMessage({ type: "error", text: response.message || "Error updating project." });
       } else {
-        dataToSend = { ...formData };
+        setMessage({ type: "success", text: "Project updated successfully." });
+        setProjects(prev =>
+          prev.map(p => (p.projectId === selectedProject.projectId ? response : p))
+        );
+        setSelectedProject(response);
       }
-
-      const data = await FetchWithFile(
-        `/issue/${selectedIssue.issueId}/edit`,
-        "PUT",
-        dataToSend
-      );
-
-      if (!data) throw new Error("No data returned from server");
-      if (data.error) throw new Error(data.message || "Update failed");
-
-      setIssues((prev) =>
-        prev.map((issue) =>
-          (issue._id?.$oid || issue._id) === (selectedIssue._id?.$oid || selectedIssue._id)
-            ? { ...issue, ...data }
-            : issue
-        )
-      );
-
-      setSelectedIssue(null);
-      setMessage({ type: "success", text: "Issue updated successfully." });
-    } catch (err) {
-      setMessage({ type: "error", text: err.message || "Failed to update issue" });
-    } finally {
-      setSaving(false);
+    } catch (error) {
+      console.error("Error in PUT /project:", error);
+      setMessage({ type: "error", text: "Failed to update project." });
     }
   };
 
-  if (authLoading || loading) {
-    return <div className="text-white p-4">Loading issues...</div>;
-  }
+  if (loading) return <div className="text-white p-4">Loading projects...</div>;
 
-  if (error) {
-    return <div className="text-red-500 p-4">{error}</div>;
+  if (!isAdmin) {
+    return (
+      <section className="flex flex-col items-center justify-center bg-[var(--bg-color)] text-white pt-20 px-4 min-h-screen">
+        <p className="text-red-500 text-lg">You do not have permission to view projects.</p>
+      </section>
+    );
   }
 
   return (
     <section className="flex flex-col items-center justify-center bg-[var(--bg-color)] text-white pt-20 px-4 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6">Edit Issues</h2>
+      <h2 className="text-3xl font-bold mb-6">Edit Projects</h2>
 
       {message && (
-        <div
-          className={`mb-4 ${
-            message.type === "error" ? "text-red-500" : "text-green-500"
-          }`}
-        >
+        <div className={`mb-4 ${message.type === "error" ? "text-red-500" : "text-green-500"}`}>
           {message.text}
         </div>
       )}
 
-      <ul className="space-y-2 mb-8 w-full max-w-lg">
-        {issues.length === 0 && <li>No issues found.</li>}
-        {issues.map((issue, index) => (
-          <li key={issue._id?.$oid || issue._id || index}>
-            <button
-              onClick={() => handleEditClick(issue)}
-              className="underline text-[#7ce55b] hover:text-[#a1f48d] text-lg font-semibold"
-            >
-              {issue.issueId || "(No ID)"} - {issue.clientComment || "Edit Issue"}
-            </button>
-          </li>
-        ))}
+      <ul className="w-full max-w-lg mb-8 overflow-auto max-h-48">
+        {projects.length === 0 ? (
+          <li className="p-4 text-center text-gray-300">No projects available.</li>
+        ) : (
+          projects.map(project => (
+            <li key={project._id} className="mb-2 last:mb-0">
+              <button
+                type="button"
+                onClick={() => handleSelectProject(project)}
+                className="w-full text-left px-4 py-3 border-3 border-[#F78BD8] rounded-[50px] text-white font-semibold cursor-pointer hover:rounded-[8px] hover:bg-[#F78BD8] hover:text-black transition-background duration-300 ease-in-out"
+              >
+                {project.title || "No title"}
+              </button>
+            </li>
+          ))
+        )}
       </ul>
 
-      {selectedIssue && (
+      {selectedProject && (
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSave();
-          }}
-          className="flex flex-col gap-4 w-full max-w-lg border-3 border-[#F78BD8] rounded-xl p-6"
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4 w-full max-w-lg border-3 border-[#F78BD8] rounded-xl p-6 min-h-[600px]"
         >
-          <label>
-            Issue Type:
-            <select
-              name="issueType"
-              value={formData.issueType}
+          <div className="flex flex-col">
+            <label htmlFor="title" className="mb-1">Title:</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
               onChange={handleChange}
-              onFocus={() => handleFocus("issueType")}
-              onBlur={() => handleBlur("issueType")}
-              className="w-full p-2 rounded"
-              required
-            >
-              {issueTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </label>
+              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+            />
+          </div>
 
-          <label>
-            Status:
+          <div className="flex flex-col">
+            <label htmlFor="description" className="mb-1">Description:</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={4}
+              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white resize-none"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="status" className="mb-1">Status:</label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              onFocus={() => handleFocus("status")}
-              onBlur={() => handleBlur("status")}
-              className="w-full p-2 rounded"
-              required
+              className="bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
             >
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
+              <option value="In Progress">In Progress</option>
+              <option value="Complete">Complete</option>
+              <option value="Cancelled">Cancelled</option>
             </select>
-          </label>
-
-          <label>
-            Device:
-            <select
-              name="device"
-              value={formData.device}
-              onChange={handleChange}
-              onFocus={() => handleFocus("device")}
-              onBlur={() => handleBlur("device")}
-              className="w-full p-2 rounded"
-              required
-            >
-              {deviceOptions.map((device) => (
-                <option key={device} value={device}>
-                  {device}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            Browser:
-            <input
-              type="text"
-              name="browser"
-              value={formData.browser}
-              onChange={handleChange}
-              onFocus={() => handleFocus("browser")}
-              onBlur={() => handleBlur("browser")}
-              className="w-full p-2 rounded"
-            />
-          </label>
-
-          <label>
-            Client Comment:
-            <textarea
-              name="clientComment"
-              value={formData.clientComment}
-              onChange={handleChange}
-              onFocus={() => handleFocus("clientComment")}
-              onBlur={() => handleBlur("clientComment")}
-              className="w-full p-2 rounded"
-              rows={3}
-            />
-          </label>
-
-          <label>
-            Page:
-            <input
-              type="text"
-              name="page"
-              value={formData.page}
-              onChange={handleChange}
-              onFocus={() => handleFocus("page")}
-              onBlur={() => handleBlur("page")}
-              className="w-full p-2 rounded"
-            />
-          </label>
-
-          <label>
-            Terra Comments:
-            <textarea
-              name="terraComments"
-              value={formData.terraComments}
-              onChange={handleChange}
-              onFocus={() => handleFocus("terraComments")}
-              onBlur={() => handleBlur("terraComments")}
-              className="w-full p-2 rounded"
-              rows={3}
-            />
-          </label>
-
-          <label>
-            Screenshot:
-            <input
-              type="file"
-              name="screenshot"
-              onChange={handleChange}
-              accept="image/*"
-              className="w-full p-2 rounded"
-            />
-            {formData.screenshot && typeof formData.screenshot === "string" && (
-              <img
-                src={formData.screenshot}
-                alt="Current Screenshot"
-                className="mt-2 max-h-48 rounded"
-              />
-            )}
-          </label>
-
-          <div className="flex justify-between mt-4">
-            <button
-              type="submit"
-              disabled={saving}
-              className="font-semibold text-lg px-4 py-2 border-3 border-[#7ce55e] text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
-            >
-              {saving ? "Saving..." : "Save Changes"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedIssue(null)}
-              className="font-semibold text-lg px-4 py-2 border-3 border-[#3D9DD8] text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
-            >
-              Cancel
-            </button>
           </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="clients" className="mb-1">Clients:</label>
+            {users.length > 0 ? (
+              <select
+                name="clients"
+                multiple
+                value={formData.clients}
+                onChange={handleClientsChange}
+                className="bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+              >
+                {users
+                  .filter(user => user.role === "client")
+                  .map(user => (
+                    <option key={user._id} value={user._id}>
+                      {user.name || user.email || "Unknown"}
+                    </option>
+                  ))}
+              </select>
+            ) : (
+              <>
+                <select
+                  name="clients"
+                  multiple
+                  value={formData.clients}
+                  onChange={handleClientsChange}
+                  className="bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+                >
+                  {selectedProject.clients?.map(client => (
+                    <option key={client._id} value={client._id}>
+                      {client.name || client.email || "Unknown"}
+                    </option>
+                  ))}
+                </select>
+                <label htmlFor="clientsManual" className="mt-2 mb-1">Manual Client IDs (comma-separated):</label>
+                <input
+                  type="text"
+                  name="clientsManual"
+                  value={formData.clientsManual}
+                  onChange={handleManualClientsChange}
+                  className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+                  placeholder="ObjectId1, ObjectId2, ..."
+                />
+              </>
+            )}
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="manager" className="mb-1">Project Manager:</label>
+            <select
+              name="manager"
+              value={formData.manager}
+              onChange={handleChange}
+              className="bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+            >
+              <option value="">-- Select a Manager --</option>
+              {users
+                .filter(user => user.role === "project manager")
+                .map(user => (
+                  <option key={user._id} value={user._id}>
+                    {user.name || user.email || "Unknown"}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            className="bg-[#F78BD8] text-black py-2 rounded-xl font-bold hover:bg-[#d069bb] transition-colors duration-300"
+          >
+            Update Project
+          </button>
         </form>
       )}
     </section>
   );
 };
 
-export default EditIssue;
+export default EditProject;
