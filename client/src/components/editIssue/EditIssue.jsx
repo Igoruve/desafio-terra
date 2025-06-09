@@ -1,8 +1,6 @@
-
-
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import fetch from "../../utils/fetch";
+import FetchData from "../../utils/fetch";
 
 const issueTypes = [
   "Copy revision",
@@ -53,7 +51,7 @@ const EditIssue = () => {
         if (userData.role === "admin") {
           endpoint = "/issue/";
         } else if (
-           userData.role === "project manager" ||
+          userData.role === "project manager" ||
           userData.role === "client"
         ) {
           endpoint = `/issue/user/${userData.userId}`;
@@ -63,7 +61,7 @@ const EditIssue = () => {
           return;
         }
 
-        const data = await FetchWithFile(endpoint);
+        const data = await FetchData(endpoint);
 
         if (data.error) {
           throw new Error(data.message || "Failed to fetch issues");
@@ -129,24 +127,36 @@ const EditIssue = () => {
     setMessage(null);
     setError(null);
 
-    const dataToSend = { ...formData };
-    if (dataToSend.screenshot && typeof dataToSend.screenshot !== "string") {
-      delete dataToSend.screenshot;
+    // Si tienes un archivo screenshot, creamos FormData, sino enviamos JSON simple
+    let dataToSend;
+    let headers = {};
+
+    if (formData.screenshot && typeof formData.screenshot !== "string") {
+      dataToSend = new FormData();
+      Object.entries(formData).forEach(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          if (key === "screenshot" && val instanceof File) {
+            dataToSend.append(key, val);
+          } else {
+            dataToSend.append(key, val);
+          }
+        }
+      });
+    } else {
+      // Enviar JSON (sin archivo)
+      dataToSend = { ...formData };
+      // No enviar screenshot si no es string
+      if (dataToSend.screenshot && typeof dataToSend.screenshot !== "string") {
+        delete dataToSend.screenshot;
+      }
     }
 
     try {
-      console.log("Sending data to:", `/issue/${selectedIssue.issueId}/edit`);
-      const data = await FetchWithFile(
+      const data = await FetchData(
         `/issue/${selectedIssue.issueId}/edit`,
         "PUT",
         dataToSend
       );
-
-      console.log("Response data:", data);
-
-      if (data === null) {
-        throw new Error("No data returned from server");
-      }
 
       if (data.error) {
         throw new Error(data.message || "Update failed");
@@ -163,7 +173,6 @@ const EditIssue = () => {
       setSelectedIssue(null);
       setMessage({ type: "success", text: "Issue updated successfully." });
     } catch (err) {
-      console.error("Save error:", err);
       setMessage({ type: "error", text: err.message || "Failed to update issue" });
     } finally {
       setSaving(false);
@@ -242,7 +251,7 @@ const EditIssue = () => {
           </div>
 
           {(userData.role === "admin" ||
-            ((userData.role === "pm" || userData.role === "project manager") &&
+            ((userData.role === "project manager") &&
               selectedIssue?.createdBy === userData.userId)) ? (
             <div className="flex flex-col">
               <label className="mb-1" htmlFor="status">
@@ -345,9 +354,7 @@ const EditIssue = () => {
             </div>
           )}
 
-          {(userData.role === "admin" ||
-            userData.role === "pm" ||
-            userData.role === "project manager") && (
+          {(userData.role === "admin" || userData.role === "project manager") && (
             <div className="flex flex-col">
               <label className="mb-1" htmlFor="terraComments">
                 Terra Comments:
@@ -384,7 +391,7 @@ const EditIssue = () => {
 
           <div className="flex flex-col">
             <label className="mb-1" htmlFor="screenshot">
-              Screenshot:
+              Screenshot (upload new):
             </label>
             <input
               id="screenshot"
@@ -392,43 +399,36 @@ const EditIssue = () => {
               type="file"
               accept="image/*"
               onChange={(e) => {
-                const file = e.target.files[0];
-                setFormData((prev) => ({ ...prev, screenshot: file }));
+                setFormData((prev) => ({
+                  ...prev,
+                  screenshot: e.target.files[0] || null,
+                }));
               }}
-              className="appearance-none text-white"
+              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
             />
-            {formData.screenshot && typeof formData.screenshot !== "string" && (
-              <img
-                src={URL.createObjectURL(formData.screenshot)}
-                alt="Preview"
-                className="mt-2 max-h-48 rounded-lg"
-              />
-            )}
-            {formData.screenshot && typeof formData.screenshot === "string" && (
+            {typeof formData.screenshot === "string" && formData.screenshot && (
               <img
                 src={formData.screenshot}
-                alt="Current screenshot"
-                className="mt-2 max-h-48 rounded-lg"
+                alt="Screenshot"
+                className="mt-2 max-h-40 rounded-md border border-white"
               />
             )}
           </div>
 
-          <div className="flex justify-between mt-4">
-            <button
-              type="submit"
-              disabled={saving}
-              className="font-semibold text-lg px-4 py-2 border-3 border-[#7ce55e] text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedIssue(null)}
-              className="font-semibold text-lg px-4 py-2 border-3 border-[#F78BD8] text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
-            >
-              Cancel
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={saving}
+            className="mt-4 rounded-xl bg-[#F78BD8] px-6 py-3 font-bold text-black hover:bg-[#E85DE6]"
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedIssue(null)}
+            className="mt-2 rounded-xl bg-gray-700 px-6 py-3 font-bold text-white hover:bg-gray-800"
+          >
+            Cancel
+          </button>
         </form>
       )}
     </section>
