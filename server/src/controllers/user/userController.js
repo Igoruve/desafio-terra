@@ -8,10 +8,14 @@ import {
   RequestingUserNotFound,
   RoleChangeNotAllowed,
   UsersDoNotExist,
-  ApiKeyChangeNotAllowed
+  ApiKeyChangeNotAllowed,
+  WorkspaceAlreadyAssigned
 } from "../../utils/errors/userErrors.js";
 
 import {UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided} from "../../utils/errors/authErrors.js";
+import { get } from "mongoose";
+
+import { createEasySpaceAndFolder, createEasyFolder, getFolders, getSpaces } from "../../utils/clickUpApi/apiFunctions.js";
 
 // const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
@@ -156,7 +160,59 @@ async function getUserByProjectId(projectId) {
   };
 }
 
-export default {
+async function editUserWorkspace(userId, workspaceId) {
+
+  const user = await userModel.findOne({ _id: userId }).select("-password");
+
+  console.log("User:", user);
+
+  if (!user) {
+    throw new UserDoesNotExist(userId);
+  }
+
+  if (user.workspaceId === workspaceId) {
+    throw new WorkspaceAlreadyAssigned();
+  }
+
+  user.workspaceId = workspaceId;
+  await user.save();
+  
+  const userSpaces = await getSpaces(workspaceId, user.apiKey);
+  const easySpace = userSpaces.spaces.find(space => space.name === 'EasySpace');
+
+  if (easySpace?.id) {
+    user.spaceId = easySpace.id;
+
+    const userFolders = await getFolders(easySpace.id, user.apiKey);
+    const easyFolder = userFolders.folders.find(folder => folder.name === 'EasyFolder');
+
+    if (!easyFolder.id) {
+      const newFolder = await createEasyFolder(easySpace.id, user.apiKey);
+      user.folderId = newFolder.id;
+    }
+
+    if (easyFolder.id) {
+      user.folderId = easyFolder.id;
+    }
+
+  }
+  if (!easySpace) {
+    const { space, folder } = await createEasySpaceAndFolder(workspaceId, user.apiKey);
+    user.spaceId = space.id;
+    user.folderId = folder.id;
+  }
+
+  await user.save();
+
+  const editedUser = await userModel.findOne({ _id: userId }).select("-password -apiKey");
+  if (!editedUser) {
+    throw new UserDoesNotExist(userId);
+  }
+
+  return editedUser;
+}
+
+export default{
   getAll,
   getUserById,
   deleteUserById,
@@ -164,5 +220,6 @@ export default {
   createUser,
   editUserRole,
   getUserByName,
-  getUserByProjectId
+  getUserByProjectId,
+  editUserWorkspace
 };

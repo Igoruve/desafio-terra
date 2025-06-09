@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,  
       trim: true,
+      default: "apikey",
     },
     email: {
       type: String,
@@ -34,6 +35,21 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      trim: true,
+    },
+    workspaceId: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    spaceId: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    folderId: {
+      type: String,
+      required: false,
       trim: true,
     },
   },

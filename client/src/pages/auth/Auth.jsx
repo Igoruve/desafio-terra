@@ -24,12 +24,9 @@ function Auth({ isRegister }) {
     const result = isRegister
       ? await onRegister(userData.name, userData.email, userData.password)
       : await onLogin(userData.email, userData.password);
-
-    if (!result) {
-      navigate("/project");
-    } else {
-      setError(result);
-    }
+      if (result) {
+        setError(result);
+      }
   };
 
   return (
@@ -97,7 +94,9 @@ function Auth({ isRegister }) {
           </div>
           <button
             type="submit"
-            className="w-32 self-center text-white py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] bg-transparent font-bold text-lg mt-8 transition-all duration-300 ease-in-out"
+            className={`w-32 self-center py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] font-bold text-lg mt-8 transition-all duration-300 ease-in-out ${
+              isRegister ? "bg-white text-black" : "bg-transparent text-white"
+            }`}
           >
             {isRegister ? "Register" : "Log In"}
           </button>
@@ -108,7 +107,7 @@ function Auth({ isRegister }) {
             <>
               <p className="text-lg font-light">Already have an account?</p>
               <Link to="/login">
-                <button className="w-32 text-white py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] w-40 bg-transparent font-bold text-lg transition-all duration-300 ease-in-out">
+                <button className=" text-white py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] w-40 bg-transparent font-bold text-lg transition-all duration-300 ease-in-out">
                   Go to Log In
                 </button>
               </Link>

@@ -18,14 +18,16 @@ async function FetchData(route, method = "GET", data = null) {
     options.headers["Authorization"] = `Bearer ${token}`;
   } */
 
+  // Si data existe y es FormData, NO añadir Content-Type, fetch lo hace automáticamente
   if (data) {
-    if (data instanceof FormData) {
+    if(data instanceof FormData){
       options.body = data;
-    } else {
+      //no ponemos headers['Content-Type']
+    }else{
       options.headers["Content-Type"] = "application/json";
       options.body = JSON.stringify(data);
     }
-  }  
+  }
 
   try {
     const response = await fetch(url, options);
