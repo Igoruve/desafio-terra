@@ -1,6 +1,7 @@
 import userModel from "../../models/userModel.js";
 import { compare } from "../../utils/bcrypt.js";
 import jwt from "jsonwebtoken";
+import { sendRecoveryEmail } from "../../utils/mailer.js";
 import { customAlphabet } from "nanoid";
 import { UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided, 
         UserEmailAlreadyExists, UserCreationFailed, EmailNotFound, InvalidCredentials, InvalidEmailFormat, InvalidPasswordFormat, AccountLockedError } from "../../utils/errors/authErrors.js";
@@ -119,4 +120,61 @@ const register = async ({ userData }) => {
   };
 };
 
-export default { login, register };
+const recoverPassword = async (email) => {
+  const user = await userModel.findOne({ email });
+  if (!user) {
+    const error = new Error("No user found with this email.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  console.log("el token es: ", token);
+
+  // Guardar token y expiración en el usuario (opcional según tu lógica)
+  user.resetPasswordToken = token;
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hora
+  await user.save();
+
+  const recoveryUrl = `${process.env.CLIENT_URL}/reset-password/${token}`;
+  await sendRecoveryEmail(user.email, recoveryUrl);
+
+  return {
+    message: "Recovery email sent successfully.",
+  }
+}
+
+const resetPassword = async (token, newPassword) => {
+  const user = await userModel.findOne({
+    resetPasswordToken: token,
+    resetPasswordExpires: { $gt: Date.now() },
+  });
+
+  if(!user) {
+    const error = new Error("Invalid or expired token.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+  if (!passwordRegex.test(newPassword)) {
+    const error = new Error("Password does not meet the requirements.");
+    error.statusCode = 400;
+    throw error;
+  }
+  
+  user.password = newPassword;
+
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+
+  await user.save();
+
+  return { message: "Password reset successfully." };
+};
+  
+export default { login, register, recoverPassword, resetPassword };

@@ -8,5 +8,7 @@ router.post("/login",authAPIController.login);
 router.post("/register",authAPIController.register);
 router.post("/logout",authAPIController.logout);
 router.get("/me", isLoggedInAPI,authAPIController.getMe);
+router.post("/recover-password", authAPIController.recoverPassword);
+router.post("/reset-password/:token", authAPIController.resetPassword);
 
 export default router
