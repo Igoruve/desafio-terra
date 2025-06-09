@@ -4,6 +4,7 @@ import FetchData from "../../utils/fetch";
 import { useNavigate } from "react-router-dom";
 import { deleteProject } from "../../utils/project";
 import { deleteIssue } from "../../utils/issue";
+import ConfirmationModal from "../confirmationModal/ConfirmationModal";
 
 const formatDate = (dateObj) => {
   const raw = dateObj?.$date || dateObj;
@@ -57,6 +58,11 @@ const ProjectsByUser = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    onConfirm: () => {},
+    message: "",
+  });
 
   const handleRemoveProject = async (projectId) => {
     try {
@@ -93,6 +99,11 @@ const ProjectsByUser = () => {
       console.error(err);
       setError("Failed to delete issue");
     }
+  };
+
+  const confirmDelete = (message, onConfirm) => {
+    setModalConfig({ message, onConfirm });
+    setModalOpen(true);
   };
 
   useEffect(() => {
@@ -178,6 +189,16 @@ const ProjectsByUser = () => {
 
   return (
     <section className="py-18">
+      <ConfirmationModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={() => {
+          modalConfig.onConfirm();
+          setModalOpen(false);
+        }}
+        message={modalConfig.message}
+      />
+
       <header className="bg-[var(--bg-color)] text-white py-4 grid grid-cols-1 custom-xl:grid-cols-3">
         <h2 className="text-[64px] sm:text-[96px] md:text-[140px] lg:text-[180px] xl:text-[220px] 2xl:text-[250px] font-bold mb-4 leading-[0.75] custom-xl:col-span-2 max-w-[12ch] break-words">
           my
@@ -224,7 +245,10 @@ const ProjectsByUser = () => {
                       <div
                         className="cursor-pointer"
                         onClick={() =>
-                          handleRemoveProject(p.projectId || p._id)
+                          confirmDelete(
+                            "Are you sure you want to delete this project? All issues and progress will be lost.",
+                            () => handleRemoveProject(p.projectId || p._id)
+                          )
                         }
                       >
                         <img src="/Trash.svg" alt="Delete project" />
@@ -340,9 +364,13 @@ const ProjectsByUser = () => {
                                   alt="Delete"
                                   className="cursor-pointer w-[24px] h-[24px]"
                                   onClick={() =>
-                                    handleRemoveIssue(
-                                      p.projectId || p._id,
-                                      issue.issueId
+                                    confirmDelete(
+                                      "Are you sure you want to delete this issue?",
+                                      () =>
+                                        handleRemoveIssue(
+                                          p.projectId || p._id,
+                                          issue.issueId
+                                        )
                                     )
                                   }
                                 />
