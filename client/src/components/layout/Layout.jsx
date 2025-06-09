@@ -1,17 +1,20 @@
 import TopNavbar from "../navbar/TopNavbar";
+import Footer from "../footer/Footer";
 import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col min-h-screen">
       <TopNavbar />
-      <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 overflow-auto">
-          <Outlet />
-        </main>
-      </div>
+      <main className="flex-1 overflow-auto">
+        <Outlet />
+      </main>
+      <footer className="bg-[var(--bg-color)] text-white">
+        <Footer />
+      </footer>
     </div>
   );
 };
+
 
 export default Layout;

@@ -353,5 +353,5 @@ export {
     deleteEasyTask,
     editEasyProject,
     editEasyTask,
-    uploadImageToTask
+    //uploadImageToTask
 };
