@@ -1,11 +1,14 @@
 import userModel from "../../models/userModel.js";
-import { hash, compare } from "../../utils/bcrypt.js";
+import { compare } from "../../utils/bcrypt.js";
 import jwt from "jsonwebtoken";
 import { customAlphabet } from "nanoid";
 import { UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided, 
-        UserEmailAlreadyExists, UserCreationFailed, EmailNotFound, InvalidCredentials, InvalidEmailFormat, InvalidPasswordFormat } from "../../utils/errors/authErrors.js";
+        UserEmailAlreadyExists, UserCreationFailed, EmailNotFound, InvalidCredentials, InvalidEmailFormat, InvalidPasswordFormat, AccountLockedError } from "../../utils/errors/authErrors.js";
 
 const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
+
+const MAX_ATTEMPTS = 3;
+const LOCK_TIME = 30 * 60 * 1000; // 30 minutos
 
 const login = async ({ email, password }) => {
 
@@ -17,9 +20,27 @@ const login = async ({ email, password }) => {
   const user = await userModel.findOne({ email });
   if (!user) throw new EmailNotFound();
 
+  // Verificar si el usuario está bloqueado
+  if (user.lockUntil && user.lockUntil > Date.now()) {
+    throw new AccountLockedError("Account is temporarily locked. Please try again later.");
+  }
+
   // Comparar contraseñas
   const isMatch = await compare(password, user.password);
-  if (!isMatch) throw new InvalidCredentials();
+  if (!isMatch) {
+    user.loginAttempts = (user.loginAttempts || 0) + 1;
+    if (user.loginAttempts >= MAX_ATTEMPTS) {
+      user.lockUntil = new Date(Date.now() + LOCK_TIME);
+    }
+
+    await user.save();
+    throw new InvalidCredentials();
+  }
+
+  //Login exitoso: resetear contador y bloqueo
+  user.loginAttempts = 0;
+  user.lockUntil = null;
+  await user.save();
 
   // Generar token
   const token = jwt.sign(
