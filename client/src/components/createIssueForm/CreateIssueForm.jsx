@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { createIssue } from "../../utils/issue";
+import { createIssue } from "../../utils/issue.js";
 
 import { useLoaderData, useNavigate } from "react-router-dom";
 
@@ -34,7 +34,7 @@ const topBrowsers = [
   "Mozilla Firefox",
 ];
 
-function Form() {
+function CreateIssueForm() {
   const { projectId } = useLoaderData();
 
   console.log(projectId);
@@ -57,7 +57,7 @@ function Form() {
       image: form.image.files[0] || null,
     };
     const result = await createIssue(projectId, data);
-    navigate(`/`); //TODO CAMBIAR RUTA
+    navigate(`/projects`); //TODO CAMBIAR RUTA
   };
 
   const handleIssueTypeChange = (e) => {
@@ -234,4 +234,4 @@ function Form() {
   );
 }
 
-export default Form;
+export default CreateIssueForm;
