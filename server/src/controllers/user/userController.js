@@ -159,7 +159,9 @@ async function getUserByProjectId(projectId) {
 
 async function editUserWorkspace(userId, workspaceId) {
 
-  const user = await userModel.findOne({ userId }).select("-password");
+  const user = await userModel.findOne({ _id: userId }).select("-password");
+
+  console.log("User:", user);
 
   if (!user) {
     throw new UserDoesNotExist(userId);
@@ -191,7 +193,6 @@ async function editUserWorkspace(userId, workspaceId) {
     }
 
   }
-  console.log("No entra en el primer if");
   if (!easySpace) {
     const { space, folder } = await createEasySpaceAndFolder(workspaceId, user.apiKey);
     user.spaceId = space.id;
@@ -200,7 +201,7 @@ async function editUserWorkspace(userId, workspaceId) {
 
   await user.save();
 
-  const editedUser = await userModel.findOne({ userId }).select("-password -apiKey");
+  const editedUser = await userModel.findOne({ _id: userId }).select("-password -apiKey");
   if (!editedUser) {
     throw new UserDoesNotExist(userId);
   }

@@ -1,5 +1,6 @@
 import projectModel from "../../models/projectModel.js";
 import userModel from "../../models/userModel.js";
+import issueModel from "../../models/issueModel.js";
 import { createEasyProject, deleteEasyProject } from "../../utils/clickUpApi/apiFunctions.js";
 
 import {
@@ -93,7 +94,9 @@ const createProject = async (userId, data) => {
     throw new ProjectDescriptionNotProvided();
   }
 
-  const user = await userModel.findOne({userId});
+  const user = await userModel.findById({_id: userId});
+
+  console.log( "User: ", user);
   
   if (!user) throw new Error("UserNotFound");
 

@@ -170,6 +170,7 @@ async function replaceIssueScreenshot(issueId, screenshot) {
   }
 
 async function deleteIssue(issueId) {
+
     const issue = await issueModel.findOneAndDelete({ issueId: issueId });
     const updatedProject = await projectModel.findOneAndUpdate(
         { issues: issue._id },

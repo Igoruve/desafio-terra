@@ -245,12 +245,10 @@ async function deleteEasyTask(taskId, apiKey) {
     const response = await fetch(`https://api.clickup.com/api/v2/task/${taskId}`, options)
         .then(res => res.json())
         .then(res => {
-            console.log(res);
-            return res;
+            //console.log(res);
+            //return res;
         })
         .catch(err => console.error(err));
-
-    return response;
 }
 
 //================= EDIT FUNCTIONS ======================

@@ -35,7 +35,7 @@ const createIssue = async (projectId, data) => {
 };
 
 const deleteIssue = async (issueId) => {
-  const result = await FetchData(`/issue/${issueId}`, "DELETE");
+  const result = await FetchData(`/issue/${issueId}/delete`, "DELETE");
   return result;
 };
 
