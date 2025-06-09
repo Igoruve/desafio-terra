@@ -53,7 +53,9 @@ const router = createBrowserRouter([
           {
             path: "/projects",
             element: <ProjectsByUser />,
-            loader: getProjectsByUserId,
+/*             loader: getProjectsByUserId => {
+              return { getProjectsByUserId };
+            }, */
           },
           {
             path: "/issue/:issueId",

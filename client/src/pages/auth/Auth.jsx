@@ -24,12 +24,9 @@ function Auth({ isRegister }) {
     const result = isRegister
       ? await onRegister(userData.name, userData.email, userData.password)
       : await onLogin(userData.email, userData.password);
-
-    if (!result) {
-      navigate("/projects");
-    } else {
-      setError(result);
-    }
+      if (result) {
+        setError(result);
+      }
   };
 
   return (

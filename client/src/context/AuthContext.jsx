@@ -44,7 +44,6 @@ const AuthProvider = ({ children }) => {
         if (result.user) {
           //y si existe user guarda sus datos
           setUserData(result.user);
-          saveToLocalStorage("userData", result.user);
         }
 
         navigate(`/login`);
@@ -69,8 +68,7 @@ const AuthProvider = ({ children }) => {
         }
         let finalUserData = result.user;
         setUserData(finalUserData);
-        saveToLocalStorage("userData", finalUserData);
-        navigate("/"); //TODO: redirigir a la homepage?
+        navigate("/projects"); //TODO: redirigir a la homepage?
         return null;
       }
     } catch (error) {

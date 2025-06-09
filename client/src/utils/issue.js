@@ -28,27 +28,8 @@ const getIssuesByDevice = async (device) => {
 const createIssue = async (projectId, data) => {
   console.log(projectId);
 
-  const formData = new FormData();
-
-  // Añadir todos los campos de data excepto 'image' (porque es archivo)
-  for (const key in data) {
-    if (key !== "screenshot") {
-      formData.append(key, data[key]);
-    }
-  }
-
-  // Añadir la imagen solo si existe
-  if (data.screenshot) {
-    formData.append("screenshot", data.screenshot);
-  }
-
   const result = await FetchData(`/issue/create/${projectId}`, "POST",
-    formData,
-    {
-      headers: {
-        
-      },
-    }
+    data
   );
   return result;
 };
