@@ -36,12 +36,18 @@ const topBrowsers = [
 
 function CreateIssueForm() {
   const { projectId } = useLoaderData();
-
-  console.log(projectId);
-
   const [expanded, setExpanded] = useState(false);
-
   const navigate = useNavigate();
+  const [preview, setPreview] = useState(null);
+  const [screenshotFile, setScreenshotFile] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreview(imageUrl);
+    }
+  };
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
@@ -55,13 +61,13 @@ function CreateIssueForm() {
     formData.append("browser", form.browser.value);
     formData.append("clientComment", form.comment.value);
     formData.append("page", form.url.value);
-    
-    if(form.screenshot.files[0]){
-      formData.append("screenshot", form.screenshot.files[0]);
+
+    if (screenshotFile) {
+      formData.append("screenshot", screenshotFile);
     }
-    
+
     const result = await createIssue(projectId, formData);
-    navigate(`/projects`); //TODO CAMBIAR RUTA
+    navigate(`/projects`);
   };
 
   const handleIssueTypeChange = (e) => {
@@ -69,7 +75,7 @@ function CreateIssueForm() {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center h-full bg-[var(--bg-color)] text-white pt-24 relative overflow-hidden">
+    <section className="flex flex-col items-center justify-center h-ful bg-[var(--bg-color)] text-white pt-24 relative overflow-hidden">
       <h2 className="hidden sm:block text-8xl font-bold top-42 left-24 w-72 fixed">
         Create a new Issue!
       </h2>
@@ -223,8 +229,35 @@ function CreateIssueForm() {
             id="screenshot"
             name="screenshot"
             accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setScreenshotFile(file);
+                setPreview(URL.createObjectURL(file));
+              }
+            }}
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
           />
+
+          {preview && (
+            <div className="w-full flex flex-col items-end gap-2 mb-4">
+              <img
+                src={preview}
+                alt="Vista previa"
+                className="w-full max-h-64 object-contain border-2 border-white rounded-lg"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setScreenshotFile(null);
+                  setPreview(null);
+                }}
+                className="text-red-400 hover:underline text-sm cursor-pointer" 
+              >
+                Remove screenshot
+              </button>
+            </div>
+          )}
         </fieldset>
 
         <button
