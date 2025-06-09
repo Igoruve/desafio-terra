@@ -52,6 +52,16 @@ const userSchema = new mongoose.Schema(
       required: false,
       trim: true,
     },
+    loginAttempts: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+      required: false,
+      default: null,
+    },
   },
   { timestamps: true }
 );
