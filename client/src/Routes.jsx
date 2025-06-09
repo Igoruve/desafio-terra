@@ -5,6 +5,8 @@ import { getProjectsByUserId, getProjectById } from "./utils/project.js";
 import { createIssue } from "./utils/issue.js";
 
 import Auth from "./pages/auth/Auth.jsx";
+import ResetPassword from "./pages/auth/ResetPassword.jsx";
+import RecoveryPassword from "./pages/auth/RecoveryPassword.jsx";
 import Root from "./pages/root/Root.jsx";
 import Homepage from "./pages/home/Homepage.jsx";
 import Layout from "./components/layout/Layout.jsx";
@@ -35,6 +37,14 @@ const router = createBrowserRouter([
       {
         path: "logout",
         element: <Homepage />,
+      },
+      {
+        path: "forgot-password",
+        element: <RecoveryPassword />,
+      },
+      {
+        path: "reset-password/:token",
+        element: <ResetPassword />,
       },
       {
         element: <Layout />,
