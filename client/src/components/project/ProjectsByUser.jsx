@@ -31,7 +31,7 @@ const ProjectsByUser = () => {
 
   const handleRemoveIssue = async (projectId, issueId) => {
     try {
-      await deleteIssue(projectId, issueId);
+      await deleteIssue(issueId);
       setProjects((prevProjects) =>
         prevProjects.map((project) => {
           if (project.projectId === projectId) {

@@ -128,9 +128,11 @@ const editUserRole = async (req, res) => {
 
 const editUserWorkspace = async (req, res) => {
   try {
-    //const userId = req.user.userId; //TODO descomentar para usar cookies
-    const userId = req.params.id;
+    const userId = req.user.userId; //TODO descomentar para usar cookies
+    //const userId = req.params.id;
+    console.log("User ID:", userId);
     const workspaceId = req.body.workspaceId;
+    console.log("Workspace ID:", workspaceId);
     const user = await userController.editUserWorkspace(userId, workspaceId);
     res.status(200).json(user);
   } catch (error) {
