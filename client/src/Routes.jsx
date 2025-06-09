@@ -1,8 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import ProjectList from "./components/project/ProjectList.jsx";
-import Project from "./components/project/Project.jsx";
-
 import { getProjectsByUserId, getProjectById } from "./utils/project.js";
 
 import { createIssue } from "./utils/issue.js";
@@ -13,8 +10,11 @@ import Homepage from "./pages/home/Homepage.jsx";
 import Layout from "./components/layout/Layout.jsx";
 import ProjectsByUser from "./components/project/ProjectsByUser.jsx";
 import AllProjectsByUser from "./components/project/AllProjectsByUser.jsx";
-import Form from "./components/form/Form.jsx";
- 
+import CreateIssueForm from "./components/createIssueForm/CreateIssueForm.jsx";
+import CreateProjectForm from "./components/createProjectForm/CreateProjectForm.jsx";
+import FAQ from "./components/FAQ/FAQ.jsx";
+import IssueById from "./components/issue/IssueById.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -40,24 +40,31 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           {
-            path: "/myprojects",
-            element: <ProjectsByUser />,
-          },
-          {
-            path: "/project",
-            element: <AllProjectsByUser />,
-          },
-          {
-            path: "/project/:id",
-            element: <Project />,
-            loader: async ({ params }) => getProjectById(params.id),
-          },
-          {
-            path: "/issue/create/:projectId",
-            element: <Form />,
+            path: "/newissue/:projectId",
+            element: <CreateIssueForm />,
             loader: async ({ params }) => {
               return { projectId: params.projectId };
             },
+          },
+          {
+            path: "/newproject",
+            element: <CreateProjectForm />,
+          },
+          {
+            path: "/projects",
+            element: <ProjectsByUser />,
+            loader: getProjectsByUserId,
+          },
+          {
+            path: "/issue/:issueId",
+            element: <IssueById />,
+            loader: async ({ params }) => {
+              return { issueId: params.issueId };
+            },
+          },
+          {
+            path: "/faq",
+            element: <FAQ />,
           },
         ],
       },
