@@ -1,5 +1,5 @@
 
-import userController from "./userController.js"; //MODIFICADO
+import userController from "./userController.js";
 import projectModel from "../../models/projectModel.js";  
 import {ProjectNotFound} from "../../utils/errors/projectErrors.js";
 import {
@@ -126,6 +126,23 @@ const editUserRole = async (req, res) => {
   }
 };
 
+const editUserWorkspace = async (req, res) => {
+  try {
+    const userId = req.user.userId; //TODO descomentar para usar cookies
+    //const userId = req.params.id;
+    console.log("User ID:", userId);
+    const workspaceId = req.body.workspaceId;
+    console.log("Workspace ID:", workspaceId);
+    const user = await userController.editUserWorkspace(userId, workspaceId);
+    res.status(200).json(user);
+  } catch (error) {
+    if (error instanceof UserDoesNotExist) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 export default{
   getAllUsers,
@@ -136,4 +153,5 @@ export default{
   deleteUser,
   getUserByProjectId,
   editUserRole,
+  editUserWorkspace
 };

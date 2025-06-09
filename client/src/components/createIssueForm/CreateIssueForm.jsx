@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { createIssue } from "../../utils/issue";
+import { createIssue } from "../../utils/issue.js";
 
 import { useLoaderData, useNavigate } from "react-router-dom";
 
@@ -34,7 +34,7 @@ const topBrowsers = [
   "Mozilla Firefox",
 ];
 
-function Form() {
+function CreateIssueForm() {
   const { projectId } = useLoaderData();
 
   console.log(projectId);
@@ -46,18 +46,22 @@ function Form() {
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     const form = e.target;
-    const data = {
-      issueType: form.issueType.value,
-      specifyIssue: form.specifyIssue?.value || "",
-      status: form.status.value,
-      device: form.device.value,
-      browser: form.browser.value,
-      clientComment: form.comment.value,
-      page: form.url.value,
-      image: form.image.files[0] || null,
-    };
-    const result = await createIssue(projectId, data);
-    navigate(`/`); //TODO CAMBIAR RUTA
+
+    const formData = new FormData();
+    formData.append("issueType", form.issueType.value);
+    formData.append("specifyIssue", form.specifyIssue?.value || "");
+    formData.append("status", form.status.value);
+    formData.append("device", form.device.value);
+    formData.append("browser", form.browser.value);
+    formData.append("clientComment", form.comment.value);
+    formData.append("page", form.url.value);
+    
+    if(form.screenshot.files[0]){
+      formData.append("screenshot", form.screenshot.files[0]);
+    }
+    
+    const result = await createIssue(projectId, formData);
+    navigate(`/projects`); //TODO CAMBIAR RUTA
   };
 
   const handleIssueTypeChange = (e) => {
@@ -211,13 +215,13 @@ function Form() {
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 max-h-60 w-full resize-none overflow-hidden cursor-text  h-12"
           ></input>
 
-          <label htmlFor="image" className="pb-4">
+          <label htmlFor="screenshot" className="pb-4">
             Screenshot
           </label>
           <input
             type="file"
-            id="image"
-            name="image"
+            id="screenshot"
+            name="screenshot"
             accept="image/*"
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
           />
@@ -234,4 +238,4 @@ function Form() {
   );
 }
 
-export default Form;
+export default CreateIssueForm;

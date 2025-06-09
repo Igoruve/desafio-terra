@@ -1,7 +1,7 @@
 import { Router } from "express";
 import userApiController from "../controllers/user/userApiController.js";
 import { isLoggedInAPI } from "../middlewares/authMiddleware.js";
-import { requireAdmin } from "../middlewares/roleMiddleware.js"; 
+import { requireAdmin, requirePM } from "../middlewares/roleMiddleware.js"; 
 
 const router = Router();
 
@@ -16,6 +16,8 @@ router.post("/create", isLoggedInAPI, requireAdmin, userApiController.createUser
 router.put("/role", isLoggedInAPI, requireAdmin, userApiController.editUserRole);
 
 router.delete("/:id", isLoggedInAPI, requireAdmin, userApiController.deleteUser);
+
+router.put("/workspace", isLoggedInAPI, requirePM, userApiController.editUserWorkspace);
 
 router.put("/:id", isLoggedInAPI, userApiController.editUser);
 

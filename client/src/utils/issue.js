@@ -27,12 +27,15 @@ const getIssuesByDevice = async (device) => {
 
 const createIssue = async (projectId, data) => {
   console.log(projectId);
-  const result = await FetchData(`/issue/create/${projectId}`, "POST", data);
+
+  const result = await FetchData(`/issue/create/${projectId}`, "POST",
+    data
+  );
   return result;
 };
 
 const deleteIssue = async (issueId) => {
-  const result = await FetchData(`/issue/${issueId}`, "DELETE");
+  const result = await FetchData(`/issue/${issueId}/delete`, "DELETE");
   return result;
 };
 
