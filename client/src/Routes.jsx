@@ -10,7 +10,6 @@ import Homepage from "./pages/home/Homepage.jsx";
 import Layout from "./components/layout/Layout.jsx";
 import ProjectsByUser from "./components/project/ProjectsByUser.jsx";
 import AllProjectsByUser from "./components/project/AllProjectsByUser.jsx";
-import Form from "./components/form/Form.jsx";
 import Profile from "./components/profile/Profile.jsx";
 import EditProject from "./components/editProject/EditProject.jsx"; 
 import EditIssue from "./components/editIssue/EditIssue.jsx";
@@ -60,18 +59,16 @@ const router = createBrowserRouter([
             path: "/project",
             element: <AllProjectsByUser />,
           },
-          {
+          /* {
             path: "/project/:id",
             element: <Project />,
             loader: async ({ params }) => getProjectById(params.id),
-          },
+          }, */
           {
             path: "/issues/edit",
             element: <EditIssue />,
           },
           {
-            path: "/issue/create/:projectId",
-            element: <Form />,
             path: "/newissue/:projectId",
             element: <CreateIssueForm />,
             loader: async ({ params }) => {

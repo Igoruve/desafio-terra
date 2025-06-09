@@ -18,8 +18,7 @@ import { createEasyTask, deleteEasyTask } from "../../utils/clickUpApi/apiFuncti
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
-
+ 
 //CAMBIO
 
 async function getIssuesByUser(userId) {

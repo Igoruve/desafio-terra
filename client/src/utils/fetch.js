@@ -47,6 +47,7 @@ async function FetchData(route, method = "GET", data = null) {
 
     if (!response.ok) {
       responseData.status = response.status;
+      return { error: true, message: responseData.message || `HTTP error: ${response.status}`, status: response.status }; //CAMBIADO
     }
 
     return responseData;
