@@ -14,12 +14,17 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      console.log("userData", userData);
       if (!userData?._id) return;
       setLoading(true);
       try {
         const result = await FetchData(`/user/${userData._id}`);
+        console.log("Hola ceci", result);
         if (result.error) {
-          setMessage({ type: "error", text: result.message || "Error loading profile" });
+          setMessage({
+            type: "error",
+            text: result.message || "Error loading profile",
+          });
         } else {
           setProfile(result);
           setFormData({
@@ -65,7 +70,13 @@ const Profile = () => {
     if (!dataToSend.password) delete dataToSend.password;
 
     try {
-      const result = await FetchData(`/user/${userData._id}`, "PUT", dataToSend);
+      const result = await FetchData(
+        `/user/${userData._id}`,
+        "PUT",
+        dataToSend
+      );
+      console.log("result", result);
+      console.log("dataToSend", userData._id);
       if (result.error) {
         setMessage({ type: "error", text: result.message });
       } else {
@@ -95,35 +106,41 @@ const Profile = () => {
         </div>
       </header>
 
-      {message && (
-        <div className={`mb-4 ${message.type === "error" ? "text-red-500" : "text-green-500"}`}>
-          {message.text}
-        </div>
-      )}
-
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 w-full max-w-lg border-3 border-[#F78BD8] rounded-xl p-6"
+        className="flex flex-col gap-4 w-full max-w-lg border-3 border-[var(--bg-color)] rounded-xl p-6 mx-auto my-24"
       >
         {!editing ? (
           <>
-            <p><strong>Name:</strong> {profile?.name}</p>
-            <p><strong>Email:</strong> {profile?.email}</p>
-            <p><strong>Role:</strong> {profile?.role}</p>
+            <p className="text-2xl">Name: {profile?.name}</p>
+            <p className="text-2xl">Email: {profile?.email}</p>
+            <p className="text-2xl">Role: {profile?.role}</p>
+            {message && (
+              <div
+                className={`mb-b ${
+                  message.type === "error" ? "text-red-500" : "text-green-500"
+                }`}
+              >
+                {message.text}
+              </div>
+            )}
             <button
-              type="button" onClick={() => {
+              type="button"
+              onClick={() => {
                 setEditing(true);
                 setMessage(null);
               }}
-              className="font-semibold text-lg px-4 py-2 border-3 border-white text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
+              className="font-semibold text-2xl px-4 py-2 border-3 border-white text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all bg-[var(--bg-color)] duration-300 ease-in-out w-fit mx-auto"
             >
               Edit Profile
             </button>
           </>
         ) : (
           <>
-            <div className="flex flex-col">
-              <label htmlFor="name" className="mb-1">Name:</label>
+            <div className="flex flex-col text-2xl">
+              <label htmlFor="name" className="mb-1">
+                Name:
+              </label>
               <input
                 type="text"
                 name="name"
@@ -136,8 +153,10 @@ const Profile = () => {
               />
             </div>
 
-            <div className="flex flex-col">
-              <label htmlFor="email" className="mb-1">Email:</label>
+            <div className="flex flex-col text-2xl">
+              <label htmlFor="email" className="mb-1">
+                Email:
+              </label>
               <input
                 type="email"
                 name="email"
@@ -154,13 +173,15 @@ const Profile = () => {
               <button
                 type="button"
                 onClick={() => setShowPasswordField(true)}
-                className="text-sm text-[#ffb410] underline mt-2"
+                className="text-md text-[#ffb410] underline mt-2 cursor-pointer"
               >
                 Change password
               </button>
             ) : (
               <div className="flex flex-col">
-                <label htmlFor="password" className="mb-1">New password:</label>
+                <label htmlFor="password" className="mb-1">
+                  New password:
+                </label>
                 <input
                   type="password"
                   name="password"
@@ -169,8 +190,8 @@ const Profile = () => {
                   placeholder="New password"
                   onFocus={() => {
                     if (!touchedFields.password) {
-                      setFormData(prev => ({ ...prev, password: "" }));
-                      setTouchedFields(prev => ({ ...prev, password: true }));
+                      setFormData((prev) => ({ ...prev, password: "" }));
+                      setTouchedFields((prev) => ({ ...prev, password: true }));
                     }
                   }}
                   className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
@@ -179,12 +200,6 @@ const Profile = () => {
             )}
 
             <div className="flex justify-between mt-4">
-              <button
-                type="submit"
-                className="font-semibold text-lg px-4 py-2 border-3 border-[#7ce55e] text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
-              >
-                Save Changes
-              </button>
               <button
                 type="button"
                 onClick={() => {
@@ -197,9 +212,15 @@ const Profile = () => {
                   });
                   setTouchedFields({});
                 }}
-                className="font-semibold text-lg px-4 py-2 border-3 border-[#3D9DD8] text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
+                className="font-semibold text-lg px-4 py-2 border-3 border-[var(--bg-color)] text-[var(--bg-color)] rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
               >
                 Cancel
+              </button>
+              <button
+                type="submit"
+                className="font-semibold text-lg px-4 py-2 border-3 border-[var(--bg-color)] text-[var(--bg-color)] rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
+              >
+                Save Changes
               </button>
             </div>
           </>
@@ -207,7 +228,6 @@ const Profile = () => {
       </form>
     </section>
   );
-
 };
 
 export default Profile;

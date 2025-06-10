@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { editUserWorkSpace } from "../../utils/user";
 import { editUser } from "../../utils/user";
-import {AuthContext} from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 
 function ClickUpButtons() {
@@ -23,7 +23,7 @@ function ClickUpButtons() {
 
   const handleUpdateWorkspaceID = async () => {
     try {
-      await editUserWorkSpace({workspaceId});
+      await editUserWorkSpace({ workspaceId });
       setExpanded(false);
     } catch (error) {
       console.log(error);
@@ -31,8 +31,8 @@ function ClickUpButtons() {
   };
 
   const handleUpdateAPIKey = async (userData, apiKey) => {
-    try{
-      await editUser( userData.userId,{apiKey});
+    try {
+      await editUser(userData.userId, { apiKey });
       setExpanded(false);
     } catch (error) {
       console.log(error);
@@ -58,6 +58,19 @@ function ClickUpButtons() {
             onSubmit={handleSubmit}
             className="absolute flex flex-col bg-[#F7F8F4] px-6 py-4 shadow-md rounded-[30px] text-xl"
           >
+            <label>API Key:</label>
+            <input
+              type="text"
+              className="bg-white rounded-[30px] py-2 px-4 my-4 border border-black"
+              onChange={(e) => setApiKey(e.target.value)}
+              value={apiKey}
+            />
+            <button
+              className="bg-[var(--bg-color)] rounded-[50px] hover:rounded-[8px] text-white px-4 py-2 cursor-pointer transition-all 300ms ease-in-out mb-8"
+              onClick={() => handleUpdateAPIKey(userData, apiKey)}
+            >
+              Update
+            </button>
             <label>Workspace ID:</label>
             <input
               value={workspaceId}
@@ -67,23 +80,10 @@ function ClickUpButtons() {
             />
             <button
               onClick={handleUpdateWorkspaceID}
-              className="bg-[var(--bg-color)] rounded-[50px] hover:rounded-[8px] text-white px-4 py-2 cursor-pointer transition-all 300ms ease-in-out mb-8"
+              className="bg-[var(--bg-color)] rounded-[50px] hover:rounded-[8px] text-white px-4 py-2 cursor-pointer transition-all 300ms ease-in-out "
             >
               Update
-            </button>
-            <label>API Key:</label>
-            <input
-              type="text"
-              className="bg-white rounded-[30px] py-2 px-4 my-4 border border-black"
-              onChange={(e) => setApiKey(e.target.value)}
-              value={apiKey}
-            />
-            <button
-              className="bg-[var(--bg-color)] rounded-[50px] hover:rounded-[8px] text-white px-4 py-2 cursor-pointer transition-all 300ms ease-in-out"
-              onClick={() => handleUpdateAPIKey(userData, apiKey)}
-            >
-              Update
-            </button>
+            </button> 
           </form>
         </div>
       )}
