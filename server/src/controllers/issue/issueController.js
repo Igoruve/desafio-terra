@@ -21,6 +21,16 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+ 
+//CAMBIO
+
+async function getIssuesByUser(userId) {
+  const issues = await issueModel.find({ client: userId }).populate({
+    path: "client",
+    select: "-password -apiKey",
+  });
+  return issues;
+}
 async function getAllIssues() {
   const issues = await issueModel.find().populate({
     path: "client",
@@ -214,7 +224,7 @@ async function deleteIssueScreenshot(_id) {
 
     try {
       await fs.unlink(filePath);
-      console.log("Archivo borrado:", filePath); // ✅ Añade esto para ver si llega
+
     } catch (error) {
       console.error("Error deleting screenshot file:", error);
     }
@@ -235,5 +245,6 @@ export default {
   editIssue,
   replaceIssueScreenshot,
   deleteIssue,
-  deleteIssueScreenshot,
+  getIssuesByUser,
+  deleteIssueScreenshot
 };

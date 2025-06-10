@@ -1,17 +1,11 @@
 import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-import {
-  saveToken,
-  removeToken,
-  saveToLocalStorage,
-  getFromLocalStorage,
-} from "../utils/localStorage";
-
-import { login, register, logout } from "../utils/auth";
+import { login, register, logout, getMe } from "../utils/auth";
+import { removeToken } from "../utils/localStorage";
 
 const AuthContext = createContext({
   userData: null,
+  loading: true,
   onLogin: async () => {},
   onLogout: () => {},
   onRegister: async () => {},
@@ -19,21 +13,33 @@ const AuthContext = createContext({
 
 const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  //cargar los datos del usuario al inicio si existe
   useEffect(() => {
-    
-    const savedUserData = getFromLocalStorage("userData");
-    if (savedUserData) {
-      setUserData(savedUserData);
-    }
+    const checkAuth = async () => {
+      try {
+        setLoading(true);
+        const result = await getMe();
+        console.log("getMe result:", result);
+        if (result.user && result.user.role) {
+          setUserData(result.user);
+        } else {
+          setUserData(null);
+        }
+      } catch (error) {
+        console.error("Auth verification failed:", error.message);
+        setUserData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
   }, []);
 
   const handleRegister = async (name, email, password) => {
     try {
       const result = await register(name, email, password);
-
       if (result.error) {
         return result.error;
       } else {
@@ -49,14 +55,16 @@ const AuthProvider = ({ children }) => {
         navigate(`/login`);
         return null;
       }
+       
     } catch (error) {
-      console.error("Register error: ", error);
+      console.error("Register error:", error);
       return "Error processing the register.";
     }
   };
 
   const handleLogin = async (email, password) => {
     try {
+      setLoading(true);
       const result = await login(email, password);
       if ("error" in result && result.error) {
         removeToken();
@@ -68,12 +76,15 @@ const AuthProvider = ({ children }) => {
         }
         let finalUserData = result.user;
         setUserData(finalUserData);
-        navigate("/projects"); //TODO: redirigir a la homepage?
+        navigate("/projects"); 
         return null;
       }
+      
     } catch (error) {
-      console.error("Error logging in: ", error);
+      console.error("Error logging in:", error);
       return "Error processing the login.";
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,11 +92,8 @@ const AuthProvider = ({ children }) => {
     try {
       await logout();
     } catch (error) {
-      console.error("Error loggint out: ", error);
+      console.error("Error logging out:", error);
     } finally {
-      //siempre limpia los datos locales independientemente de la respuesta del servidor
-      removeToken();
-      localStorage.removeItem("userData");
       setUserData(null);
       navigate("/");
     }
@@ -94,7 +102,8 @@ const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        userData: userData,
+        userData,
+        loading,
         onLogin: handleLogin,
         onLogout: handleLogout,
         onRegister: handleRegister,

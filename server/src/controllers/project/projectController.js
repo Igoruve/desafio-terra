@@ -49,22 +49,24 @@ const getProjectById = (id) =>
     })
     .populate("issues");
 
+
 const getProjectsByUserId = async (userId) => {
   const user = await userModel.findById(userId.trim());
-  if (!user) throw new Error("UserNotFound");
+  if (!user) throw new Error("UserNotFound"); //TO DO: cambiar a error personalizado
 
   return projectModel
     .find({ $or: [{ manager: user._id }, { clients: user._id }] })
     .populate({
       path: "clients",
-      select: "-password -apiKey",
+      select: "-password -apiKey"
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey",
+      select: "-password -apiKey"
     })
     .populate("issues");
 };
+
 const getProjectsByDate = (date) =>
   projectModel
     .find({ createdAt: { $gte: date } })
