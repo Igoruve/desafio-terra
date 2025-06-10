@@ -30,6 +30,7 @@ const login = async (req, res) => {
     });
 
     const { token, user } = data;
+
     res.status(200).json({
       message: "Login successful",
       user,
@@ -54,7 +55,7 @@ const logout = async (req, res) => {
   });
 };
 
-const recoverPassword = async (req,res, next) => {
+const recoverPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
     await authController.recoverPassword(email);
@@ -105,5 +106,5 @@ export default {
   logout,
   getMe,
   recoverPassword,
-  resetPassword
+  resetPassword,
 };
