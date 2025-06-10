@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import FetchData from "../../utils/fetch";
 
@@ -27,6 +28,7 @@ const deviceOptions = ["Desktop", "Mobile", "Tablet"];
 
 const EditIssue = () => {
   const { userData } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [issues, setIssues] = useState([]);
   const [selectedIssue, setSelectedIssue] = useState(null);
@@ -36,51 +38,88 @@ const EditIssue = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [managerProjectIds, setManagerProjectIds] = useState([]); // Added for project manager project IDs
 
   useEffect(() => {
     const fetchIssues = async () => {
       if (!userData?.userId || !userData?.role) {
-        setError("You must be logged in");
+        setError("You must be logged in. Please log in and try again.");
         setLoading(false);
+        navigate("/projects");
         return;
       }
       setLoading(true);
       setError(null);
       try {
-        let endpoint = "";
+        let issuesData = [];
+        let projectIds = [];
         if (userData.role === "admin") {
-          endpoint = "/issue/";
-        } else if (
-          userData.role === "project manager" ||
-          userData.role === "client"
-        ) {
-          endpoint = `/issue/user/${userData._id}`;
+          // Para admin: obtener todos los issues
+          const data = await FetchData("/issue/");
+          console.log("Admin issues response:", data);
+          if (data.error || data.status >= 400) {
+            throw new Error(data.message || `Failed to fetch issues: ${data.status || 'Unknown status'}`);
+          }
+          if (!Array.isArray(data)) {
+            throw new Error(`Unexpected response format: Response is not an array, received ${JSON.stringify(data)}`);
+          }
+          issuesData = data;
+        } else if (userData.role === "client") {
+          // Para client: obtener issues creados por ellos
+          const data = await FetchData(`/issue/user/${userData._id}`);
+          console.log("Client issues response:", data);
+          if (data.error || data.status >= 400) {
+            throw new Error(data.message || `Failed to fetch issues: ${data.status || 'Unknown status'}`);
+          }
+          if (!Array.isArray(data)) {
+            throw new Error(`Unexpected response format: Response is not an array, received ${JSON.stringify(data)}`);
+          }
+          issuesData = data;
+        } else if (userData.role === "project manager") {
+          // Para project manager: obtener issues de sus proyectos asignados
+          const projectsData = await FetchData(`/project?manager=${userData._id}`);
+          console.log("Project manager projects response:", projectsData);
+          if (projectsData.error || projectsData.status >= 400) {
+            throw new Error(projectsData.message || `Failed to fetch projects: ${projectsData.status || 'Unknown status'}`);
+          }
+          if (!Array.isArray(projectsData)) {
+            throw new Error(`Unexpected projects response format: Response is not an array, received ${JSON.stringify(projectsData)}`);
+          }
+          projectIds = projectsData.map(project => project.projectId);
+          console.log("Project IDs for PM:", projectIds);
+          setManagerProjectIds(projectIds); // Store project IDs
+          if (projectIds.length > 0) {
+            // Obtener issues para los projectId
+            const issuesResponse = await FetchData("/issue/", "POST", { projectIds });
+            console.log("Project manager issues response:", issuesResponse);
+            if (issuesResponse.error || issuesResponse.status >= 400) {
+              throw new Error(issuesResponse.message || `Failed to fetch issues: ${issuesResponse.status || 'Unknown status'}`);
+            }
+            if (!Array.isArray(issuesResponse)) {
+              throw new Error(`Unexpected issues response format: Response is not an array, received ${JSON.stringify(issuesResponse)}`);
+            }
+            issuesData = issuesResponse;
+          } else {
+            issuesData = []; // No hay proyectos asignados
+          }
         } else {
-          setError("Unauthorized access");
+          setError("Unauthorized access. Your role does not permit viewing issues.");
           setLoading(false);
+          navigate("/projects");
           return;
         }
 
-        const data = await FetchData(endpoint);
-
-        if (data.error) {
-          throw new Error(data.message || "Failed to fetch issues");
-        }
-
-        if (!Array.isArray(data)) {
-          throw new Error("Unexpected response format");
-        }
-
-        setIssues(data);
+        setIssues(issuesData);
       } catch (err) {
-        setError(err.message || "Failed to fetch issues");
+        setError(err.message || "Failed to fetch issues. Check console for details.");
+        console.error("Fetch issues error:", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchIssues();
-  }, [userData]);
+  }, [userData, navigate]);
 
   const handleEditClick = (issue) => {
     setSelectedIssue(issue);
@@ -127,7 +166,6 @@ const EditIssue = () => {
     setMessage(null);
     setError(null);
 
-    // Si tienes un archivo screenshot, creamos FormData, sino enviamos JSON simple
     let dataToSend;
     let headers = {};
 
@@ -143,9 +181,7 @@ const EditIssue = () => {
         }
       });
     } else {
-      // Enviar JSON (sin archivo)
       dataToSend = { ...formData };
-      // No enviar screenshot si no es string
       if (dataToSend.screenshot && typeof dataToSend.screenshot !== "string") {
         delete dataToSend.screenshot;
       }
@@ -198,7 +234,7 @@ const EditIssue = () => {
       )}
 
       <ul className="space-y-2 mb-8 w-full max-w-lg">
-        {issues.length === 0 && <li>No issues found.</li>}
+        {issues.length === 0 && <li>No issues assigned to you. Contact support if this is unexpected.</li>}
         {issues.map((issue, index) => (
           <li key={issue._id?.$oid || issue._id || index}>
             <button
@@ -251,8 +287,8 @@ const EditIssue = () => {
           </div>
 
           {(userData.role === "admin" ||
-            ((userData.role === "project manager") &&
-              selectedIssue?.createdBy === userData._id)) ? (
+            (userData.role === "project manager" &&
+              managerProjectIds.includes(selectedIssue?.projectId))) ? (
             <div className="flex flex-col">
               <label className="mb-1" htmlFor="status">
                 Status:
@@ -436,4 +472,3 @@ const EditIssue = () => {
 };
 
 export default EditIssue;
-
