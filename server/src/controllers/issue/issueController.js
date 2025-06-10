@@ -62,7 +62,6 @@ async function createIssue(projectId, data, imageFile=null) {
   if (!data.browser) throw new browserNotProvided();
   if (!data.clientComment) throw new clientCommentNotProvided();
   if (!data.page) throw new pageUrlNotProvided();
-
   const project = await projectModel
     .findOne({ projectId: projectId })
     .populate({
