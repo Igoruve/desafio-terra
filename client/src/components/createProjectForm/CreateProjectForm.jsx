@@ -10,6 +10,8 @@ function CreateProjectForm() {
   const navigate = useNavigate();
   const { userData } = useContext(AuthContext);
   const [error, setError] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
@@ -73,8 +75,13 @@ function CreateProjectForm() {
             id="title"
             name="title"
             required
+            maxLength={80}
+            onChange={(e) => setTitle(e.target.value)}
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 w-full"
           />
+          <p className="text-right text-sm text-gray-400 mb-3">
+            {title.length}/80
+          </p>
 
           <label htmlFor="description" className="pb-2">
             Description*
@@ -84,8 +91,13 @@ function CreateProjectForm() {
             name="description"
             rows="4"
             required
+            maxLength={500}
+            onChange={(e) => setDescription(e.target.value)}
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full"
           ></textarea>
+          <p className="text-right text-sm text-gray-400 mb-3">
+            {description.length}/500
+          </p>
 
           <label htmlFor="status" className="pb-2">
             Status*
@@ -119,13 +131,8 @@ function CreateProjectForm() {
             placeholder="(comma-separated)"
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full cursor-text h-24"
           ></textarea>
-        {error && (
-          <p className="  text-red-500">
-            {error}
-          </p>
-        )}
+          {error && <p className="  text-red-500">{error}</p>}
         </fieldset>
-
 
         <button
           type="submit"

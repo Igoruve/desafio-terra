@@ -238,9 +238,11 @@ const ProjectsByUser = () => {
               >
                 <div className="md:w-1/2 bg-[#F7F8F4] rounded-[20px] px-8 py-10 shadow-2xs">
                   <div className="grid grid-cols-[1fr_40px] gap-4">
-                    <h3 className="text-4xl font-bold pb-6">
-                      {p.title || "Untitled Project"}
-                    </h3>
+                  <h3 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold pb-6 break-words whitespace-pre-wrap overflow-hidden max-w-full">
+  {p.title || "Untitled Project"}
+</h3>
+
+
                     {userData.role === "admin" && !isCancelled && (
                       <div
                         className="cursor-pointer"
@@ -288,7 +290,9 @@ const ProjectsByUser = () => {
                   </div>
                   <div className="mt-8 text-xl flex flex-col gap-2">
                     <p>Description:</p>
-                    <p>{p.description || "No description"}</p>
+                    <p className="break-words whitespace-pre-wrap">
+                      {p.description || "No description"}
+                    </p>
                   </div>
                 </div>
 

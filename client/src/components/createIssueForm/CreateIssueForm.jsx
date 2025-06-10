@@ -1,9 +1,8 @@
-import { useState } from "react";
-
-import { createIssue } from "../../utils/issue.js";
-
+import { useState, useContext } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 
+import { AuthContext } from "../../context/AuthContext.jsx";
+import { createIssue } from "../../utils/issue.js";
 import Arrow from "./Arrow.jsx";
 
 const issueTypes = [
@@ -13,6 +12,7 @@ const issueTypes = [
   "Bug Fix",
   "Design Issues",
   "Not Addressing",
+  "Other",
 ];
 
 const statusOptions = [
@@ -22,7 +22,7 @@ const statusOptions = [
   "Needs Inputs",
   "Ready to upload",
   "Duplicate Comment",
-  "N/A",
+  "Other",
 ];
 
 const deviceOptions = ["Desktop", "Mobile", "Tablet"];
@@ -40,6 +40,8 @@ function CreateIssueForm() {
   const navigate = useNavigate();
   const [preview, setPreview] = useState(null);
   const [screenshotFile, setScreenshotFile] = useState(null);
+  const { userData } = useContext(AuthContext);
+  const [comment, setComment] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -70,9 +72,9 @@ function CreateIssueForm() {
     navigate(`/projects`);
   };
 
-  const handleIssueTypeChange = (e) => {
-    setExpanded(e.target.value === "Other");
-  };
+  // const handleIssueTypeChange = (e) => {
+  //   setExpanded(e.target.value === "Other");
+  // };
 
   return (
     <section className="flex flex-col items-center justify-center h-ful bg-[var(--bg-color)] text-white pt-24 relative overflow-hidden">
@@ -97,7 +99,7 @@ function CreateIssueForm() {
               id="issueType"
               name="issueType"
               required
-              onChange={handleIssueTypeChange}
+              // onChange={handleIssueTypeChange}
               className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
             >
               <option value="">Select an option</option>
@@ -106,7 +108,6 @@ function CreateIssueForm() {
                   {type}
                 </option>
               ))}
-              <option value="Other">Other</option>
             </select>
             <Arrow />
           </div>
@@ -123,27 +124,30 @@ function CreateIssueForm() {
               ></textarea>
             </>
           )} */}
-
-          <label htmlFor="status" className="pb-4">
-            Status*
-          </label>
-          <div className="flex flex-row relative w-full items-center justify-between">
-            <select
-              id="status"
-              name="status"
-              defaultValue="On Hold"
-              required
-              className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
-            >
-              <option value="On Hold">On Hold</option>
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-            <Arrow />
-          </div>
+          {userData.role !== "client" && (
+            <>
+              <label htmlFor="status" className="pb-4">
+                Status*
+              </label>
+              <div className="flex flex-row relative w-full items-center justify-between">
+                <select
+                  id="status"
+                  name="status"
+                  defaultValue="On Hold"
+                  required
+                  className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
+                >
+                  <option value="On Hold">On Hold</option>
+                  {statusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+                <Arrow />
+              </div>
+            </>
+          )}
         </fieldset>
 
         <fieldset className="w-full p-4 border-3 border-[#7ce55e] rounded-xl flex flex-col justify-start items-start">
@@ -205,9 +209,14 @@ function CreateIssueForm() {
             id="comment"
             name="comment"
             rows="4"
+            maxLength={500}
+            onChange={(e) => setComment(e.target.value)}
             required
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 h-fit max-h-60 w-full cursor-text "
           ></textarea>
+          <p className="text-right text-sm text-gray-400 mb-3">
+            {comment.length}/500
+          </p>
 
           <label htmlFor="url" className="pb-4">
             Page URL*
@@ -252,7 +261,7 @@ function CreateIssueForm() {
                   setScreenshotFile(null);
                   setPreview(null);
                 }}
-                className="text-red-400 hover:underline text-sm cursor-pointer" 
+                className="text-red-400 hover:underline text-sm cursor-pointer"
               >
                 Remove screenshot
               </button>
