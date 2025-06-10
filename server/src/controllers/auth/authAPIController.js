@@ -54,12 +54,12 @@ const logout = async (req, res) => {
   });
 };
 
-// Nueva función: obtener info del usuario autenticado
+ 
 const getMe = async (req, res, next) => {
   try {
     const { userId } = req.user;
 
-    const user = await userController.getUserById(userId); // Este método lo implementas tú en authController.js
+    const user = await userController.getUserById(userId);  
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });

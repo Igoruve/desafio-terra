@@ -14,10 +14,10 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!userData?.userId) return;
+      if (!userData?._id) return;
       setLoading(true);
       try {
-        const result = await FetchData(`/user/${userData.userId}`);
+        const result = await FetchData(`/user/${userData._id}`);
         if (result.error) {
           setMessage({ type: "error", text: result.message || "Error loading profile" });
         } else {
@@ -65,7 +65,7 @@ const Profile = () => {
     if (!dataToSend.password) delete dataToSend.password;
 
     try {
-      const result = await FetchData(`/user/${userData.userId}`, "PUT", dataToSend);
+      const result = await FetchData(`/user/${userData._id}`, "PUT", dataToSend);
       if (result.error) {
         setMessage({ type: "error", text: result.message });
       } else {
