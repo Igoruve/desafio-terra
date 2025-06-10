@@ -50,7 +50,7 @@ function TopNavbar() {
             <img className=" h-12 pl-2" src="/terraforms.gif" alt="" />
           </div>
         </Link>
-        <div>
+        <div className="flex flex-row gap-8 items-center">
           <button
             className="text-[var(--bg-color)] bg-white px-8 py-3 min-w-[120px] text-center rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out cursor-pointer font-bold flex justify-center items-center"
             onClick={() => setIsOpen(!isOpen)}
@@ -69,6 +69,9 @@ function TopNavbar() {
               </svg>
             )}
           </button>
+          <a href="/profile">
+            <img src="/Profile.svg" className="h-6" alt="" />
+          </a>
         </div>
       </nav>
 
