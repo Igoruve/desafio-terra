@@ -107,7 +107,7 @@ function Auth({ isRegister }) {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              classname="absolute right-3 top-[44px] text-white opacity-50 hover:opacity-100 transition-all duration-300 ease-in-out"
+              className="absolute right-3 top-[44px] text-white opacity-50 hover:opacity-100 transition-all duration-300 ease-in-out"
               aria-label={showPassword ? "Hide password" : "Show password"}
               title={showPassword ? "Hide password" : "Show password"}
             >
@@ -132,7 +132,7 @@ function Auth({ isRegister }) {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  classname="absolute right-3 top-[44px] text-white opacity-50 hover:opacity-100 transition-all duration-300 ease-in-out"
+                  className="absolute right-3 top-[44px] text-white opacity-50 hover:opacity-100 transition-all duration-300 ease-in-out"
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   title={showConfirmPassword ? "Hide password" : "Show password"}
                 >
@@ -155,6 +155,17 @@ function Auth({ isRegister }) {
             {isRegister ? "Register" : "Log In"}
           </button>
         </form>
+
+        {!isRegister && (
+          <div className="mt-4 w-full max-w-md flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-400 hover:underline cursor-pointer"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        )}
 
         <div className="flex flex-col items-center mt-6 gap-2">
           {isRegister ? (
