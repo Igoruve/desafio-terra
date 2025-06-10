@@ -31,12 +31,18 @@ const editUser = async (userId, data) => {
 };
 
 const editUserRole = async (userId, data) => {
-  const result = await FetchData(`/user/${userId}/role`, "PUT", data);
+  const result = await FetchData(`/user/${userId}/role`, "PUT", data);  
+  return result;
+};
+
+const editUserWorkSpace = async (data) => {
+  const result = await FetchData(`/user/workspace`, "PUT", data);
   return result;
 };
 
 export {
   editUser,
+  editUserWorkSpace,
   editUserRole,
   getUsers,
   getUserById,
