@@ -1,49 +1,55 @@
-import { useNavigate, useLoaderData } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createProject } from "../../utils/project.js";
 import Arrow from "../createIssueForm/Arrow.jsx";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext, useState } from "react";
 
 const statusOptions = ["In Progress", "Complete", "Cancelled"];
 
 function CreateProjectForm() {
   const navigate = useNavigate();
+  const { userData } = useContext(AuthContext);
+  const [error, setError] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     const form = e.target;
 
-    function isValidMongoId(id) {
-      return /^[a-fA-F0-9]{24}$/.test(id);
-    }
+    // function isValidMongoId(id) {
+    //   return /^[a-fA-F0-9]{24}$/.test(id);
+    // }
 
-    const rawClients = form.clients.value
+    const rawClients = form.clientsNames.value
+
       .split(",")
-      .map((id) => id.trim())
-      .filter((id) => id.length > 0);
+      .map((name) => name.trim())
+      .filter((name) => name.length > 0);
 
-    const invalidClientIds = rawClients.filter((id) => !isValidMongoId(id));
-    const managerId = form.manager.value.trim();
+    // const invalidClientIds = rawClients.filter((id) => !isValidMongoId(id));
 
-    if (!isValidMongoId(managerId)) {
-      alert("Invalid MongoDB ID for Manager.");
-      return;
-    }
-
-    if (invalidClientIds.length > 0) {
-      alert("Invalid Client IDs: " + invalidClientIds.join(", "));
-      return;
-    }
+    // if (invalidClientIds.length > 0) {
+    //   alert("Invalid Client IDs: " + invalidClientIds.join(", "));
+    //   return;
+    // }
 
     const data = {
       title: form.title.value,
       description: form.description.value,
       status: form.status.value,
-      manager: managerId,
-      clients: rawClients,
+      manager: userData.userId,
+      clientsNames: rawClients,
       issues: [],
     };
-
+    console.log("Bfff", rawClients);
     const result = await createProject(data);
-    navigate(`/projects`); // TODO: cambiar ruta si hace falta
+
+    if (result.error || result.message === "Client Not Found") {
+      setError(result.message || "Something went wrong");
+    } else {
+      navigate(`/projects`);
+    }
   };
 
   return (
@@ -69,8 +75,13 @@ function CreateProjectForm() {
             id="title"
             name="title"
             required
+            maxLength={80}
+            onChange={(e) => setTitle(e.target.value)}
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 w-full"
           />
+          <p className="text-right text-sm text-gray-400 mb-3">
+            {title.length}/80
+          </p>
 
           <label htmlFor="description" className="pb-2">
             Description*
@@ -80,8 +91,13 @@ function CreateProjectForm() {
             name="description"
             rows="4"
             required
+            maxLength={500}
+            onChange={(e) => setDescription(e.target.value)}
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full"
           ></textarea>
+          <p className="text-right text-sm text-gray-400 mb-3">
+            {description.length}/500
+          </p>
 
           <label htmlFor="status" className="pb-2">
             Status*
@@ -106,27 +122,16 @@ function CreateProjectForm() {
 
         <fieldset className="w-full p-4 border-3 border-[#EBA911] rounded-xl flex flex-col justify-start items-start">
           <legend className="text-lg font-semibold mb-2">Project Access</legend>
-
-          <label htmlFor="manager" className="pb-2">
-            Manager ID*
-          </label>
-          <input
-            id="manager"
-            name="manager"
-            type="text"
-            required
-            className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full cursor-text"
-          />
-
-          <label htmlFor="clients" className="pb-2">
-            Client IDs*
+          <label htmlFor="clientsNames" className="pb-2">
+            Client Name(s)*
           </label>
           <textarea
-            id="clients"
-            name="clients"
+            id="clientsNames"
+            name="clientsNames"
             placeholder="(comma-separated)"
             className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full cursor-text h-24"
           ></textarea>
+          {error && <p className="  text-red-500">{error}</p>}
         </fieldset>
 
         <button
