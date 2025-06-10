@@ -13,7 +13,7 @@ import {
   pageUrlNotProvided,
 } from "../../utils/errors/issueErrors.js";
 
-import { createEasyTask, deleteEasyTask } from "../../utils/clickUpApi/apiFunctions.js";
+import { createEasyTask, deleteEasyTask, uploadImageToTask } from "../../utils/clickUpApi/apiFunctions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,26 +56,37 @@ async function getIssuesByDevice(device) {
   });
   return issues;
 }
-async function createIssue(projectId, data) {
-
+async function createIssue(projectId, data, imageFile=null) {
   if (!data.issueType) throw new issueTypeNotProvided();
   if (!data.device) throw new deviceNotProvided();
   if (!data.browser) throw new browserNotProvided();
   if (!data.clientComment) throw new clientCommentNotProvided();
   if (!data.page) throw new pageUrlNotProvided();
 
-    const project = await projectModel.findOne({ projectId: projectId })
-        .populate({
-            path: "manager",
-            select: "-password"
-        })
-        .populate("issues");
-    const apiKey = project.manager.apiKey;
-    const newEasyTask = await createEasyTask(projectId, apiKey, data);
-    data.issueId = newEasyTask.id;
+  const project = await projectModel
+    .findOne({ projectId: projectId })
+    .populate({
+      path: "manager",
+      select: "-password",
+    })
+    .populate("issues");
+  console.log("project", project);
+
+  const apiKey = project.manager.apiKey;
+  console.log("API KEY:", apiKey);
+
+  const newEasyTask = await createEasyTask(projectId, apiKey, data);
+  data.issueId = newEasyTask.id;
+
+  if (imageFile) {
+    console.log("Subiendo imagen a la tarea:", newEasyTask.id);
+    await uploadImageToTask(newEasyTask.id, apiKey, imageFile.path, imageFile.originalname);
+    console.log("Imagen subida");
+  }
 
   const newIssue = await issueModel.create(data);
   newIssue.save();
+
   project.issues.push(newIssue);
   project.save();
 
@@ -84,55 +95,63 @@ async function createIssue(projectId, data) {
 
 async function editIssue(issueId, data) {
   //BUscamos la issue antes de actualizar
-  const issue = await issueModel.findOne({ issueId: issueId }).populate('client');
+  const issue = await issueModel
+    .findOne({ issueId: issueId })
+    .populate("client");
   if (!issue) {
     throw new Error("Issue not found");
   }
   const previousStatus = issue.status;
   console.log(previousStatus);
-  
+
   console.log("Data en controller:", data);
-console.log("Issue encontrada:", issue);
+  console.log("Issue encontrada:", issue);
   //Actualizamos la issue
-  const updatedIssue = await issueModel.findOneAndUpdate({issueId},data,{new: true,}).populate('client');
+  const updatedIssue = await issueModel
+    .findOneAndUpdate({ issueId }, data, { new: true })
+    .populate("client");
   const newStatus = updatedIssue.status;
   console.log(newStatus);
 
   //Enviamos el email de actualizacion si corresponde
   console.log("lista de status");
   const statusEmailMessages = {
-    On_Hold: 'Issue on hold',
-    In_Progress: 'Issue in progress',
-    Complete: 'Issue completed',
-    Post_Launch: 'Issue post launch',
-    Needs_Inputs: 'Issue needs inputs',
-    Ready_to_upload: 'Issue ready to upload',
-    Duplicate_Comment: 'Issue duplicate comment',
-    N_A: 'Issue N/A',
+    On_Hold: "Issue on hold",
+    In_Progress: "Issue in progress",
+    Complete: "Issue completed",
+    Post_Launch: "Issue post launch",
+    Needs_Inputs: "Issue needs inputs",
+    Ready_to_upload: "Issue ready to upload",
+    Duplicate_Comment: "Issue duplicate comment",
+    N_A: "Issue N/A",
   };
 
-  if (newStatus && newStatus !== previousStatus && statusEmailMessages[newStatus]) {
-      const userEmail = updatedIssue.client?.email;
-      const userName = updatedIssue.client?.name || "User";
-      console.log(userEmail);
-      console.log(userName);
+  if (
+    newStatus &&
+    newStatus !== previousStatus &&
+    statusEmailMessages[newStatus]
+  ) {
+    const userEmail = updatedIssue.client?.email;
+    const userName = updatedIssue.client?.name || "User";
+    console.log(userEmail);
+    console.log(userName);
 
-      if (userEmail) {
-        console.log("Enviando email");
-        await sendIssueStatusEmail(
-          userEmail,
-          userName,
-          userEmail,
-          issue.issueType,
-          previousStatus,
-          newStatus,
-          issue.clientComment,
-          issue.createdAt,
-          updatedIssue.terraComments,
-          new Date(),
-          statusEmailMessages[newStatus],
-        );
-      }
+    if (userEmail) {
+      console.log("Enviando email");
+      await sendIssueStatusEmail(
+        userEmail,
+        userName,
+        userEmail,
+        issue.issueType,
+        previousStatus,
+        newStatus,
+        issue.clientComment,
+        issue.createdAt,
+        updatedIssue.terraComments,
+        new Date(),
+        statusEmailMessages[newStatus]
+      );
+    }
   }
 
   return updatedIssue;
@@ -150,7 +169,7 @@ async function replaceIssueScreenshot(issueId, screenshot) {
   if (!screenshot) {
     throw new Error("No screenshot provided");
   }
-  if(issue.screenshot){
+  if (issue.screenshot) {
     //Borramos la anterior
     const uploadDir = path.join(process.cwd(), "uploads");
     const oldFilePath = path.join(uploadDir, issue.screenshot);
@@ -161,29 +180,30 @@ async function replaceIssueScreenshot(issueId, screenshot) {
     } catch (error) {
       console.warn("Error deleting screenshot file:", error);
     }
-    }
-
-    //GUarda la imagen nueva
-    issue.screenshot = screenshot.filename;
-    await issue.save();
-    return issue; 
   }
 
-async function deleteIssue(issueId) {
+  //GUarda la imagen nueva
+  issue.screenshot = screenshot.filename;
+  await issue.save();
+  return issue;
+}
 
-    const issue = await issueModel.findOneAndDelete({ issueId: issueId });
-    const updatedProject = await projectModel.findOneAndUpdate(
-        { issues: issue._id },
-        { $pull: { issues: issue._id } },
-        { new: true }
-    ).populate({
-        path: 'manager',
-        select: '-password'
+async function deleteIssue(issueId) {
+  const issue = await issueModel.findOneAndDelete({ issueId: issueId });
+  const updatedProject = await projectModel
+    .findOneAndUpdate(
+      { issues: issue._id },
+      { $pull: { issues: issue._id } },
+      { new: true }
+    )
+    .populate({
+      path: "manager",
+      select: "-password",
     });
 
-    await deleteEasyTask(issue.issueId, updatedProject.manager.apiKey);
+  await deleteEasyTask(issue.issueId, updatedProject.manager.apiKey);
 
-    return issue;
+  return issue;
 }
 
 async function deleteIssueScreenshot(_id) {
@@ -200,17 +220,15 @@ async function deleteIssueScreenshot(_id) {
     try {
       await fs.unlink(filePath);
       console.log("Archivo borrado:", filePath); // ✅ Añade esto para ver si llega
-
     } catch (error) {
       console.error("Error deleting screenshot file:", error);
     }
-    
+
     issue.screenshot = null;
     await issue.save();
   }
   return issue;
 }
-
 
 export default {
   getAllIssues,
@@ -222,5 +240,5 @@ export default {
   editIssue,
   replaceIssueScreenshot,
   deleteIssue,
-  deleteIssueScreenshot
+  deleteIssueScreenshot,
 };
