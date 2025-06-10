@@ -1,11 +1,15 @@
 import { useState, useRef } from "react";
 import { editUserWorkSpace } from "../../utils/user";
+import { editUser } from "../../utils/user";
+import {AuthContext} from "../../context/AuthContext";
+import { useContext } from "react";
 
 function ClickUpButtons() {
   const [expanded, setExpanded] = useState(false);
   const formRef = useRef(null);
   const [workspaceId, setWorkspaceId] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const { userData } = useContext(AuthContext);
 
   const handleOverlayClick = (e) => {
     if (formRef.current && !formRef.current.contains(e.target)) {
@@ -26,7 +30,14 @@ function ClickUpButtons() {
     }
   };
 
-  const handleUpdateAPIKey = async (apiKey) => {};
+  const handleUpdateAPIKey = async (userData, apiKey) => {
+    try{
+      await editUser( userData.userId,{apiKey});
+      setExpanded(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex flex-col items-end">
@@ -64,10 +75,12 @@ function ClickUpButtons() {
             <input
               type="text"
               className="bg-white rounded-[30px] py-2 px-4 my-4 border border-black"
+              onChange={(e) => setApiKey(e.target.value)}
+              value={apiKey}
             />
             <button
-              onClick={handleUpdateAPIKey}
               className="bg-[var(--bg-color)] rounded-[50px] hover:rounded-[8px] text-white px-4 py-2 cursor-pointer transition-all 300ms ease-in-out"
+              onClick={() => handleUpdateAPIKey(userData, apiKey)}
             >
               Update
             </button>
