@@ -14,6 +14,17 @@ services:
       - terra_network
     depends_on:
       - mongo # Descomentar si se usa MongoDB
+    
+  apidata:
+    container_name: ${DATA_HOST}
+    build: ../data
+    restart: unless-stopped
+    ports:
+      - ${DATA_PORT}:5000
+    networks:
+      - terra_network
+    depends_on:
+      - mongo # Descomentar si se usa MongoDB
 
   # Servicio de MySQL
   # mysql:
