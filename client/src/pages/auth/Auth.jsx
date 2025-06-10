@@ -42,7 +42,7 @@ function Auth({ isRegister }) {
   };
 
   return (
-    <section className="h-full w-screen bg-[var(--bg-color)] text-white font-uncut flex flex-col justify-center items-center pb-12">
+    <section className="min-h-screen w-screen bg-[var(--bg-color)] text-white font-uncut flex flex-col justify-center items-center pb-12">
       <div className="w-full">
         <Icons />
       </div>
