@@ -101,6 +101,7 @@ const createProject = async (userId, data) => {
   if (!user) throw new Error("UserNotFound");
 
   const newEasyProject = await createEasyProject(user.folderId, user.apiKey, data.title);
+  console.log("New Easy Project: ", newEasyProject);
   data.projectId = newEasyProject.id;
 
   const project = await projectModel.create(data);
