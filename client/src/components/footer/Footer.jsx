@@ -91,6 +91,11 @@ function Footer() {
               228 Park Ave S New York, NY 10003
             </a>
           </p>
+          <p className="w-full max-w-[400px] text-sm sm:text-base md:text-lg">
+            <a className="underline hover:text-white" href="/privacy">
+              Privacy Policy
+            </a>
+          </p>
         </div>
       </section>
 

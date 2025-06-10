@@ -16,6 +16,7 @@ import CreateIssueForm from "./components/createIssueForm/CreateIssueForm.jsx";
 import CreateProjectForm from "./components/createProjectForm/CreateProjectForm.jsx";
 import FAQ from "./components/FAQ/FAQ.jsx";
 import IssueById from "./components/issue/IssueById.jsx";
+import AvisoLegal from "./components/footer/AvisoLegal.jsx";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
           {
             path: "/faq",
             element: <FAQ />,
+          },
+          {
+            path: "/privacy",
+            element: <AvisoLegal />,
           },
         ],
       },
