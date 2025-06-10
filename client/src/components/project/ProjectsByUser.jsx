@@ -212,7 +212,7 @@ const ProjectsByUser = () => {
       </header>
 
       <main className="px-8 md:px-24 py-12 text-black">
-        <section className="flex flex-row justify-between items-center mb-12">
+        <section className="flex sm:flex-row flex-col gap-4 justify-between items-center mb-12">
         {userData.role !== "client" && (
           <div
             className="flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
