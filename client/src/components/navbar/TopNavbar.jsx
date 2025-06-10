@@ -47,6 +47,7 @@ function TopNavbar() {
                 by <span className="font-bold">terra</span>
               </h2>
             </div>
+            <img className=" h-12 pl-2" src="/terraforms.gif" alt="" />
           </div>
         </Link>
         <div>
