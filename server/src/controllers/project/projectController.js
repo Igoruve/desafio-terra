@@ -106,7 +106,6 @@ const createProject = async (userId, data) => {
     throw new ProjectDescriptionNotProvided();
   }
   const user = await userModel.findById({ _id: userId });
-  console.log("HOlammmmmm", user);
   const getClients = async () => {
     const promises = data.clientsNames.map(async (client) => {
       let clientModel = await userModel.findOne({ name: client });
@@ -134,8 +133,9 @@ const createProject = async (userId, data) => {
     data.title
   );
 
-  console.log("HolaIbon", newEasyProject);
   data.projectId = newEasyProject.id;
+
+  console.log("data", data);
 
   const project = await projectModel.create(data);
 
