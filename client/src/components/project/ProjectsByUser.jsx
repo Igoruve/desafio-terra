@@ -227,7 +227,7 @@ const ProjectsByUser = () => {
           </div>
         )}
 
-        {userData.role === "admin" && <ClickUpButtons />}
+        {userData.role !== "client" && <ClickUpButtons />}
         </section>
 
         <div className="space-y-12">

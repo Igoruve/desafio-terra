@@ -2,6 +2,7 @@ import userModel from "../../models/userModel.js";
 import fs from "fs";
 import path from "path";
 import FormData from "form-data";
+import fetch from "node-fetch";
 import { UserDoesNotExist } from "../../utils/errors/userErrors.js";
 
 //================= CREATE FUNCTIONS =================
@@ -315,22 +316,31 @@ async function editEasyTask(taskId, apiKey, data) {
 //=======================================================
 
 
-async function uploadImageToTask(taskId, apiKey, imagePath, imageName){
-    const formData = new FormData();
-    const readStream = fs.createReadStream(imagePath);
+async function uploadImageToTask(taskId, apiKey, file){
 
-    formData.append("file", readStream, imageName || path.basename(imagePath));
+    const formData = new FormData();
+    const readStream = fs.createReadStream(file.path);
+
+    formData.append("attachment", readStream, {
+        filename: file.filename || path.basename(file.path),
+        contentType: file.mimetype
+    });
+    console.log(formData);
 
     const options = {
         method: 'POST',
         headers: {
-            Authorization: apiKey,
+            'Accept': 'application/json',
+            'Authorization': apiKey,
             ...formData.getHeaders()
+            // No establezcas 'content-type' manualmente, fetch lo hará automáticamente con el boundary correcto
+            // 'Content-Type': 'multipart/form-data' ← Esto causará problemas
         },
         body: formData
     };
 
     try {
+        console.log("Uploading image to task:", taskId);
         const response = await fetch(`https://api.clickup.com/api/v2/task/${taskId}/attachment`, options);
         const data = await response.json();
         console.log("Upload successful:", data);
