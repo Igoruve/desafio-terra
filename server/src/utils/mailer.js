@@ -83,4 +83,28 @@ const sendIssueStatusEmail = async (to, userName, userEmail, issueType, previous
   });
 };
 
-export { sendIssueStatusEmail };
+const sendRecoveryEmail = async (to, resetUrl) => {
+/*   const resetUrl = `${process.env.CLIENT_URL}/reset-password/${token}`;*/
+  console.log("la url es: ", resetUrl);
+  
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; color: #333;">
+      <h2 style="color: #2E86C1;">Password Recovery</h2>
+      <p>Hi,</p>
+      <p>You have requested to recover your password. Please click the following link to reset your password:</p>
+      <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #2E86C1; color: #fff; text-decoration: none; border-radius: 5px;">Reset Password</a>
+      <p>If you did not request a password reset, please ignore this email.</p>
+      <p>The link will expire in 1 hour.</p>
+      <p>Best regards,<br />easy by Terra Dev Team</p>
+    </div>
+  `;
+
+  await transporter.sendMail({
+    from: `"easy by Terra Dev Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Password Recovery",
+    html: htmlContent,
+  });
+};
+
+export { sendIssueStatusEmail, sendRecoveryEmail };
