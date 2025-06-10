@@ -15,7 +15,7 @@ const getProjectsByUserId = async (userId) => {
   return userProjects;
 };
 
-const getProjectByStatus = async (status) => {
+const getProjectsByStatus = async (status) => {
   const projects = await FetchData(`/project/status/${status}`);
   return projects;
 };
@@ -42,7 +42,7 @@ const editProject = async (projectId, data) => {
 
 export {
   editProject,
-  getProjectByStatus,
+  getProjectsByStatus,
   getProjectsByDate,
   getProjects,
   getProjectById,
