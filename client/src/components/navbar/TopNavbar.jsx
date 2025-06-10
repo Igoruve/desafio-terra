@@ -9,7 +9,6 @@ function TopNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const closeMenu = () => setIsOpen(false);
 
-
   const { userData } = useContext(AuthContext);
 
   return (
@@ -59,7 +58,7 @@ function TopNavbar() {
 
         <div className="flex flex-row items-center gap-8">
           {userData?.role === "admin" && (
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-12 relative w-full sm:w-auto sm:justify-end">
+            <div className="hidden sm:flex flex-col sm:flex-row items-start sm:items-center gap-12 relative w-full sm:w-auto sm:justify-end">
               {/* <Browser /> */}
               <ClickUpButtons />
             </div>
