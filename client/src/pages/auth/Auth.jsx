@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import Icons from "../home/Icons";
+import { Eye, EyeOff } from "lucide-react";
 
 function Auth({ isRegister }) {
   const [error, setError] = useState(null);
@@ -9,8 +10,12 @@ function Auth({ isRegister }) {
   const [userData, setUserData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     name: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -21,9 +26,16 @@ function Auth({ isRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isRegister && userData.password !== userData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     const result = isRegister
       ? await onRegister(userData.name, userData.email, userData.password)
       : await onLogin(userData.email, userData.password);
+
       if (result) {
         setError(result);
       }
@@ -63,6 +75,7 @@ function Auth({ isRegister }) {
                 />
               </div>
             )}
+
             <div className="flex flex-col gap-2">
               <label className="text-lg font-bold" htmlFor="email">
                 Email:
@@ -77,21 +90,62 @@ function Auth({ isRegister }) {
                 required
               />
             </div>
-            <div className="flex flex-col gap-2">
+
+            <div className="flex flex-col gap-2 relative">
               <label className="text-lg font-bold" htmlFor="password">
                 Password:
               </label>
               <input
                 className="bg-transparent border-2 border-white/50 rounded-[8px] text-white px-4 py-2 focus:outline-none focus:border-white transition-all duration-300"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={userData.password}
                 onChange={handleChange}
                 required
               />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-[44px] text-white opacity-50 hover:opacity-100 transition-all duration-300 ease-in-out"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
             </div>
+
+            {isRegister && (
+              <div className="flex flex-col gap-2">
+                <label className="text-lg font-bold" htmlFor="confirmPassword">
+                  Repeat Password:
+                </label>
+                <input
+                  className="bg-transparent border-2 border-white/50 rounded-[8px] text-white px-4 py-2 focus:outline-none focus:border-white transition-all duration-300"
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={userData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-[44px] text-white opacity-50 hover:opacity-100 transition-all duration-300 ease-in-out"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  title={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
+            )}
           </div>
+
           <button
             type="submit"
             className={`w-32 self-center py-2 px-4 border-2 border-white rounded-[50px] cursor-pointer hover:rounded-[8px] font-bold text-lg mt-8 transition-all duration-300 ease-in-out ${
@@ -101,6 +155,17 @@ function Auth({ isRegister }) {
             {isRegister ? "Register" : "Log In"}
           </button>
         </form>
+
+        {!isRegister && (
+          <div className="mt-4 w-full max-w-md flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-400 hover:underline cursor-pointer"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        )}
 
         <div className="flex flex-col items-center mt-6 gap-2">
           {isRegister ? (
