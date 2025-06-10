@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext} from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import FetchData from "../../utils/fetch";
@@ -15,7 +15,6 @@ const EditProjectPM = () => {
 
   const navigate = useNavigate();
 
-
   useEffect(() => {
     if (!userData || !isManager) {
       setLoading(false);
@@ -28,7 +27,9 @@ const EditProjectPM = () => {
       setMessage(null);
 
       try {
-         const projectsResult = await FetchData(`/project?manager=${userData._id}`);
+        const projectsResult = await FetchData(
+          `/project?manager=${userData._id}`
+        );
         setProjects(Array.isArray(projectsResult) ? projectsResult : []);
       } catch (error) {
         setMessage({ type: "error", text: "Error fetching projects." });
@@ -53,7 +54,7 @@ const EditProjectPM = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -78,12 +79,23 @@ const EditProjectPM = () => {
     };
 
     try {
-      const response = await FetchData(`/project/${selectedProject.projectId}`, "PUT", payload);
+      const response = await FetchData(
+        `/project/${selectedProject.projectId}`,
+        "PUT",
+        payload
+      );
       if (response.error || response.status >= 400) {
-        setMessage({ type: "error", text: response.message || "Error updating project." });
+        setMessage({
+          type: "error",
+          text: response.message || "Error updating project.",
+        });
       } else {
         setMessage({ type: "success", text: "Project updated successfully." });
-        setProjects(prev => prev.map(p => (p.projectId === selectedProject.projectId ? response : p)));
+        setProjects((prev) =>
+          prev.map((p) =>
+            p.projectId === selectedProject.projectId ? response : p
+          )
+        );
         setSelectedProject(response);
       }
     } catch {
@@ -91,36 +103,45 @@ const EditProjectPM = () => {
     }
   };
 
-  if (loading) return <div className="text-white p-4">Loading projects...</div>;
+  if (loading)
+    return (
+      <div className="text-[var(--bg-color)] p-4">Loading projects...</div>
+    );
 
   if (!userData || !isManager) {
     return (
-      <section className="flex flex-col items-center justify-center bg-[var(--bg-color)] text-white pt-20 px-4 min-h-screen">
-        <p className="text-red-500 text-lg">Only project managers can access this page.</p>
+      <section className="flex flex-col items-center justify-center bg-[var(--bg-color)] text-[var(--bg-color)] pt-20 px-4 min-h-screen">
+        <p className="text-red-500 text-lg">
+          Only project managers can access this page.
+        </p>
       </section>
     );
   }
 
   return (
-    <section className="flex flex-col items-center justify-center bg-[var(--bg-color)] text-white pt-20 px-4 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6">Edit Projects</h2>
-
+    <section className="flex flex-col items-center justify-center bg-white text-[var(--bg-color)] pt-20 px-4 min-h-screen text-2xl">
       {message && (
-        <div className={`mb-4 ${message.type === "error" ? "text-red-500" : "text-green-500"}`}>
+        <div
+          className={`mb-4 ${
+            message.type === "error" ? "text-red-500" : "text-green-500"
+          }`}
+        >
           {message.text}
         </div>
       )}
 
       <ul className="w-full max-w-lg mb-8 overflow-auto max-h-48">
         {projects.length === 0 ? (
-          <li className="p-4 text-center text-gray-300">No projects available.</li>
+          <li className="p-4 text-center text-gray-300">
+            No projects available.
+          </li>
         ) : (
-          projects.map(project => (
+          projects.map((project) => (
             <li key={project._id} className="mb-2 last:mb-0">
               <button
                 type="button"
                 onClick={() => handleSelectProject(project)}
-                className="w-full text-left px-4 py-3 border-3 border-[#F78BD8] rounded-[50px] text-white font-semibold cursor-pointer hover:rounded-[8px] hover:bg-[#F78BD8] hover:text-black transition-background duration-300 ease-in-out"
+                className="w-full text-left px-4 py-3 border-3 border-[var(--bg-color)] rounded-[50px] text-[var(--bg-color)] font-semibold cursor-pointer hover:rounded-[8px] hover:bg-[var(--bg-color)] hover:text-white transition-background duration-300 ease-in-out"
               >
                 {project.title || "No title"}
               </button>
@@ -132,37 +153,43 @@ const EditProjectPM = () => {
       {selectedProject && (
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 w-full max-w-lg border-3 border-[#F78BD8] rounded-xl p-6 min-h-[500px]"
+          className="flex flex-col gap-8 w-full max-w-lg border-3 border-[var(--bg-color)] rounded-xl p-6 min-h-[500px] text-[var(--bg-color)]"
         >
           <div className="flex flex-col">
-            <label htmlFor="title" className="mb-1">Title:</label>
+            <label htmlFor="title" className="mb-1 font-bold">
+              Title:
+            </label>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+              className="appearance-none bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 "
             />
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="description" className="mb-1">Description:</label>
+            <label htmlFor="description" className="mb-1 font-bold">
+              Description:
+            </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white resize-none"
+              className="appearance-none bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 resize-none"
             />
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="status" className="mb-1">Status:</label>
+            <label htmlFor="status" className="mb-1 font-bold">
+              Status:
+            </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+              className="bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 "
             >
               <option value="In Progress">In Progress</option>
               <option value="Complete">Complete</option>
@@ -172,7 +199,7 @@ const EditProjectPM = () => {
 
           <button
             type="submit"
-            className="bg-[#F78BD8] text-black py-2 rounded-xl font-bold hover:bg-[#d069bb] transition-colors duration-300"
+            className="bg-[var(--bg-color)] text-white py-2 rounded-[50px] font-bold cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
           >
             Update Project
           </button>
