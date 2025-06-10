@@ -13,8 +13,8 @@ import Layout from "./components/layout/Layout.jsx";
 import ProjectsByUser from "./components/project/ProjectsByUser.jsx";
 import AllProjectsByUser from "./components/project/AllProjectsByUser.jsx";
 import Profile from "./components/profile/Profile.jsx";
-import EditProject from "./components/editProject/EditProject.jsx"; 
- import EditIssue from "./components/editIssue/EditIssue.jsx";
+import EditProject from "./components/editProject/EditProject.jsx";
+import EditIssue from "./components/editIssue/EditIssue.jsx";
 
 import CreateIssueForm from "./components/createIssueForm/CreateIssueForm.jsx";
 import CreateProjectForm from "./components/createProjectForm/CreateProjectForm.jsx";
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
             path: "/myprojects",
             element: <ProjectsByUser />,
           },
-                    {
+          {
             path: "/project/edit",
             element: <EditProject />,
           },
@@ -93,7 +93,7 @@ const router = createBrowserRouter([
           {
             path: "/projects",
             element: <ProjectsByUser />,
-/*             loader: getProjectsByUserId => {
+            /*             loader: getProjectsByUserId => {
               return { getProjectsByUserId };
             }, */
           },
