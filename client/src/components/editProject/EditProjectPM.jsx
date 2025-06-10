@@ -1,4 +1,5 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext} from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import FetchData from "../../utils/fetch";
 
@@ -12,9 +13,13 @@ const EditProjectPM = () => {
 
   const isManager = userData?.role === "project manager";
 
+  const navigate = useNavigate();
+
+
   useEffect(() => {
     if (!userData || !isManager) {
       setLoading(false);
+      navigate("/projects");
       return;
     }
 
@@ -163,22 +168,6 @@ const EditProjectPM = () => {
               <option value="Complete">Complete</option>
               <option value="Cancelled">Cancelled</option>
             </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="mb-1">Clients:</label>
-            <ul className="text-white list-disc list-inside ml-2">
-              {selectedProject.clients?.map(client => (
-                <li key={client._id}>{client.name || client.email || client._id}</li>
-              )) || <li>No clients assigned.</li>}
-            </ul>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="mb-1">Project Manager:</label>
-            <p className="text-white">
-              {selectedProject.manager?.name || selectedProject.manager?.email || selectedProject.manager?._id || "No manager assigned."}
-            </p>
           </div>
 
           <button

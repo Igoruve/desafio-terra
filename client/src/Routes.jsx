@@ -11,9 +11,8 @@ import Layout from "./components/layout/Layout.jsx";
 import ProjectsByUser from "./components/project/ProjectsByUser.jsx";
 import AllProjectsByUser from "./components/project/AllProjectsByUser.jsx";
 import Profile from "./components/profile/Profile.jsx";
-import EditProjectAdmin from "./components/editProject/EditProjectAdmin.jsx"; 
-import EditProjectPM from "./components/editProject/EditProjectPM.jsx"; 
-import EditIssue from "./components/editIssue/EditIssue.jsx";
+import EditProject from "./components/editProject/EditProject.jsx"; 
+ import EditIssue from "./components/editIssue/EditIssue.jsx";
 
 import CreateIssueForm from "./components/createIssueForm/CreateIssueForm.jsx";
 import CreateProjectForm from "./components/createProjectForm/CreateProjectForm.jsx";
@@ -48,13 +47,9 @@ const router = createBrowserRouter([
             path: "/myprojects",
             element: <ProjectsByUser />,
           },
-          {
+                    {
             path: "/project/edit",
-            element: <EditProjectAdmin />,
-          },
-          {
-            path: "/project/edit",
-            element: <EditProjectPM />,
+            element: <EditProject />,
           },
           {
             path: "/profile",

@@ -1,4 +1,5 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext} from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import FetchData from "../../utils/fetch";
 
@@ -15,29 +16,31 @@ const EditProjectAdmin = () => {
 
   const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!userData || !isAdmin) {
       setLoading(false);
+      navigate("/projects");
       return;
     }
+
 
     const fetchData = async () => {
       setLoading(true);
       setMessage(null);
 
       try {
-        // Get projects
-        const projectsResult = await FetchData("/project");
+         const projectsResult = await FetchData("/project");
         setProjects(Array.isArray(projectsResult) ? projectsResult : []);
 
-        // Get users (clients and project managers)
-        const usersResult = await FetchData("/user");
-        console.log("Raw usersResult:", usersResult); // Log para depuración
+         const usersResult = await FetchData("/user");
+        
         if (usersResult.error || usersResult.status >= 400) {
           throw new Error(usersResult.message || `Error fetching users: ${usersResult.status}`);
         }
         const usersArray = Array.isArray(usersResult) ? usersResult : usersResult.data || [];
-        console.log("Filtered roles:", usersArray.map(user => user.role)); // Log para verificar roles
+        
         setUsers(usersArray.filter(user => user.role === "client" || user.role === "project manager"));
       } catch (error) {
         console.error("Fetch error:", error);
