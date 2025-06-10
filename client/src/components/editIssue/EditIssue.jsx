@@ -214,185 +214,208 @@ const EditIssue = () => {
   if (error) return <div className="text-red-500 p-4">{error}</div>;
 
   return (
-    <section className="flex flex-col items-center justify-center bg-[var(--bg-color)] text-white pt-20 px-4 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6">Edit Issues</h2>
+  <section className="flex flex-col items-center justify-center bg-[var(--bg-color)] text-white pt-20 px-4 min-h-screen">
+    <h2 className="text-3xl font-bold mb-6">Edit Issues</h2>
 
-      {message && (
-        <div
-          className={`mb-4 ${
-            message.type === "error" ? "text-red-500" : "text-green-500"
-          }`}
-        >
-          {message.text}
-        </div>
+    {message && (
+      <div
+        className={`mb-4 ${
+          message.type === "error" ? "text-red-500" : "text-green-500"
+        }`}
+      >
+        {message.text}
+      </div>
+    )}
+
+    <ul className="space-y-2 mb-8 w-full max-w-lg">
+      {issues.length === 0 && (
+        <li>No issues assigned to you. Contact support if this is unexpected.</li>
       )}
+      {issues.map((issue, index) => (
+        <li key={issue._id?.$oid || issue._id || index}>
+          <button
+            onClick={() => handleEditClick(issue)}
+            className="underline text-[#7ce55b] hover:text-[#a1f48d] text-lg font-semibold"
+          >
+            {issue.issueId || "(No ID)"} - {issue.clientComment || "Edit Issue"}
+          </button>
+        </li>
+      ))}
+    </ul>
 
-      <ul className="space-y-2 mb-8 w-full max-w-lg">
-        {issues.length === 0 && <li>No issues assigned to you. Contact support if this is unexpected.</li>}
-        {issues.map((issue, index) => (
-          <li key={issue._id?.$oid || issue._id || index}>
-            <button
-              onClick={() => handleEditClick(issue)}
-              className="underline text-[#7ce55b] hover:text-[#a1f48d] text-lg font-semibold"
-            >
-              {issue.issueId || "(No ID)"} - {issue.clientComment || "Edit Issue"}
-            </button>
-          </li>
-        ))}
-      </ul>
+    {selectedIssue && (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSave();
+        }}
+        className="flex flex-col gap-4 w-full max-w-lg text-base sm:text-xl"
+      >
+        <fieldset className="w-full p-4 border-3 border-[#ffb410] rounded-xl flex flex-col justify-start items-start">
+          <legend className="text-lg font-semibold mb-2">Issue Details</legend>
 
-      {selectedIssue && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSave();
-          }}
-          className="flex flex-col gap-4 w-full max-w-lg border-3 border-[#F78BD8] rounded-xl p-6"
-        >
-          <div className="w-full">
-            <p className="font-bold">
-              <strong>Issue ID:</strong> {selectedIssue.issueId}
-            </p>
-          </div>
+          <p className="mb-2 font-semibold">Issue ID: {selectedIssue.issueId}</p>
 
-          <div className="flex flex-col">
-            <label className="mb-1" htmlFor="issueType">Issue Type:</label>
-            <select
-              id="issueType"
-              name="issueType"
-              value={formData.issueType || ""}
-              onChange={handleChange}
-              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-            >
-              <option value="">Select issue type</option>
-              {issueTypes.map((type) => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-          </div>
+          <label htmlFor="issueType" className="pb-1">
+            Issue Type
+          </label>
+          <select
+            id="issueType"
+            name="issueType"
+            value={formData.issueType || ""}
+            onChange={handleChange}
+            className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
+          >
+            <option value="">Select an option</option>
+            {issueTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
 
           {(userData.role === "admin" || userData.role === "project manager") && (
-            <div className="flex flex-col">
-              <label className="mb-1" htmlFor="status">Status:</label>
+            <>
+              <label htmlFor="status" className="pb-1">
+                Status
+              </label>
               <select
                 id="status"
                 name="status"
                 value={formData.status || ""}
                 onChange={handleChange}
-                className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+                className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
               >
                 <option value="">Select status</option>
                 {statusOptions.map((status) => (
-                  <option key={status} value={status}>{status}</option>
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
                 ))}
               </select>
-            </div>
+            </>
           )}
+        </fieldset>
 
-          <div className="flex flex-col">
-            <label className="mb-1" htmlFor="device">Device:</label>
-            <select
-              id="device"
-              name="device"
-              value={formData.device || ""}
-              onChange={handleChange}
-              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-            >
-              <option value="">Select device</option>
-              {deviceOptions.map((device) => (
-                <option key={device} value={device}>{device}</option>
-              ))}
-            </select>
-          </div>
+        <fieldset className="w-full p-4 border-3 border-[#7ce55e] rounded-xl flex flex-col justify-start items-start">
+          <legend className="text-lg font-semibold mb-2">Device & Browser Info</legend>
 
-          <div className="flex flex-col">
-            <label className="mb-1" htmlFor="browser">Browser:</label>
-            <input
-              id="browser"
-              name="browser"
-              value={formData.browser || ""}
-              onChange={handleChange}
-              type="text"
-              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-            />
-          </div>
+          <label htmlFor="device" className="pb-1">
+            Device
+          </label>
+          <select
+            id="device"
+            name="device"
+            value={formData.device || ""}
+            onChange={handleChange}
+            className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
+          >
+            <option value="">Select device</option>
+            {deviceOptions.map((device) => (
+              <option key={device} value={device}>
+                {device}
+              </option>
+            ))}
+          </select>
+
+          <label htmlFor="browser" className="pb-1">
+            Browser
+          </label>
+          <input
+            id="browser"
+            name="browser"
+            value={formData.browser || ""}
+            onChange={handleChange}
+            type="text"
+            className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full"
+          />
+        </fieldset>
+
+        <fieldset className="w-full p-4 border-3 border-[#3D9DD8] rounded-xl flex flex-col justify-start items-start">
+          <legend className="text-lg font-semibold mb-2">Additional Info</legend>
 
           {userData.role === "client" && (
-            <div className="flex flex-col">
-              <label className="mb-1" htmlFor="clientComment">Client Comment:</label>
+            <>
+              <label htmlFor="clientComment" className="pb-1">
+                Client Comment
+              </label>
               <textarea
                 id="clientComment"
                 name="clientComment"
                 value={formData.clientComment || ""}
                 onChange={handleChange}
                 rows={3}
-                className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white resize-none"
+                className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full resize-none"
               />
-            </div>
+            </>
           )}
 
           {(userData.role === "admin" || userData.role === "project manager") && (
-            <div className="flex flex-col">
-              <label className="mb-1" htmlFor="terraComments">Terra Comments:</label>
+            <>
+              <label htmlFor="terraComments" className="pb-1">
+                Terra Comments
+              </label>
               <textarea
                 id="terraComments"
                 name="terraComments"
                 value={formData.terraComments || ""}
                 onChange={handleChange}
                 rows={3}
-                className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white resize-none"
+                className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full resize-none"
               />
-            </div>
+            </>
           )}
 
-          <div className="flex flex-col">
-            <label className="mb-1" htmlFor="page">Page:</label>
-            <input
-              id="page"
-              name="page"
-              value={formData.page || ""}
-              onChange={handleChange}
-              type="text"
-              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-            />
-          </div>
+          <label htmlFor="page" className="pb-1">
+            Page URL
+          </label>
+          <input
+            id="page"
+            name="page"
+            value={formData.page || ""}
+            onChange={handleChange}
+            type="text"
+            className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 w-full"
+          />
 
-          <div className="flex flex-col">
-            <label className="mb-1" htmlFor="screenshot">Screenshot (new):</label>
-            <input
-              id="screenshot"
-              name="screenshot"
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                setScreenshotFile(file || null);
-              }}
-              className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="mt-4 rounded-lg bg-[#F78BD8] px-6 py-2 font-semibold text-black hover:bg-[#E85DE6]"
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedIssue(null);
-              setScreenshotFile(null);
+          <label htmlFor="screenshot" className="pb-1">
+            Screenshot (new)
+          </label>
+          <input
+            id="screenshot"
+            name="screenshot"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              setScreenshotFile(file || null);
             }}
-            className="mt-2 rounded-lg bg-gray-700 px-6 py-2 font-semibold text-white hover:bg-gray-800"
-          >
-            Cancel
-          </button>
-        </form>
-      )}
-    </section>
-  );
+            className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 w-full"
+          />
+        </fieldset>
+
+        <button
+          type="submit"
+          disabled={saving}
+          className="font-semibold text-xl mt-4 px-4 py-2 border-3 border-[#F78BD8] text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
+        >
+          {saving ? "Saving..." : "Save"}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedIssue(null);
+            setScreenshotFile(null);
+          }}
+          className="mt-2 rounded-[50px] border-3 border-white px-6 py-2 font-semibold text-white hover:rounded-[8px] transition-all duration-300 ease-in-out"
+        >
+          Cancel
+        </button>
+      </form>
+    )}
+  </section>
+);
+
 };
 
 export default EditIssue;
