@@ -24,6 +24,16 @@ const __dirname = path.dirname(__filename);
  
 //CAMBIO
 
+async function getIssuesByProjects(projectIds) {
+  const projects = await projectModel.find({ projectId: { $in: projectIds } });
+  const clientIds = projects.flatMap(project => project.clients.map(client => client.toString()));
+  const issues = await issueModel.find({ client: { $in: clientIds } }).populate({
+    path: "client",
+    select: "-password -apiKey",
+  });
+  return issues;
+}
+
 async function getIssuesByUser(userId) {
   const issues = await issueModel.find({ client: userId }).populate({
     path: "client",
@@ -246,5 +256,6 @@ export default {
   replaceIssueScreenshot,
   deleteIssue,
   getIssuesByUser,
-  deleteIssueScreenshot
+  deleteIssueScreenshot,
+  getIssuesByProjects
 };

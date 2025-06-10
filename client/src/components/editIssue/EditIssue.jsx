@@ -21,7 +21,7 @@ const statusOptions = [
   "Needs Inputs",
   "Ready to upload",
   "Duplicate Comment",
-  "N/A",
+  "Other",
 ];
 
 const deviceOptions = ["Desktop", "Mobile", "Tablet"];
@@ -33,19 +33,19 @@ const EditIssue = () => {
   const [issues, setIssues] = useState([]);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [formData, setFormData] = useState({});
-  const [touchedFields, setTouchedFields] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
-  const [managerProjectIds, setManagerProjectIds] = useState([]); // Added for project manager project IDs
+  const [managerProjectIds, setManagerProjectIds] = useState([]);
+  const [screenshotFile, setScreenshotFile] = useState(null);
 
   useEffect(() => {
     const fetchIssues = async () => {
       if (!userData?.userId || !userData?.role) {
         setError("You must be logged in. Please log in and try again.");
         setLoading(false);
-        navigate("/projects");
+        navigate("/issues");
         return;
       }
       setLoading(true);
@@ -54,64 +54,52 @@ const EditIssue = () => {
         let issuesData = [];
         let projectIds = [];
         if (userData.role === "admin") {
-          // Para admin: obtener todos los issues
           const data = await FetchData("/issue/");
-          console.log("Admin issues response:", data);
           if (data.error || data.status >= 400) {
             throw new Error(data.message || `Failed to fetch issues: ${data.status || 'Unknown status'}`);
           }
           if (!Array.isArray(data)) {
-            throw new Error(`Unexpected response format: Response is not an array, received ${JSON.stringify(data)}`);
+            throw new Error(`Unexpected response format: ${JSON.stringify(data)}`);
           }
           issuesData = data;
         } else if (userData.role === "client") {
-          // Para client: obtener issues creados por ellos
           const data = await FetchData(`/issue/user/${userData._id}`);
-          console.log("Client issues response:", data);
           if (data.error || data.status >= 400) {
             throw new Error(data.message || `Failed to fetch issues: ${data.status || 'Unknown status'}`);
           }
           if (!Array.isArray(data)) {
-            throw new Error(`Unexpected response format: Response is not an array, received ${JSON.stringify(data)}`);
+            throw new Error(`Unexpected response format: ${JSON.stringify(data)}`);
           }
           issuesData = data;
         } else if (userData.role === "project manager") {
-          // Para project manager: obtener issues de sus proyectos asignados
           const projectsData = await FetchData(`/project?manager=${userData._id}`);
-          console.log("Project manager projects response:", projectsData);
           if (projectsData.error || projectsData.status >= 400) {
             throw new Error(projectsData.message || `Failed to fetch projects: ${projectsData.status || 'Unknown status'}`);
           }
           if (!Array.isArray(projectsData)) {
-            throw new Error(`Unexpected projects response format: Response is not an array, received ${JSON.stringify(projectsData)}`);
+            throw new Error(`Unexpected projects response format: ${JSON.stringify(projectsData)}`);
           }
           projectIds = projectsData.map(project => project.projectId);
-          console.log("Project IDs for PM:", projectIds);
-          setManagerProjectIds(projectIds); // Store project IDs
+          setManagerProjectIds(projectIds);
           if (projectIds.length > 0) {
-            // Obtener issues para los projectId
-            const issuesResponse = await FetchData("/issue/", "POST", { projectIds });
-            console.log("Project manager issues response:", issuesResponse);
+            const issuesResponse = await FetchData("/issue/byProjects", "POST", { projectIds });
             if (issuesResponse.error || issuesResponse.status >= 400) {
               throw new Error(issuesResponse.message || `Failed to fetch issues: ${issuesResponse.status || 'Unknown status'}`);
             }
             if (!Array.isArray(issuesResponse)) {
-              throw new Error(`Unexpected issues response format: Response is not an array, received ${JSON.stringify(issuesResponse)}`);
+              throw new Error(`Unexpected issues response format: ${JSON.stringify(issuesResponse)}`);
             }
             issuesData = issuesResponse;
-          } else {
-            issuesData = []; // No hay proyectos asignados
           }
         } else {
           setError("Unauthorized access. Your role does not permit viewing issues.");
           setLoading(false);
-          navigate("/projects");
+          navigate("/issues");
           return;
         }
-
         setIssues(issuesData);
       } catch (err) {
-        setError(err.message || "Failed to fetch issues. Check console for details.");
+        setError(err.message || "Failed to fetch issues.");
         console.error("Fetch issues error:", err);
       } finally {
         setLoading(false);
@@ -125,33 +113,15 @@ const EditIssue = () => {
     setSelectedIssue(issue);
     setFormData({
       issueType: issue.issueType || "",
-      status: issue.status || "On Hold",
+      status: userData.role !== "client" ? issue.status || "On Hold" : undefined,
       device: issue.device || "Desktop",
       browser: issue.browser || "",
-      clientComment: issue.clientComment || "",
+      clientComment: userData.role === "client" ? issue.clientComment || "" : undefined,
       page: issue.page || "",
-      terraComments: issue.terraComments || "",
-      screenshot: issue.screenshot || "",
+      terraComments: userData.role !== "client" ? issue.terraComments || "" : undefined,
     });
-    setTouchedFields({});
+    setScreenshotFile(null);
     setMessage(null);
-  };
-
-  const handleFocus = (field) => {
-    if (!touchedFields[field]) {
-      setFormData((prev) => ({ ...prev, [field]: "" }));
-      setTouchedFields((prev) => ({ ...prev, [field]: true }));
-    }
-  };
-
-  const handleBlur = (field) => {
-    if (!formData[field] && selectedIssue) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: selectedIssue[field] || "",
-      }));
-      setTouchedFields((prev) => ({ ...prev, [field]: false }));
-    }
   };
 
   const handleChange = (e) => {
@@ -166,50 +136,74 @@ const EditIssue = () => {
     setMessage(null);
     setError(null);
 
-    let dataToSend;
-    let headers = {};
+    try {
+      // Log para depuración
+      console.log("Selected issue:", {
+        issueId: selectedIssue.issueId,
+        _id: selectedIssue._id?.$oid || selectedIssue._id,
+        formData,
+        screenshotFile: screenshotFile ? screenshotFile.name : null,
+      });
 
-    if (formData.screenshot && typeof formData.screenshot !== "string") {
-      dataToSend = new FormData();
+      // Subir screenshot si existe
+      if (screenshotFile) {
+        const screenshotData = new FormData();
+        screenshotData.append("screenshot", screenshotFile);
+        console.log("Sending screenshot to PUT /:id/screenshot:");
+        for (let [key, value] of screenshotData.entries()) {
+          console.log(`FormData ${key}:`, value instanceof File ? value.name : value);
+        }
+
+        const screenshotResponse = await FetchData(
+          `/issue/${selectedIssue._id?.$oid || selectedIssue._id}/screenshot`,
+          "PUT",
+          screenshotData
+        );
+        console.log("Screenshot response:", screenshotResponse);
+
+        if (screenshotResponse.error || screenshotResponse.status >= 400) {
+          throw new Error(screenshotResponse.message || "Failed to update screenshot");
+        }
+      }
+
+      // Preparar datos para actualizar el issue
+      const dataToSend = new FormData();
       Object.entries(formData).forEach(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          if (key === "screenshot" && val instanceof File) {
-            dataToSend.append(key, val);
-          } else {
-            dataToSend.append(key, val);
-          }
+        if (val !== undefined && val !== null && val !== "") {
+          dataToSend.append(key, val);
         }
       });
-    } else {
-      dataToSend = { ...formData };
-      if (dataToSend.screenshot && typeof dataToSend.screenshot !== "string") {
-        delete dataToSend.screenshot;
-      }
-    }
 
-    try {
-      const data = await FetchData(
+      console.log("Sending issue data to POST /:id/edit:");
+      for (let [key, value] of dataToSend.entries()) {
+        console.log(`FormData ${key}:`, value);
+      }
+
+      const issueResponse = await FetchData(
         `/issue/${selectedIssue.issueId}/edit`,
-        "PUT",
+        "POST", // Cambiado de PUT a POST
         dataToSend
       );
+      console.log("Issue response:", issueResponse);
 
-      if (data.error) {
-        throw new Error(data.message || "Update failed");
+      if (issueResponse.error || issueResponse.status >= 400) {
+        throw new Error(issueResponse.message || `Failed to update issue: ${issueResponse.status}`);
       }
 
       setIssues((prev) =>
         prev.map((issue) =>
           (issue._id?.$oid || issue._id) === (selectedIssue._id?.$oid || selectedIssue._id)
-            ? { ...issue, ...data }
+            ? { ...issue, ...issueResponse }
             : issue
         )
       );
 
       setSelectedIssue(null);
+      setScreenshotFile(null);
       setMessage({ type: "success", text: "Issue updated successfully." });
     } catch (err) {
       setMessage({ type: "error", text: err.message || "Failed to update issue" });
+      console.error("Edit issue error:", err);
     } finally {
       setSaving(false);
     }
@@ -262,145 +256,88 @@ const EditIssue = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-1" htmlFor="issueType">
-              Issue Type:
-            </label>
+            <label className="mb-1" htmlFor="issueType">Issue Type:</label>
             <select
               id="issueType"
               name="issueType"
-              value={formData.issueType}
-              onFocus={() => handleFocus("issueType")}
-              onBlur={() => handleBlur("issueType")}
+              value={formData.issueType || ""}
               onChange={handleChange}
               className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-              required
             >
-              <option value="" disabled>
-                Select issue type
-              </option>
+              <option value="">Select issue type</option>
               {issueTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
+                <option key={type} value={type}>{type}</option>
               ))}
             </select>
           </div>
 
-          {(userData.role === "admin" ||
-            (userData.role === "project manager" &&
-              managerProjectIds.includes(selectedIssue?.projectId))) ? (
+          {(userData.role === "admin" || userData.role === "project manager") && (
             <div className="flex flex-col">
-              <label className="mb-1" htmlFor="status">
-                Status:
-              </label>
+              <label className="mb-1" htmlFor="status">Status:</label>
               <select
                 id="status"
                 name="status"
-                value={formData.status}
-                onFocus={() => handleFocus("status")}
-                onBlur={() => handleBlur("status")}
+                value={formData.status || ""}
                 onChange={handleChange}
                 className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-                required
               >
-                <option value="" disabled>
-                  Select status
-                </option>
+                <option value="">Select status</option>
                 {statusOptions.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
+                  <option key={status} value={status}>{status}</option>
                 ))}
               </select>
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              <label className="mb-1">Status:</label>
-              <p className="bg-gray-800 border-3 border-white rounded-[20px] px-4 py-2">
-                {formData.status}
-              </p>
             </div>
           )}
 
           <div className="flex flex-col">
-            <label className="mb-1" htmlFor="device">
-              Device:
-            </label>
+            <label className="mb-1" htmlFor="device">Device:</label>
             <select
               id="device"
               name="device"
-              value={formData.device}
-              onFocus={() => handleFocus("device")}
-              onBlur={() => handleBlur("device")}
+              value={formData.device || ""}
               onChange={handleChange}
               className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-              required
             >
-              <option value="" disabled>
-                Select device
-              </option>
+              <option value="">Select device</option>
               {deviceOptions.map((device) => (
-                <option key={device} value={device}>
-                  {device}
-                </option>
+                <option key={device} value={device}>{device}</option>
               ))}
             </select>
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-1" htmlFor="browser">
-              Browser:
-            </label>
+            <label className="mb-1" htmlFor="browser">Browser:</label>
             <input
               id="browser"
               name="browser"
-              value={formData.browser}
-              onFocus={() => handleFocus("browser")}
-              onBlur={() => handleBlur("browser")}
+              value={formData.browser || ""}
               onChange={handleChange}
               type="text"
               className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-              required
             />
           </div>
 
-          {selectedIssue?.createdBy === userData._id && userData.role === "client" ? (
+          {userData.role === "client" && (
             <div className="flex flex-col">
-              <label className="mb-1" htmlFor="clientComment">
-                Client Comment:
-              </label>
+              <label className="mb-1" htmlFor="clientComment">Client Comment:</label>
               <textarea
                 id="clientComment"
                 name="clientComment"
-                value={formData.clientComment}
-                onFocus={() => handleFocus("clientComment")}
-                onBlur={() => handleBlur("clientComment")}
+                value={formData.clientComment || ""}
                 onChange={handleChange}
                 rows={3}
                 className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white resize-none"
-                required
               />
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              <label className="mb-1">Client Comment:</label>
-              <p className="bg-gray-800 border-3 border-white rounded-[20px] px-4 py-2">
-                {formData.clientComment}
-              </p>
             </div>
           )}
 
           {(userData.role === "admin" || userData.role === "project manager") && (
             <div className="flex flex-col">
-              <label className="mb-1" htmlFor="terraComments">
-                Terra Comments:
-              </label>
+              <label className="mb-1" htmlFor="terraComments">Terra Comments:</label>
               <textarea
                 id="terraComments"
                 name="terraComments"
-                value={formData.terraComments}
-                onFocus={() => handleFocus("terraComments")}
-                onBlur={() => handleBlur("terraComments")}
+                value={formData.terraComments || ""}
                 onChange={handleChange}
                 rows={3}
                 className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white resize-none"
@@ -409,59 +346,46 @@ const EditIssue = () => {
           )}
 
           <div className="flex flex-col">
-            <label className="mb-1" htmlFor="page">
-              Page:
-            </label>
+            <label className="mb-1" htmlFor="page">Page:</label>
             <input
               id="page"
               name="page"
-              value={formData.page}
-              onFocus={() => handleFocus("page")}
-              onBlur={() => handleBlur("page")}
+              value={formData.page || ""}
               onChange={handleChange}
               type="text"
               className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
-              required
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-1" htmlFor="screenshot">
-              Screenshot (upload new):
-            </label>
+            <label className="mb-1" htmlFor="screenshot">Screenshot (new):</label>
             <input
               id="screenshot"
               name="screenshot"
               type="file"
               accept="image/*"
               onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  screenshot: e.target.files[0] || null,
-                }));
+                const file = e.target.files[0];
+                setScreenshotFile(file || null);
               }}
               className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
             />
-            {typeof formData.screenshot === "string" && formData.screenshot && (
-              <img
-                src={formData.screenshot}
-                alt="Screenshot"
-                className="mt-2 max-h-40 rounded-md border border-white"
-              />
-            )}
           </div>
 
           <button
             type="submit"
             disabled={saving}
-            className="mt-4 rounded-xl bg-[#F78BD8] px-6 py-3 font-bold text-black hover:bg-[#E85DE6]"
+            className="mt-4 rounded-lg bg-[#F78BD8] px-6 py-2 font-semibold text-black hover:bg-[#E85DE6]"
           >
             {saving ? "Saving..." : "Save"}
           </button>
           <button
             type="button"
-            onClick={() => setSelectedIssue(null)}
-            className="mt-2 rounded-xl bg-gray-700 px-6 py-3 font-bold text-white hover:bg-gray-800"
+            onClick={() => {
+              setSelectedIssue(null);
+              setScreenshotFile(null);
+            }}
+            className="mt-2 rounded-lg bg-gray-700 px-6 py-2 font-semibold text-white hover:bg-gray-800"
           >
             Cancel
           </button>

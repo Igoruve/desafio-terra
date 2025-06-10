@@ -4,6 +4,20 @@ import fs from "fs/promises";
 
 //cambio
 
+async function getIssuesByProjects(req, res) {
+  try {
+    const { projectIds } = req.body;
+    if (!Array.isArray(projectIds) || projectIds.length === 0) {
+      return res.status(400).json({ error: "Invalid or empty projectIds" });
+    }
+    const issues = await issueController.getIssuesByProjects(projectIds);
+    res.json(issues);
+  } catch (error) {
+    console.error("Error fetching issues by projects:", error);
+    res.status(500).json({ error: "Internal Server Error", message: error.message });
+  }
+}
+
 async function getIssuesByUser(req, res) {
   try {
     const userId = req.params.userId;
@@ -182,5 +196,6 @@ export default {
   replaceIssueScreenshot,
   deleteIssue,
   getIssuesByUser,
-  deleteIssueScreenshot
+  deleteIssueScreenshot,
+  getIssuesByProjects
 };
