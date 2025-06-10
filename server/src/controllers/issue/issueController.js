@@ -69,17 +69,17 @@ async function createIssue(projectId, data, imageFile=null) {
       select: "-password",
     })
     .populate("issues");
-  console.log("project", project);
 
   const apiKey = project.manager.apiKey;
-  console.log("API KEY:", apiKey);
 
   const newEasyTask = await createEasyTask(projectId, apiKey, data);
   data.issueId = newEasyTask.id;
 
   if (imageFile) {
     console.log("Subiendo imagen a la tarea:", newEasyTask.id);
-    await uploadImageToTask(newEasyTask.id, apiKey, imageFile.path, imageFile.originalname);
+    console.log("Ruta de la imagen:", imageFile.path);
+    console.log("Nombre de la imagen:", imageFile.filename);
+    await uploadImageToTask(newEasyTask.id, apiKey, imageFile);
     console.log("Imagen subida");
   }
 
