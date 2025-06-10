@@ -159,12 +159,10 @@ const resetPassword = async (token, newPassword) => {
     throw error;
   }
 
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
 
-  if (!passwordRegex.test(newPassword)) {
-    const error = new Error("Password does not meet the requirements.");
-    error.statusCode = 400;
-    throw error;
+  if (!newPassword || !passwordRegex.test(newPassword)) {
+    throw new InvalidPasswordFormat();
   }
   
   user.password = newPassword;
