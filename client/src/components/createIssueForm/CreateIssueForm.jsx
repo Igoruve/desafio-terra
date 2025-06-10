@@ -58,11 +58,15 @@ function CreateIssueForm() {
     const formData = new FormData();
     formData.append("issueType", form.issueType.value);
     formData.append("specifyIssue", form.specifyIssue?.value || "");
-    formData.append("status", form.status.value);
+    if(userData.role !== "client"){
+      formData.append("status", form.status.value);
+    }
     formData.append("device", form.device.value);
     formData.append("browser", form.browser.value);
     formData.append("clientComment", form.comment.value);
     formData.append("page", form.url.value);
+
+    console.log("formData", formData);
 
     if (screenshotFile) {
       formData.append("screenshot", screenshotFile);
