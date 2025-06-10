@@ -214,7 +214,7 @@ const ProjectsByUser = () => {
 
       <main className="px-8 md:px-24 py-12 text-black">
           {userData.role !== "client" && (
-            <div className="flex sm:flex-row flex-col gap-4">
+            <div className="flex sm:flex-row flex-col gap-4 pb-12">
               <div
                 className="flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
                 onClick={() => navigate(`/newproject`)}

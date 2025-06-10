@@ -60,7 +60,7 @@ function TopNavbar() {
         <div className="flex flex-row items-center gap-8">
           {userData?.role === "admin" && (
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-12 relative w-full sm:w-auto sm:justify-end">
-              <Browser />
+              {/* <Browser /> */}
               <ClickUpButtons />
             </div>
           )}
