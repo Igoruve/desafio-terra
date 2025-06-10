@@ -83,6 +83,8 @@ async function createEasyProject(folderId, apiKey, projectName) {
         body: JSON.stringify({ name: projectName })
     };
 
+    console.log("Folder", folderId, apiKey);
+
     const response = await fetch(`https://api.clickup.com/api/v2/folder/${folderId}/list`, options)
         .then(res => res.json())
         .then(res => {
