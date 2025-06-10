@@ -49,7 +49,6 @@ const getProjectById = (id) =>
     })
     .populate("issues");
 
-
 const getProjectsByUserId = async (userId) => {
   const user = await userModel.findById(userId.trim());
   if (!user) throw new Error("UserNotFound"); //TO DO: cambiar a error personalizado
@@ -58,11 +57,11 @@ const getProjectsByUserId = async (userId) => {
     .find({ $or: [{ manager: user._id }, { clients: user._id }] })
     .populate({
       path: "clients",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate({
       path: "manager",
-      select: "-password -apiKey"
+      select: "-password -apiKey",
     })
     .populate("issues");
 };
@@ -106,7 +105,6 @@ const createProject = async (userId, data) => {
   if (!data.description || data.description.trim() === "") {
     throw new ProjectDescriptionNotProvided();
   }
-console.log(data.clientsNames);
   const user = await userModel.findById({ _id: userId });
   const getClients = async () => {
     const promises = data.clientsNames.map(async (client) => {
@@ -116,11 +114,10 @@ console.log(data.clientsNames);
     });
 
     const clientIds = await Promise.all(promises);
-    return clientIds.filter(Boolean); 
+    return clientIds.filter(Boolean);
   };
 
   const clientsList = await getClients();
-  console.log("Hola Asier", clientsList);
 
   if (clientsList.length === 0) {
     throw new Error("Client Not Found");
@@ -135,6 +132,8 @@ console.log(data.clientsNames);
     user.apiKey,
     data.title
   );
+
+  console.log("HolaIbon", newEasyProject);
   data.projectId = newEasyProject.id;
 
   const project = await projectModel.create(data);

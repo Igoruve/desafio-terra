@@ -9,13 +9,22 @@ import {
   RoleChangeNotAllowed,
   UsersDoNotExist,
   ApiKeyChangeNotAllowed,
-  WorkspaceAlreadyAssigned
+  WorkspaceAlreadyAssigned,
 } from "../../utils/errors/userErrors.js";
 
-import {UserEmailNotProvided, UserPasswordNotProvided, UserNameNotProvided} from "../../utils/errors/authErrors.js";
+import {
+  UserEmailNotProvided,
+  UserPasswordNotProvided,
+  UserNameNotProvided,
+} from "../../utils/errors/authErrors.js";
 import { get } from "mongoose";
 
-import { createEasySpaceAndFolder, createEasyFolder, getFolders, getSpaces } from "../../utils/clickUpApi/apiFunctions.js";
+import {
+  createEasySpaceAndFolder,
+  createEasyFolder,
+  getFolders,
+  getSpaces,
+} from "../../utils/clickUpApi/apiFunctions.js";
 
 // const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
@@ -44,8 +53,7 @@ async function getUserByName(name) {
 }
 
 async function deleteUserById(userId) {
-  // const user = await userModel.findOneAndDelete({ userId }).select("-password -apiKey");
-  const user = await userModel.findByIdAndDelete(userId).select("-password -apiKey");
+  const user = await userModel.findOneAndDelete({ userId }).select("-password -apiKey");
   if (!user) {
     throw new UserDoesNotExist(userId);
   }
@@ -53,11 +61,8 @@ async function deleteUserById(userId) {
 }
 
 async function editUserById(userId, newData) {
-  // const user = await userModel.findOne({ userId }).select("-password -apiKey");
-  const user = await userModel.findById(userId).select("-password -apiKey");
-  if (!user) {
-    throw new UserDoesNotExist(userId);
-  }
+
+  const user = await userModel.findOne({ userId }).select("-password -apiKey");
 
   if (newData.password) {
     newData.password = await bcrypt.hash(newData.password, 10);
@@ -68,16 +73,14 @@ async function editUserById(userId, newData) {
   if (newData.apiKey && user.role === "client") {
     throw new ApiKeyChangeNotAllowed();
   }
-  // const newUser = await userModel.findOneAndUpdate(
-  //   { userId },
-  //   newData,
-  //   { new: true, runValidators: true }
-  // ).select("-password -apiKey");
-  const newUser = await userModel.findByIdAndUpdate(
-    userId,
+  const newUser = await userModel.findOneAndUpdate(
+    { userId },
     newData,
     { new: true, runValidators: true }
   ).select("-password -apiKey");
+  if (!user) {
+    throw new UserDoesNotExist(userId);
+  }
   return newUser;
 }
 
@@ -107,7 +110,7 @@ async function createUser(userData) {
     // return await userModel.findOne({ userId }).select("-password -apiKey");
     return await userModel.findById(user._id).select("-password -apiKey");
   } catch (error) {
-    if (error.code === 11000) {
+    if (error.code === 11000) { // Error de duplicado
       throw new UserEmailAlreadyExists();
     }
     throw error;
@@ -120,8 +123,7 @@ async function editUserRole(callerUserId, targetUserId, newRole) {
     throw new Error("Invalid role");
   }
 
-  // const caller = await userModel.findOne({ userId: callerUserId }).select("-password -apiKey");
-  const caller = await userModel.findById(callerUserId).select("-password -apiKey");
+  const caller = await userModel.findOne({ userId: callerUserId }).select("-password -apiKey");
   if (!caller) {
     throw new RequestingUserNotFound();
   }
@@ -129,39 +131,43 @@ async function editUserRole(callerUserId, targetUserId, newRole) {
     throw new RoleChangeNotAllowed();
   }
 
-  // const user = await userModel.findOneAndUpdate(
-  //   { userId: targetUserId },
-  //   { role: newRole },
-  //   { new: true, runValidators: true }
-  // ).select("-password -apiKey");
-  const user = await userModel.findByIdAndUpdate(
-    targetUserId,
-    { role: newRole },
-    { new: true, runValidators: true }
-  ).select("-password -apiKey");
-  if (!user) {
-    throw new UserDoesNotExist(targetUserId);
+  try {
+    const user = await userModel.findOneAndUpdate(
+      { userId: targetUserId },
+      { role: newRole },
+      { new: true, runValidators: true }
+    ).select("-password -apiKey");
+    if (!user) {
+      throw new UserDoesNotExist(targetUserId);
+    }
+    return user;
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new UserEmailAlreadyExists();
+    }
+    throw error;
   }
-  return user;
 }
 
 async function getUserByProjectId(projectId) {
-  const project = await projectModel.findOne({ projectId })
-    .populate("client").select("-password -apiKey")
-    .populate("manager").select("-password -apiKey");
+  const project = await projectModel
+    .findOne({ projectId })
+    .populate("client")
+    .select("-password -apiKey")
+    .populate("manager")
+    .select("-password -apiKey");
 
   if (!project) {
     throw new Error(`Project with ID ${projectId} not found`);
   }
 
   return {
-    client: project.client || null,
-    manager: project.manager || null
+    client: projectModel.client || null,
+    manager: projectModel.manager || null
   };
 }
 
 async function editUserWorkspace(userId, workspaceId) {
-
   const user = await userModel.findOne({ _id: userId }).select("-password");
 
   console.log("User:", user);
@@ -176,15 +182,19 @@ async function editUserWorkspace(userId, workspaceId) {
 
   user.workspaceId = workspaceId;
   await user.save();
-  
+
   const userSpaces = await getSpaces(workspaceId, user.apiKey);
-  const easySpace = userSpaces.spaces.find(space => space.name === 'EasySpace');
+  const easySpace = userSpaces.spaces.find(
+    (space) => space.name === "EasySpace"
+  );
 
   if (easySpace?.id) {
     user.spaceId = easySpace.id;
 
     const userFolders = await getFolders(easySpace.id, user.apiKey);
-    const easyFolder = userFolders.folders.find(folder => folder.name === 'EasyFolder');
+    const easyFolder = userFolders.folders.find(
+      (folder) => folder.name === "EasyFolder"
+    );
 
     if (!easyFolder.id) {
       const newFolder = await createEasyFolder(easySpace.id, user.apiKey);
@@ -194,17 +204,21 @@ async function editUserWorkspace(userId, workspaceId) {
     if (easyFolder.id) {
       user.folderId = easyFolder.id;
     }
-
   }
   if (!easySpace) {
-    const { space, folder } = await createEasySpaceAndFolder(workspaceId, user.apiKey);
+    const { space, folder } = await createEasySpaceAndFolder(
+      workspaceId,
+      user.apiKey
+    );
     user.spaceId = space.id;
     user.folderId = folder.id;
   }
 
   await user.save();
 
-  const editedUser = await userModel.findOne({ _id: userId }).select("-password -apiKey");
+  const editedUser = await userModel
+    .findOne({ _id: userId })
+    .select("-password -apiKey");
   if (!editedUser) {
     throw new UserDoesNotExist(userId);
   }
@@ -212,7 +226,7 @@ async function editUserWorkspace(userId, workspaceId) {
   return editedUser;
 }
 
-export default{
+export default {
   getAll,
   getUserById,
   deleteUserById,
@@ -221,5 +235,5 @@ export default{
   editUserRole,
   getUserByName,
   getUserByProjectId,
-  editUserWorkspace
+  editUserWorkspace,
 };
