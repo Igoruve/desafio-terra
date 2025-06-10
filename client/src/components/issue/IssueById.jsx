@@ -59,7 +59,7 @@ function IssueById() {
 
       <main className="flex flex-col container py-12 items-center justify-center relative">
         <img src="/Back.svg" alt="" className="absolute top-4 left-4 sm:top-8 sm:left-8 cursor-pointer" onClick={() => navigate(-1)}/>
-        <div className="bg-white p-8 rounded-[30px] shadow-sm w-full sm:max-w-[50%] sm:mx-4 mx-4">
+        <div className="bg-[#F7F8F4] p-8 rounded-[30px] shadow-sm w-full sm:max-w-[50%] sm:mx-4 mx-4">
           <div className="flex justify-between gap-6">
             <div className="flex-1">
               <p className="text-xl pb-6">
