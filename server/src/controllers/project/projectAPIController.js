@@ -1,10 +1,11 @@
 import projectController from "./projectController.js";
+import mongoose from "mongoose";
 
 const createProject = async (req, res) => {
   try {
     const role = req.user?.role;
     const userId = req.user?.userId;
-  console.log("User ID: ", userId);
+    console.log("User ID: ", userId);
     if (role === "client") {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -41,7 +42,7 @@ const getProjectById = async (req, res) => {
   }
 };
 
-const getProjectsByUserId = async (req, res) => {
+/* const getProjectsByUserId = async (req, res) => {
   try {
     const projects = await projectController.getProjectsByUserId(req.params.id);
     res.status(200).json(projects);
@@ -51,6 +52,22 @@ const getProjectsByUserId = async (req, res) => {
     }
     console.error(error);
     res.status(500).json({ message: "Error fetching projects" });
+  }
+}; */
+
+
+const getProjectsByUserId = async (req, res) => {
+  const userId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid userId format" });
+  }
+
+  try {
+    const projects = await projectController.getProjectsByUserId(userId);
+    return res.status(200).json(projects);
+  } catch (err) {
+    return res.status(500).json({ message: err.message || "Server error" });
   }
 };
 

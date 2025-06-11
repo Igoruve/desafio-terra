@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteProject } from "../../utils/project";
 import { deleteIssue } from "../../utils/issue";
 import ConfirmationModal from "../confirmationModal/ConfirmationModal";
+import ClickUpButtons from "../clickUpButtons/ClickUpButtons";
 
 const formatDate = (dateObj) => {
   const raw = dateObj?.$date || dateObj;
@@ -211,19 +212,33 @@ const ProjectsByUser = () => {
       </header>
 
       <main className="px-8 md:px-24 py-12 text-black">
-        {userData.role !== "client" && (
-          <div
-            className="flex flex-row gap-4 items-center bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky mb-12 left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
-            onClick={() => navigate(`/newproject`)}
-          >
-            <img
-              src="/Plus.svg"
-              alt=""
-              className="invert brightness-0 saturate-0"
-            />
-            <h2 className="text-2xl font-bold">New Project</h2>
-          </div>
-        )}
+        <section className="flex sm:flex-row flex-col gap-4 justify-between items-center mb-12">
+          {userData.role !== "client" && (
+            <div className="flex sm:flex-row flex-col gap-4">
+              <div
+                className="flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
+                onClick={() => navigate(`/newproject`)}
+              >
+                <img
+                  src="/Plus.svg"
+                  alt=""
+                  className="invert brightness-0 saturate-0"
+                />
+                <h2 className="text-2xl font-bold">New Project</h2>
+              </div>
+             
+                <div
+                  className="cursor-pointer flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 hover:rounded-[8px] transition-all 300ms ease-in-out text-2xl font-bold"
+                  onClick={() => navigate(`/project/edit`)}
+                >
+                  <img src="/Edit.svg" alt="Delete project" />
+                  <h2>Edit projects</h2>
+                </div>
+            </div>
+          )}
+
+          {userData.role === "admin" && <ClickUpButtons />}
+        </section>
 
         <div className="space-y-12">
           {projects.map((p, index) => {
@@ -238,23 +253,24 @@ const ProjectsByUser = () => {
               >
                 <div className="md:w-1/2 bg-[#F7F8F4] rounded-[20px] px-8 py-10 shadow-2xs">
                   <div className="grid grid-cols-[1fr_40px] gap-4">
-                  <h3 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold pb-6 break-words whitespace-pre-wrap overflow-hidden max-w-full">
-  {p.title || "Untitled Project"}
-</h3>
-
+                    <h3 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold pb-6 break-words whitespace-pre-wrap overflow-hidden max-w-full">
+                      {p.title || "Untitled Project"}
+                    </h3>
 
                     {userData.role === "admin" && !isCancelled && (
-                      <div
-                        className="cursor-pointer"
-                        onClick={() =>
-                          confirmDelete(
-                            "Are you sure you want to delete this project? All issues and progress will be lost.",
-                            () => handleRemoveProject(p.projectId || p._id)
-                          )
-                        }
-                      >
-                        <img src="/Trash.svg" alt="Delete project" />
-                      </div>
+                      <section className="flex flex-col gap-6">
+                        <div
+                          className="cursor-pointer"
+                          onClick={() =>
+                            confirmDelete(
+                              "Are you sure you want to delete this project? All issues and progress will be lost.",
+                              () => handleRemoveProject(p.projectId || p._id)
+                            )
+                          }
+                        >
+                          <img src="/Trash.svg" alt="Delete project" />
+                        </div>
+                      </section>
                     )}
                   </div>
                   <div>

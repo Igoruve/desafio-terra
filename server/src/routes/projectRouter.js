@@ -24,6 +24,8 @@ router.get(
   projectAPIController.getProjectByStatus
 );
 
+/* router.get("/user", isLoggedInAPI, projectAPIController.getProjectsByUserId);
+ */
 router.put("/:id", isLoggedInAPI, projectAPIController.editProject);
 
 router.post("/", isLoggedInAPI, projectAPIController.createProject);
