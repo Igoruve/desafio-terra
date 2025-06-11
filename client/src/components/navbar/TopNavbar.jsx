@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import ClickUpButtons from "../clickUpButtons/ClickUpButtons";
+import { AuthContext } from "../../context/AuthContext";
 
 function TopNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const closeMenu = () => setIsOpen(false);
+
+  const { userData } = useContext(AuthContext);
 
   return (
     <section className="flex flex-row bg-[var(--bg-color)] h-fit w-full fixed top-0 z-50">
@@ -50,7 +54,15 @@ function TopNavbar() {
             <img className=" h-12 pl-2" src="/terraforms.gif" alt="" />
           </div>
         </Link>
-        <div className="flex flex-row gap-8 items-center">
+
+        <div className="flex flex-row items-center gap-8">
+          {userData?.role === "admin" && (
+            <div className="hidden sm:flex flex-col sm:flex-row items-start sm:items-center gap-12 relative w-full sm:w-auto sm:justify-end">
+              {/* <Browser /> */}
+              <ClickUpButtons />
+            </div>
+          )}
+
           <button
             className="text-[var(--bg-color)] bg-white px-8 py-3 min-w-[120px] text-center rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out cursor-pointer font-bold flex justify-center items-center"
             onClick={() => setIsOpen(!isOpen)}
@@ -69,8 +81,9 @@ function TopNavbar() {
               </svg>
             )}
           </button>
+
           <a href="/profile">
-            <img src="/Profile.svg" className="h-6" alt="" />
+            <img src="/Profile.svg" className="h-6" alt="Profile" />
           </a>
         </div>
       </nav>

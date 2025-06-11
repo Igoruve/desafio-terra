@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { deleteProject } from "../../utils/project";
 import { deleteIssue } from "../../utils/issue";
 import ConfirmationModal from "../confirmationModal/ConfirmationModal";
-import ClickUpButtons from "../clickUpButtons/ClickUpButtons";
 
 const formatDate = (dateObj) => {
   const raw = dateObj?.$date || dateObj;
@@ -235,9 +234,7 @@ const ProjectsByUser = () => {
                   <h2>Edit projects</h2>
                 </div>
             </div>
-          )}
-
-          {userData.role === "admin" && <ClickUpButtons />}
+          )}  
         </section>
 
         <div className="space-y-12">
