@@ -4,6 +4,7 @@ import path from "path";
 import FormData from "form-data";
 import fetch from "node-fetch";
 import { UserDoesNotExist } from "../../utils/errors/userErrors.js";
+import issueModel from "../../models/issueModel.js";
 
 //================= CREATE FUNCTIONS =================
 //====================================================
@@ -282,16 +283,12 @@ async function editEasyProject(projectId, apiKey, data) {
     return response;
 }
 
-async function editEasyTask(taskId, apiKey, data) {
-    let editedData = {}
+async function editEasyTask(taskId, apiKey) {
 
-    if (data.title) {
-        editedData.name = data.title;
-    }
-
-    if (data.description) {
-        editedData.description = data.description;
-    }
+    const data = await issueModel.findOne({ issueId: taskId }).populate({
+        path: "client",
+        select: "-password",
+    })
 
     const options = {
         method: 'PUT',
@@ -300,13 +297,16 @@ async function editEasyTask(taskId, apiKey, data) {
             'content-type': 'application/json',
             Authorization: apiKey
         },
-        body: JSON.stringify(editedData)
+        body: JSON.stringify({
+            name: data.issueType,
+            description: `Client: ${data.client.name}\nDevice: ${data.device}\nBrowser: ${data.browser}\nPage: ${data.page}\nComment: ${data.clientComment}`,
+        })
     };
 
     const response = await fetch(`https://api.clickup.com/api/v2/task/${taskId}`, options)
         .then(res => res.json())
         .then(res => {
-            console.log(res);
+            //console.log(res);
             return res;
         })
         .catch(err => console.error(err));
@@ -318,7 +318,7 @@ async function editEasyTask(taskId, apiKey, data) {
 //=======================================================
 
 
-async function uploadImageToTask(taskId, apiKey, file){
+async function uploadImageToTask(taskId, apiKey, file) {
 
     const formData = new FormData();
     const readStream = fs.createReadStream(file.path);
@@ -351,7 +351,7 @@ async function uploadImageToTask(taskId, apiKey, file){
         console.error("Upload failed:", err);
         throw err;
     }
-} 
+}
 
 export {
     createEasySpace,

@@ -30,5 +30,7 @@ router.get("/:id", isLoggedInAPI,issueAPIController.getIssueById)
 
 router.post("/create/:projectId", isLoggedInAPI, upload.single("screenshot"),issueAPIController.createIssue)
 
+router.post("/:id/edit", isLoggedInAPI, upload.none(), issueAPIController.editIssue);
+
 
 export default router;
