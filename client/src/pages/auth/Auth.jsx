@@ -116,7 +116,7 @@ function Auth({ isRegister }) {
             </div>
 
             {isRegister && (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 relative">
                 <label className="text-lg font-bold" htmlFor="confirmPassword">
                   Repeat Password:
                 </label>
