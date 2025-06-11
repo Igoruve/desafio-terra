@@ -6,7 +6,6 @@ import { deleteProject } from "../../utils/project";
 import { deleteIssue } from "../../utils/issue";
 import ConfirmationModal from "../confirmationModal/ConfirmationModal";
 
-
 const formatDate = (dateObj) => {
   const raw = dateObj?.$date || dateObj;
   if (!raw) return "N/A";
@@ -64,7 +63,6 @@ const ProjectsByUser = () => {
     onConfirm: () => {},
     message: "",
   });
-
 
   const handleRemoveProject = async (projectId) => {
     try {
@@ -213,8 +211,9 @@ const ProjectsByUser = () => {
       </header>
 
       <main className="px-8 md:px-24 py-12 text-black">
-          {userData.role !== "client" && (
-            <div className="flex sm:flex-row flex-col gap-4 pb-12">
+        {userData.role !== "client" && (
+          <div className="flex sm:flex-row flex-col justify-between gap-4 pb-12">
+            <div className="flex sm:flex-row flex-col justify-between gap-4">
               <div
                 className="flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
                 onClick={() => navigate(`/newproject`)}
@@ -232,10 +231,18 @@ const ProjectsByUser = () => {
                 onClick={() => navigate(`/project/edit`)}
               >
                 <img src="/Edit.svg" alt="Delete project" />
-                <h2>Edit projects</h2>
+                <h2>Edit Projects</h2>
               </div>
             </div>
-          )}      
+            <div
+              className="cursor-pointer flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 hover:rounded-[8px] transition-all 300ms ease-in-out text-2xl font-bold"
+              onClick={() => navigate(`/issues/edit`)}
+            >
+              <img src="/Edit.svg" alt="Delete project" />
+              <h2>Edit Issues</h2>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-12">
           {projects.map((p, index) => {
@@ -330,40 +337,39 @@ const ProjectsByUser = () => {
                           className="bg-white p-4 rounded-[30px] shadow-sm text-sm text-[var(--bg-color)] space-y-1"
                         >
                           <div className="grid grid-cols-[1fr_40px] gap-4">
-                            <div className="flex flex-wrap gap-4 text-lg">
-                              <p
-                                className={`border-3 w-fit rounded-[50px] px-4 py-2 ${
-                                  statusBorderColor[issue.status] ||
-                                  "border-[var(--bg-color)]"
-                                }`}
-                              >
-                                Status:
-                                <span className="font-medium">
-                                  {" "}
-                                  {issue.status || "N/A"}
-                                </span>
-                              </p>
-                              <div className="mt-2">
-                                <ProgressBar
-                                  percentage={getProgressFromStatus(
-                                    issue.status
-                                  )}
-                                />
+                            <div>
+                              <div>
+                                <h3 className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2 mb-4 text-2xl">
+                                  Type:
+                                  <span className="font-medium">
+                                    {" "}
+                                    {issue.issueType || "N/A"}
+                                  </span>
+                                </h3>
                               </div>
-                              <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
-                                Type:
-                                <span className="font-medium">
-                                  {" "}
-                                  {issue.issueType || "N/A"}
-                                </span>
-                              </p>
-                              <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
-                                Created:
-                                <span className="font-medium">
-                                  {" "}
-                                  {formatDate(issue.createdAt)}
-                                </span>
-                              </p>
+
+                              <div className="flex flex-wrap gap-4 text-lg">
+                                <p
+                                  className={`border-3 w-fit rounded-[50px] px-4 py-2 text-xl  ${
+                                    statusBorderColor[issue.status] ||
+                                    "border-[var(--bg-color)]"
+                                  }`}
+                                >
+                                  Status:
+                                  <span className="font-medium">
+                                    {" "}
+                                    {issue.status || "N/A"}
+                                  </span>
+                                </p>
+
+                                <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                                  Created:
+                                  <span className="font-medium">
+                                    {" "}
+                                    {formatDate(issue.createdAt)}
+                                  </span>
+                                </p>
+                              </div>
                             </div>
 
                             {!isCancelled && (

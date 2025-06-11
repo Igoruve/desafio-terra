@@ -187,7 +187,7 @@ const EditProjectAdmin = () => {
   }
 
   return (
-    <section className="flex flex-col items-center justify-center bg-white text-[var(--bg-color)] pt-20 px-4 min-h-screen text-2xl">
+    <section className="flex flex-col items-center justify-center bg-white text-[var(--bg-color)] pt-18 px-4 min-h-screen text-2xl">
       {message && (
         <div
           className={`mb-4 ${
@@ -209,7 +209,7 @@ const EditProjectAdmin = () => {
               <button
                 type="button"
                 onClick={() => handleSelectProject(project)}
-                className="w-full text-left px-4 py-3 border-3 border-[var(--bg-color)] rounded-[50px] text-[var(--bg-color)] font-semibold cursor-pointer hover:rounded-[8px] hover:bg-[var(--bg-color)] hover:text-white transition-background duration-300 ease-in-out"
+                className="w-full text-left px-4 py-3 border-5 border-[var(--bg-color)] rounded-[50px] text-[var(--bg-color)] font-semibold cursor-pointer hover:rounded-[8px] hover:bg-[var(--bg-color)] hover:text-white transition-all duration-300 ease-in-out"
               >
                 {project.title || "No title"}
               </button>
@@ -221,125 +221,130 @@ const EditProjectAdmin = () => {
       {selectedProject && (
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-8 w-full max-w-lg border-3 border-[var(--bg-color)] rounded-xl p-6 min-h-[600px] text-[var(--bg-color)]"
+          className="flex flex-col gap-6 w-full max-w-lg  rounded-xl p-6 min-h-[600px] text-[var(--bg-color)]"
         >
-          <div className="flex flex-col">
-            <label htmlFor="title" className="mb-1 font-bold">
-              Title:
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="appearance-none bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 "
-            />
-          </div>
+          <fieldset className="border-5 border-[#3D9DD8] rounded-[20px] p-8">
+            <div className="flex flex-col mb-6">
+              <label htmlFor="title" className="mb-2 font-semibold">
+                Title:
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className="appearance-none bg-white border-5 border-[var(--bg-color)] rounded-[20px] px-4 py-2"
+              />
+            </div>
 
-          <div className="flex flex-col">
-            <label htmlFor="description" className="mb-1 font-bold">
-              Description:
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={4}
-              className="appearance-none bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2  resize-none"
-            />
-          </div>
+            <div className="flex flex-col mb-6">
+              <label htmlFor="description" className="mb-2 font-semibold">
+                Description:
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={4}
+                className="appearance-none bg-white border-5 border-[var(--bg-color)] rounded-[20px] px-4 py-2 resize-none"
+              />
+            </div>
 
-          <div className="flex flex-col">
-            <label htmlFor="status" className="mb-1 font-bold">
-              Status:
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 "
-            >
-              <option value="In Progress">In Progress</option>
-              <option value="Complete">Complete</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="clients" className="mb-1 font-bold">
-              Clients:
-            </label>
-            {users.filter((user) => user.role === "client").length > 0 ? (
+            <div className="flex flex-col mb-6">
+              <label htmlFor="status" className="mb-2 font-semibold">
+                Status:
+              </label>
               <select
-                name="clients"
-                multiple
-                value={formData.clients}
-                onChange={handleClientsChange}
-                className="bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 "
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="appearance-none bg-white border-5 border-[var(--bg-color)] rounded-[20px] px-4 py-2"
               >
-                {users
-                  .filter((user) => user.role === "client")
-                  .map((user) => (
-                    <option key={user._id} value={user._id}>
-                      {user.name || user.email || "Unknown"}
-                    </option>
-                  ))}
+                <option value="In Progress">In Progress</option>
+                <option value="Complete">Complete</option>
+                <option value="Cancelled">Cancelled</option>
               </select>
-            ) : (
-              <>
-                <ul className=" list-disc list-inside ml-2">
-                  {selectedProject.clients?.map((client) => (
-                    <li key={client._id}>
-                      {client.name || client.email || client._id}
-                    </li>
-                  ))}
-                </ul>
-                <label htmlFor="clientsManual" className="mt-2 mb-1">
-                  Manual Client IDs (comma-separated):
-                </label>
-                <input
-                  type="text"
-                  name="clientsManual"
-                  value={formData.clientsManual}
-                  onChange={handleManualClientsChange}
-                  className="appearance-none bg-white border-3 border-[var(--bg-color)]rounded-[20px] px-4 py-2 text-white"
-                  placeholder="ObjectId1, ObjectId2, ..."
-                />
-              </>
-            )}
-          </div>
+            </div>
 
-          <div className="flex flex-col">
-            <label htmlFor="manager" className="mb-1">
-              Project Manager:
-            </label>
-            {users.filter((user) => user.role === "project manager").length >
-            0 ? (
-              <select
-                name="manager"
-                value={formData.manager}
-                onChange={handleManagerChange}
-                className="bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 text-white"
-              >
-                <option value="">-- Select a Manager --</option>
-                {users
-                  .filter((user) => user.role === "project manager")
-                  .map((user) => (
-                    <option key={user._id} value={user._id}>
-                      {user.name || user.email || "Unknown"}
-                    </option>
-                  ))}
-              </select>
-            ) : (
-              <p className="text-red-500">
-                No project managers available. Check console for details.
-              </p>
-            )}
-          </div>
+            <div className="flex flex-col mb-6">
+              <label htmlFor="clients" className="mb-2 font-semibold">
+                Clients:
+              </label>
+              {users.filter((user) => user.role === "client").length > 0 ? (
+                <select
+                  name="clients"
+                  multiple
+                  value={formData.clients}
+                  onChange={handleClientsChange}
+                  className="appearance-none bg-white border-5 border-[var(--bg-color)] rounded-[20px] px-4 py-2"
+                >
+                  {users
+                    .filter((user) => user.role === "client")
+                    .map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.name || user.email || "Unknown"}
+                      </option>
+                    ))}
+                </select>
+              ) : (
+                <>
+                  <ul className="list-disc list-inside ml-2">
+                    {selectedProject.clients?.map((client) => (
+                      <li key={client._id}>
+                        {client.name || client.email || client._id}
+                      </li>
+                    ))}
+                  </ul>
+                  <label
+                    htmlFor="clientsManual"
+                    className="mt-2 mb-2 font-semibold"
+                  >
+                    Manual Client IDs (comma-separated):
+                  </label>
+                  <input
+                    type="text"
+                    name="clientsManual"
+                    value={formData.clientsManual}
+                    onChange={handleManualClientsChange}
+                    className="appearance-none bg-white border-5 border-[var(--bg-color)] rounded-[20px] px-4 py-2"
+                    placeholder="ObjectId1, ObjectId2, ..."
+                  />
+                </>
+              )}
+            </div>
+
+            <div className="flex flex-col mb-6">
+              <label htmlFor="manager" className="mb-2 font-semibold">
+                Project Manager:
+              </label>
+              {users.filter((user) => user.role === "project manager").length >
+              0 ? (
+                <select
+                  name="manager"
+                  value={formData.manager}
+                  onChange={handleManagerChange}
+                  className="appearance-none bg-white border-5 border-[var(--bg-color)] rounded-[20px] px-4 py-2"
+                >
+                  <option value="">-- Select a Manager --</option>
+                  {users
+                    .filter((user) => user.role === "project manager")
+                    .map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.name || user.email || "Unknown"}
+                      </option>
+                    ))}
+                </select>
+              ) : (
+                <p className="text-red-500">
+                  No project managers available. Check console for details.
+                </p>
+              )}
+            </div>
+          </fieldset>
 
           <button
             type="submit"
-            className="bg-[var(--bg-color)] text-white py-2 rounded-[50px] font-bold cursor-pointer  hover:rounded-[8px] transition-all duration-300 ease-in-out"
+            className="font-semibold text-xl mt-4 px-6 py-3 border-5 border-[#F78BD8] text-[var(--bg-color)] rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
           >
             Update Project
           </button>

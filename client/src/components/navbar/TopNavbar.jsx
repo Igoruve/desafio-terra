@@ -90,7 +90,7 @@ function TopNavbar() {
       </nav>
 
       {isOpen && (
-        <nav className="absolute top-18 right-0 w-full bg-[var(--bg-color)] font-bold text-white flex flex-col px-6 py-4 text-4xl text-center sm:text-6xl h-screen gap-6 items-center justify-center">
+        <nav className="absolute top-18 right-0 w-full bg-[var(--bg-color)] font-bold text-white flex flex-col px-6 py-4 text-4xl text-center sm:text-5xl h-screen gap-6 items-center justify-center">
           <Link
             onClick={closeMenu}
             className="border-[5px] border-[#F96E43] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out"
@@ -112,21 +112,22 @@ function TopNavbar() {
           >
             profile
           </Link>
+          {userData?.role === "admin" && (
+            <Link
+              onClick={closeMenu}
+              className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+              to="/stats"
+            >
+              stats
+            </Link>
+          )}
           <Link
             onClick={closeMenu}
-            className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
-            to="/stats"
-          >
-            stats
-          </Link>
-          <Link
-            onClick={closeMenu}
-            className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            className=" border-[5px] border-white px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
             to="/logout"
           >
             log out
           </Link>
-          
         </nav>
       )}
     </section>

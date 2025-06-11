@@ -79,21 +79,27 @@ function CreateIssueForm() {
   // };
 
   return (
-    <section className="flex flex-col items-center justify-center h-ful bg-[var(--bg-color)] text-white pt-24 relative overflow-hidden">
-      <h2 className="hidden sm:block text-8xl font-bold top-42 left-24 w-72 fixed">
-        Create a new Issue!
-      </h2>
+    <section className="flex flex-col bg-white pt-18">
+      <header className="bg-[var(--bg-color)] text-white py-4 grid grid-cols-1 custom-xl:grid-cols-3">
+        <h2 className="text-[64px] sm:text-[96px] md:text-[140px] lg:text-[180px] xl:text-[220px] 2xl:text-[250px] font-bold mb-4 leading-[0.75] custom-xl:col-span-2 max-w-[12ch] break-words">
+          new
+          <br />
+          issue
+        </h2>
+        <div className="flex justify-end items-start pt-12 font-bold custom-xl:items-end pr-8">
+          <p className="text-2xl">Create a new issue!</p>
+        </div>
+      </header>
 
       <form
         onSubmit={handleSubmitForm}
-        action=""
-        className="flex flex-col gap-4 items-center justify-center w-full max-w-md mx-auto min-h-screen my-8 px-4 text-base sm:text-xl
-"
+        className="flex flex-col gap-4 items-center justify-center w-full max-w-md mx-auto my-8 px-4 text-base sm:text-xl"
       >
-        <fieldset className="w-full px-8 py-4 border-3 border-[#ffb410] rounded-xl flex flex-col">
+        {/* Issue Details */}
+        <fieldset className="w-full px-8 py-4 border-5 border-[#3D9DD8] rounded-xl flex flex-col">
           <legend className="text-lg font-semibold mb-2">Issue Details</legend>
 
-          <label htmlFor="issueType" className="pb-4">
+          <label htmlFor="issueType" className="pb-2">
             Issue Type*
           </label>
           <div className="flex flex-row relative w-full items-center justify-between">
@@ -101,8 +107,7 @@ function CreateIssueForm() {
               id="issueType"
               name="issueType"
               required
-              // onChange={handleIssueTypeChange}
-              className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
+              className="appearance-none bg-white text-[var(--bg-color)] border-3 border-[var(--bg-color)] rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full pr-10"
             >
               <option value="">Select an option</option>
               {issueTypes.map((type) => (
@@ -114,21 +119,9 @@ function CreateIssueForm() {
             <Arrow />
           </div>
 
-          {/* {expanded && (
-            <>
-              <label htmlFor="" className="pb-4">
-                Specify the issue
-              </label>
-              <textarea
-                id="specifyIssue"
-                name="specifyIssue"
-                className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 h-fit max-h-60 w-full cursor-text"
-              ></textarea>
-            </>
-          )} */}
           {userData.role !== "client" && (
             <>
-              <label htmlFor="status" className="pb-4">
+              <label htmlFor="status" className="pb-2">
                 Status*
               </label>
               <div className="flex flex-row relative w-full items-center justify-between">
@@ -137,7 +130,7 @@ function CreateIssueForm() {
                   name="status"
                   defaultValue="On Hold"
                   required
-                  className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
+                  className="appearance-none bg-white text-[var(--bg-color)] border-3 border-[var(--bg-color)] rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full pr-10"
                 >
                   <option value="On Hold">On Hold</option>
                   {statusOptions.map((status) => (
@@ -152,12 +145,13 @@ function CreateIssueForm() {
           )}
         </fieldset>
 
-        <fieldset className="w-full p-4 border-3 border-[#7ce55e] rounded-xl flex flex-col justify-start items-start">
+        {/* Device & Browser */}
+        <fieldset className="w-full p-4 border-5 border-[#EBA911] rounded-xl flex flex-col justify-start items-start">
           <legend className="text-lg font-semibold mb-2">
             Device & Browser Info
           </legend>
 
-          <label htmlFor="device" className="pb-4">
+          <label htmlFor="device" className="pb-2">
             Device
           </label>
           <div className="flex flex-row relative w-full items-center justify-between">
@@ -166,7 +160,7 @@ function CreateIssueForm() {
               name="device"
               defaultValue="Desktop"
               required
-              className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
+              className="appearance-none bg-white text-[var(--bg-color)] border-3 border-[var(--bg-color)] rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full pr-10"
             >
               {deviceOptions.map((device) => (
                 <option key={device} value={device}>
@@ -177,7 +171,7 @@ function CreateIssueForm() {
             <Arrow />
           </div>
 
-          <label htmlFor="browser" className="pb-4">
+          <label htmlFor="browser" className="pb-2">
             Browser
           </label>
           <div className="flex flex-row relative w-full items-center justify-between">
@@ -186,7 +180,7 @@ function CreateIssueForm() {
               name="browser"
               defaultValue="Google Chrome"
               required
-              className="appearance-none pr-10 bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
+              className="appearance-none bg-white text-[var(--bg-color)] border-3 border-[var(--bg-color)] rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full pr-10"
             >
               {topBrowsers.map((browser) => (
                 <option key={browser} value={browser}>
@@ -199,12 +193,13 @@ function CreateIssueForm() {
           </div>
         </fieldset>
 
-        <fieldset className="w-full p-4 border-3 border-[#3D9DD8] rounded-xl flex flex-col justify-start items-start">
+        {/* Additional Info */}
+        <fieldset className="w-full p-4 border-5 border-[#7ce55e] rounded-xl flex flex-col justify-start items-start">
           <legend className="text-lg font-semibold mb-2">
             Additional Info
           </legend>
 
-          <label htmlFor="comment" className="pb-4">
+          <label htmlFor="comment" className="pb-2">
             Comment*
           </label>
           <textarea
@@ -214,25 +209,24 @@ function CreateIssueForm() {
             maxLength={500}
             onChange={(e) => setComment(e.target.value)}
             required
-            className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 h-fit max-h-60 w-full cursor-text "
+            className="appearance-none bg-white text-[var(--bg-color)] border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 mb-4 w-full"
           ></textarea>
           <p className="text-right text-sm text-gray-400 mb-3">
             {comment.length}/500
           </p>
 
-          <label htmlFor="url" className="pb-4">
+          <label htmlFor="url" className="pb-2">
             Page URL*
           </label>
           <input
             type="text"
             id="url"
             name="url"
-            rows="2"
             required
-            className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 mb-4 max-h-60 w-full resize-none overflow-hidden cursor-text  h-12"
-          ></input>
+            className="appearance-none bg-white text-[var(--bg-color)] border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 mb-4 w-full"
+          />
 
-          <label htmlFor="screenshot" className="pb-4">
+          <label htmlFor="screenshot" className="pb-2">
             Screenshot
           </label>
           <input
@@ -247,15 +241,15 @@ function CreateIssueForm() {
                 setPreview(URL.createObjectURL(file));
               }
             }}
-            className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[50px] px-4 py-2 mb-4 cursor-pointer w-full"
+            className="appearance-none bg-white text-[var(--bg-color)] border-3 border-[var(--bg-color)] rounded-[50px] px-4 py-2 mb-4 w-full cursor-pointer"
           />
 
           {preview && (
             <div className="w-full flex flex-col items-end gap-2 mb-4">
               <img
                 src={preview}
-                alt="Vista previa"
-                className="w-full max-h-64 object-contain border-2 border-white rounded-lg"
+                alt="Preview"
+                className="w-full max-h-64 object-contain border-2 border-[var(--bg-color)] rounded-lg"
               />
               <button
                 type="button"
@@ -273,7 +267,7 @@ function CreateIssueForm() {
 
         <button
           type="submit"
-          className="font-semibold text-xl mt-4 px-4 py-2 border-3 border-[#F78BD8] text-white rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
+          className="font-semibold text-xl mt-4 px-4 py-2 border-3 border-[#F78BD8] text-[var(--bg-color)] rounded-[50px] cursor-pointer hover:rounded-[8px] transition-all duration-300 ease-in-out"
         >
           Submit
         </button>

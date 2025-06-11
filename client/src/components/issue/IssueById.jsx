@@ -58,7 +58,12 @@ function IssueById() {
       </header>
 
       <main className="flex flex-col container py-12 items-center justify-center relative">
-        <img src="/Back.svg" alt="" className="absolute top-4 left-4 sm:top-8 sm:left-8 cursor-pointer" onClick={() => navigate(-1)}/>
+        <img
+          src="/Back.svg"
+          alt=""
+          className="absolute top-4 left-4 sm:top-8 sm:left-8 cursor-pointer"
+          onClick={() => navigate(-1)}
+        />
         <div className="bg-[#F7F8F4] p-8 rounded-[30px] shadow-sm w-full sm:max-w-[50%] sm:mx-4 mx-4">
           <div className="flex justify-between gap-6">
             <div className="flex-1">
@@ -96,10 +101,23 @@ function IssueById() {
                   </span>
                 </p>
                 {issue.page && (
-                  <p className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
-                    Page URL: <span className="font-medium">{issue.page}</span>
-                  </p>
+                  <div className="border-3 border-[var(--bg-color)] w-fit rounded-[50px] px-4 py-2">
+                    <a
+                      href={
+                        issue.page.startsWith("http://") ||
+                        issue.page.startsWith("https://")
+                          ? issue.page
+                          : `https://${issue.page}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline break-words break-all max-w-xs sm:max-w-md"
+                    >
+                      {issue.page}
+                    </a>
+                  </div>
                 )}
+
                 {issue.screenshot && (
                   <div className="mt-4">
                     <img
@@ -109,23 +127,15 @@ function IssueById() {
                     />
                   </div>
                 )}
-                {issue.terraComments && (
-                  <>
-                    <p className="pt-8 text-lg ">Terra Comments:</p>
-                    <p>{issue.terraComments}</p>
-                  </>
-                )}
               </div>
+              {issue.terraComments && (
+                <>
+                  <p className="pt-8 text-lg ">Terra Comments:</p>
+                  <p className="pt-2 text-lg ">{issue.terraComments}</p>
+                </>
+              )}
               <p className="pt-8 text-lg ">Client Comment:</p>
-              <p>{issue.clientComment}</p>
-            </div>
-
-            <div className="flex-none">
-              <img
-                src="/Edit.svg"
-                alt="Edit icon"
-                className=" object-contain cursor-pointer"
-              />
+              <p className="pt-2 text-lg ">{issue.clientComment}</p>
             </div>
           </div>
         </div>
