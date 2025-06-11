@@ -1,10 +1,11 @@
 import {postReport} from "../../utils/data";
 import { getIssues } from "../../utils/issue";
 import { useState } from "react";
+import Plot from 'react-plotly.js';
 
 function Stats() {
 
-  const [images, setImages] = useState([]);
+  const [graphs, setGraphs] = useState([]);
 
   const handleSendReport = async () => {
     try {
@@ -15,7 +16,9 @@ function Stats() {
 
       if (result?.graphs) {
         console.log("Graphs:", result.graphs);
-        setImages(result.graphs);
+        console.log("Data:", result.graphs[0].data);
+        console.log("hola", typeof result.graphs[0]);
+        setGraphs(result.graphs);
       } else {
         console.warn("No graphs found in the response.");
       }
@@ -44,11 +47,18 @@ function Stats() {
           Send report
         </button>
 
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {images.map((url, i) => (
-            <img key={i} src={url} alt={`report-${i}`} className="rounded shadow" />
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full px-4">
+          {graphs.map((graph, i) => (
+            <Plot
+              key={i}
+              data={graph.data}
+              layout={graph.layout || { title: `Graph ${i + 1}` }}
+              style={{ width: "100%", height: "100%" }}
+              config={{ responsive: true }}
+            />
           ))}
         </div>
+        
       </main>
     </section>
   );

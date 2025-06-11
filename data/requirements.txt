@@ -10,3 +10,4 @@ sentence_transformers==4.1.0
 xgboost==3.0.2
 joblib==1.5.1
 spacy==3.8.7
+plotly==5.22.0

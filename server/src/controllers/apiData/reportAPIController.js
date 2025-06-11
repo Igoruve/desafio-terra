@@ -8,7 +8,7 @@ const generateReport = async (req, res) => {
         console.log(data);
         res.status(200).json(data);
     } catch (error) {
-        console.error("Flask API error: ", error.message);
+        console.error("Flask API error: ", error.message); 
         console.error(error);
         res.status(500).json({ error: "Error generating report" });
     }
