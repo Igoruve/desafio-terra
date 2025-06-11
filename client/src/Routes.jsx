@@ -17,6 +17,7 @@ import CreateProjectForm from "./components/createProjectForm/CreateProjectForm.
 import FAQ from "./components/FAQ/FAQ.jsx";
 import IssueById from "./components/issue/IssueById.jsx";
 import AvisoLegal from "./components/footer/AvisoLegal.jsx";
+import Stats from "./components/stats/Stats.jsx";
 
 const router = createBrowserRouter([
   {
@@ -83,6 +84,10 @@ const router = createBrowserRouter([
             path: "/privacy",
             element: <AvisoLegal />,
           },
+          {
+            path: "/stats", 
+            element: <Stats />
+          }
         ],
       },
     ],

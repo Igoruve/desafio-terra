@@ -79,7 +79,7 @@ def generate_report(data, frequency='weekly'):
 
 
     # Cargar datos
-    df = pd.json_normalize(json.loads(data))
+    df = pd.json_normalize(data)
     
     # COLUMNAS DEL DATAFRAME:
     #

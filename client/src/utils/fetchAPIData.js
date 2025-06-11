@@ -1,9 +1,5 @@
-/* import { getToken } from "./localStorage"; */
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL_PROD;
-
-async function FetchData(route, method = "GET", data = null) {
-  const url = BASE_URL + route;
+async function FetchAPIData(route, method = "GET", data = null) {
+  const url = route;
 
   /* const token = getToken();
   console.log("token", token); */
@@ -58,6 +54,4 @@ console.log("url", url);
   }
 }
 
-
-
-export default FetchData;
+export default FetchAPIData;

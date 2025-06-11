@@ -7,13 +7,14 @@ import os
 from flask import Flask, jsonify, request, url_for
 from flask_cors import CORS
 
-import report
+import report_generator
 
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__, static_folder=os.path.join(base_dir, 'static'))
 app.config["DEBUG"] = True
 CORS(app)
+# CORS(app, origins=["http://localhost:5173"])
 
 os.chdir(os.path.dirname(__file__))
 
@@ -55,14 +56,15 @@ def report():
     data = request.get_json()
     
     try:
-        filenames = report.generate_report(data)
+        filenames = report_generator.generate_report(data)
         urls = [url_for('static', filename=f'reports/{file_name}', _external=True) for file_name in filenames]
         
         return jsonify({"status": "ok", "graphs": urls})  # COMENTAR CON FULLSTACK QUE LO QUE LES MANDO SON URLS
     
     except Exception as e:
+        print(e,flush=True)
         return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=5000, debug=True)
