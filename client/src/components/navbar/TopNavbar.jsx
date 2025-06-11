@@ -98,10 +98,18 @@ function TopNavbar() {
           <Link
             onClick={closeMenu}
             className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
+            to="/stats"
+          >
+            stats
+          </Link>
+          <Link
+            onClick={closeMenu}
+            className=" border-[5px] border-[#F78BD8] px-12 py-3 h-fit w-full sm:max-w-[50%] rounded-[50px] hover:rounded-[8px] transition-all duration-300 ease-in-out "
             to="/logout"
           >
             log out
           </Link>
+          
         </nav>
       )}
     </section>
