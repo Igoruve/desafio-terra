@@ -96,7 +96,8 @@ async function createIssue(req, res) {
       data.screenshot = req.file.filename; 
     }
 
-    const issue = await issueController.createIssue(projectId, data);
+    console.log("req.file:", req.file);
+    const issue = await issueController.createIssue(projectId, data, req.file);
     res.json(issue);
   } catch (error) {
     console.error(error);

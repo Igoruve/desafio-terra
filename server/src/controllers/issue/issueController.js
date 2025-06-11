@@ -13,10 +13,7 @@ import {
   pageUrlNotProvided,
 } from "../../utils/errors/issueErrors.js";
 
-import {
-  createEasyTask,
-  deleteEasyTask,
-} from "../../utils/clickUpApi/apiFunctions.js";
+import { createEasyTask, deleteEasyTask, uploadImageToTask } from "../../utils/clickUpApi/apiFunctions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,14 +66,15 @@ async function getIssuesByDevice(device) {
   });
   return issues;
 }
-async function createIssue(projectId, data) {
+
+async function createIssue(projectId, data, imageFile=null) {
+  
   if (!data.issueType) throw new issueTypeNotProvided();
   if (!data.device) throw new deviceNotProvided();
   if (!data.browser) throw new browserNotProvided();
   if (!data.clientComment) throw new clientCommentNotProvided();
   if (!data.page) throw new pageUrlNotProvided();
-/*   const project = await projectModel
-    .findOne({ projectId: projectId }); */
+
   const project = await projectModel
     .findOne({ projectId: projectId })
     .populate({
@@ -84,14 +82,23 @@ async function createIssue(projectId, data) {
       select: "-password",
     })
     .populate("issues");
-  console.log("project", project);
+
   const apiKey = project.manager.apiKey;
-  console.log("API KEY:", apiKey);
+
   const newEasyTask = await createEasyTask(projectId, apiKey, data);
   data.issueId = newEasyTask.id;
 
+  if (imageFile) {
+    console.log("Subiendo imagen a la tarea:", newEasyTask.id);
+    console.log("Ruta de la imagen:", imageFile.path);
+    console.log("Nombre de la imagen:", imageFile.filename);
+    await uploadImageToTask(newEasyTask.id, apiKey, imageFile);
+    console.log("Imagen subida");
+  }
+
   const newIssue = await issueModel.create(data);
   newIssue.save();
+
   project.issues.push(newIssue);
   project.save();
 
