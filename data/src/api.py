@@ -1,5 +1,5 @@
 from model_exe import TextPreprocessor, SentenceEmbedder, RequestClassifierPipeline, translate
-from report import generate_report
+from report_generator import generate_report
 
 import pandas as pd
 
@@ -9,11 +9,6 @@ import os
 from flask import Flask, jsonify, request, url_for
 from flask_cors import CORS
 
-<<<<<<< HEAD
-import report_generator
-
-=======
->>>>>>> data
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__, static_folder=os.path.join(base_dir, 'static'))
@@ -60,11 +55,7 @@ def report():
     data = request.get_json()
     
     try:
-<<<<<<< HEAD
-        filenames = report_generator.generate_report(data)
-=======
         filenames = generate_report(data)
->>>>>>> data
         urls = [url_for('static', filename=f'reports/{file_name}', _external=True) for file_name in filenames]
         
         return jsonify({"status": "ok", "graphs": urls})  # COMENTAR CON FULLSTACK QUE LO QUE LES MANDO SON URLS
