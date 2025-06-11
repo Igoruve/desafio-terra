@@ -21,7 +21,7 @@ const AuthProvider = ({ children }) => {
       try {
         setLoading(true);
         const result = await getMe();
-        console.log("getMe result:", result);
+        result.user.userId = result.user._id;
         if (result.user && result.user.role) {
           setUserData(result.user);
         } else {
