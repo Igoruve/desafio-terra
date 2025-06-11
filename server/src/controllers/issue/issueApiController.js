@@ -109,11 +109,9 @@ async function editIssue(req, res) {
   try {
     const issueId = req.params.id;
     const data = req.body;
-    console.log("EDIT ISSUE ---");
-    console.log("ID:", issueId);
-    console.log("BODY:", data);
+
     const issue = await issueController.editIssue(issueId, data);
-    console.log("UPDATED ISSUE:", issue);
+
     res.json(issue);
   } catch (error) {
     console.error(error);

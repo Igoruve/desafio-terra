@@ -13,12 +13,12 @@ import {
   pageUrlNotProvided,
 } from "../../utils/errors/issueErrors.js";
 
-import { createEasyTask, deleteEasyTask, uploadImageToTask } from "../../utils/clickUpApi/apiFunctions.js";
+import { createEasyTask, deleteEasyTask, editEasyTask, uploadImageToTask } from "../../utils/clickUpApi/apiFunctions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
- 
+
 //CAMBIO
 
 async function getIssuesByUser(userId) {
@@ -67,8 +67,8 @@ async function getIssuesByDevice(device) {
   return issues;
 }
 
-async function createIssue(projectId, data, imageFile=null) {
-  
+async function createIssue(projectId, data, imageFile = null) {
+
   if (!data.issueType) throw new issueTypeNotProvided();
   if (!data.device) throw new deviceNotProvided();
   if (!data.browser) throw new browserNotProvided();
@@ -113,20 +113,26 @@ async function editIssue(issueId, data) {
   if (!issue) {
     throw new Error("Issue not found");
   }
-  const previousStatus = issue.status;
-  console.log(previousStatus);
 
-  console.log("Data en controller:", data);
-  console.log("Issue encontrada:", issue);
+  const previousStatus = issue.status;
+
   //Actualizamos la issue
   const updatedIssue = await issueModel
     .findOneAndUpdate({ issueId }, data, { new: true })
     .populate("client");
+
+  const project = await projectModel
+    .findOne({ clients: issue.client })
+    .populate({
+      path: "manager",
+      select: "-password",
+    })
+
+  await editEasyTask(issueId, project.manager.apiKey);
+
   const newStatus = updatedIssue.status;
-  console.log(newStatus);
 
   //Enviamos el email de actualizacion si corresponde
-  console.log("lista de status");
   const statusEmailMessages = {
     On_Hold: "Issue on hold",
     In_Progress: "Issue in progress",
@@ -145,8 +151,6 @@ async function editIssue(issueId, data) {
   ) {
     const userEmail = updatedIssue.client?.email;
     const userName = updatedIssue.client?.name || "User";
-    console.log(userEmail);
-    console.log(userName);
 
     if (userEmail) {
       console.log("Enviando email");
