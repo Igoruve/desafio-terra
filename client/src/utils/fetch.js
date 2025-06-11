@@ -8,8 +8,6 @@ async function FetchData(route, method = "GET", data = null) {
   /* const token = getToken();
   console.log("token", token); */
 
-console.log("url", url);
-
   const options = {
     method,
     headers: {},
@@ -35,7 +33,7 @@ console.log("url", url);
     const response = await fetch(url, options);
 
     console.log("response", response);
-    
+
     const contentType = response.headers.get("content-type");
 
     let responseData;
@@ -49,6 +47,7 @@ console.log("url", url);
 
     if (!response.ok) {
       responseData.status = response.status;
+      return { error: true, message: responseData.message || `HTTP error: ${response.status}`, status: response.status }; //CAMBIADO
     }
 
     return responseData;

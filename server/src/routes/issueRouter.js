@@ -15,6 +15,9 @@ router.get("/device",isLoggedInAPI,issueAPIController.getIssuesByDevice)
 
 router.put("/:id/edit", isLoggedInAPI, issueAPIController.editIssue);
 
+router.get("/user/:userId", isLoggedInAPI, issueAPIController.getIssuesByUser); //cambio
+
+/* router.get("/:id", issueAPIController.getIssueById); */ // duplicado? sin middleware?
 router.put("/:id/screenshot", isLoggedInAPI, upload.single("screenshot"),issueAPIController.replaceIssueScreenshot)
 
 router.get("/:id", issueAPIController.getIssueById);
@@ -26,5 +29,8 @@ router.delete("/:id/delete/screenshot",isLoggedInAPI,issueAPIController.deleteIs
 router.get("/:id", isLoggedInAPI,issueAPIController.getIssueById)
 
 router.post("/create/:projectId", isLoggedInAPI, upload.single("screenshot"),issueAPIController.createIssue)
+
+router.post("/:id/edit", isLoggedInAPI, upload.none(), issueAPIController.editIssue);
+
 
 export default router;

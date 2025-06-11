@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
 import { UserDoesNotExist } from "../../utils/errors/userErrors.js";
+import issueModel from "../../models/issueModel.js";
 
 //================= CREATE FUNCTIONS =================
 //====================================================
@@ -310,26 +311,25 @@ async function editEasyProject(projectId, apiKey, data) {
   return response;
 }
 
-async function editEasyTask(taskId, apiKey, data) {
-  let editedData = {};
+async function editEasyTask(taskId, apiKey) {
 
-  if (data.title) {
-    editedData.name = data.title;
-  }
+    const data = await issueModel.findOne({ issueId: taskId }).populate({
+        path: "client",
+        select: "-password",
+    })
 
-  if (data.description) {
-    editedData.description = data.description;
-  }
-
-  const options = {
-    method: "PUT",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-      Authorization: apiKey,
-    },
-    body: JSON.stringify(editedData),
-  };
+    const options = {
+        method: 'PUT',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: apiKey
+        },
+        body: JSON.stringify({
+            name: data.issueType,
+            description: `Client: ${data.client.name}\nDevice: ${data.device}\nBrowser: ${data.browser}\nPage: ${data.page}\nComment: ${data.clientComment}`,
+        })
+    };
 
   const response = await fetch(
     `https://api.clickup.com/api/v2/task/${taskId}`,
@@ -337,7 +337,7 @@ async function editEasyTask(taskId, apiKey, data) {
   )
     .then((res) => res.json())
     .then((res) => {
-      console.log(res);
+      //console.log(res);
       return res;
     })
     .catch((err) => console.error(err));
@@ -348,7 +348,7 @@ async function editEasyTask(taskId, apiKey, data) {
 //================= OTHER FUNCTIONS =====================
 //=======================================================
 
-async function uploadImageToTask(taskId, apiKey, file) {
+async function uploadImageToTask(taskId, apiKey, file)  {
   // Importación dinámica compatible con ESM
   const FormData = (await import("form-data")).default;
 
