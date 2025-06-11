@@ -25,7 +25,9 @@ const getUserByName = async (req, res) => {
   }
 };
 
-const getAllUsers = async (req, res) => {
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+/*******  01db999a-c48e-41f9-8115-585e1f29b120  *******/const getAllUsers = async (req, res) => {
   try {
     const users = await userController.getAll();
     res.status(200).json(users);
@@ -143,6 +145,21 @@ const editUserWorkspace = async (req, res) => {
   }
 };
 
+const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No image uploaded" });
+    }
+
+    const imageUrl = `/uploads/${req.file.filename}`;
+    return res.status(200).json({ imageUrl });  
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 
 export default{
   getAllUsers,
@@ -153,5 +170,6 @@ export default{
   deleteUser,
   getUserByProjectId,
   editUserRole,
-  editUserWorkspace
+  editUserWorkspace,
+  uploadImage
 };
