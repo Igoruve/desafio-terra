@@ -1,5 +1,4 @@
 import userModel from "../../models/userModel.js";
-import { customAlphabet } from "nanoid";
 import bcrypt from "bcrypt";
 
 import {
@@ -27,10 +26,10 @@ import {
   getSpaces,
 } from "../../utils/clickUpApi/apiFunctions.js";
 
-const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
+// const getRandomCode = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 6);
 
 async function getAll() {
-  const users = await userModel.find().select("-password -apiKey"); //para que no devuelva el pwd del user
+  const users = await userModel.find().select("-password -apiKey");
   if (!users || users.length === 0) {
     throw new UsersDoNotExist();
   }
@@ -67,9 +66,6 @@ async function editUserById(userId, newData) {
   const user = await userModel
     .findOne({ _id: userId })
     .select("-password -apiKey");
-  console.log("Hola", userId);
-
-  console.log("User:", user);
 
   if (newData.password) {
     newData.password = await bcrypt.hash(newData.password, 10);
@@ -81,7 +77,10 @@ async function editUserById(userId, newData) {
     throw new ApiKeyChangeNotAllowed();
   }
   const newUser = await userModel
-    .findOneAndUpdate({ _id:userId }, newData, { new: true, runValidators: true })
+    .findOneAndUpdate({ _id: userId }, newData, {
+      new: true,
+      runValidators: true,
+    })
     .select("-password -apiKey");
   if (!user) {
     throw new UserDoesNotExist(userId);
@@ -100,20 +99,20 @@ async function createUser(userData) {
   if (!password) throw new UserPasswordNotProvided();
   if (!name) throw new UserNameNotProvided();
 
-  const userId = getRandomCode();
-
-  const hashedPassword = await bcrypt.hash(password, 10); // Hay que hacer hasheo explícito
+  // const userId = getRandomCode();
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     const user = await userModel.create({
-      userId,
+      // userId,
       name,
       email,
       password: hashedPassword,
       role,
       apiKey,
     });
-    return await userModel.findOne({ userId }).select("-password -apiKey");
+    // return await userModel.findOne({ userId }).select("-password -apiKey");
+    return await userModel.findById(user._id).select("-password -apiKey");
   } catch (error) {
     if (error.code === 11000) {
       // Error de duplicado
