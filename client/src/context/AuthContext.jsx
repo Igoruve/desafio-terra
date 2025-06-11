@@ -75,6 +75,8 @@ const AuthProvider = ({ children }) => {
           saveToken(result.token);
         }
         let finalUserData = result.user;
+        console.log("result.user", result.user);
+        //finalUserData = { ...finalUserData, userId: result.user._id };
         setUserData(finalUserData);
         navigate("/projects"); 
         return null;
