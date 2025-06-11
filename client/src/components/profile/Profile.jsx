@@ -108,7 +108,7 @@ const Profile = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 w-full max-w-lg border-3 border-[var(--bg-color)] rounded-xl p-6 mx-auto my-24"
+        className="flex flex-col gap-4 w-full max-w-lg p-6 mx-auto my-24"
       >
         {!editing ? (
           <>
@@ -136,8 +136,8 @@ const Profile = () => {
             </button>
           </>
         ) : (
-          <>
-            <div className="flex flex-col text-2xl">
+          <div>
+            <div className="flex flex-col text-2xl text-black">
               <label htmlFor="name" className="mb-1">
                 Name:
               </label>
@@ -148,12 +148,12 @@ const Profile = () => {
                 onFocus={() => handleFocus("name")}
                 onBlur={() => handleBlur("name")}
                 onChange={handleChange}
-                className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+                className="appearance-none bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2"
                 required
               />
             </div>
 
-            <div className="flex flex-col text-2xl">
+            <div className="flex flex-col text-2xl text-black">
               <label htmlFor="email" className="mb-1">
                 Email:
               </label>
@@ -164,7 +164,7 @@ const Profile = () => {
                 onFocus={() => handleFocus("email")}
                 onBlur={() => handleBlur("email")}
                 onChange={handleChange}
-                className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+                className="appearance-none bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2"
                 required
               />
             </div>
@@ -178,7 +178,7 @@ const Profile = () => {
                 Change password
               </button>
             ) : (
-              <div className="flex flex-col">
+              <div className="flex flex-col text-black">
                 <label htmlFor="password" className="mb-1">
                   New password:
                 </label>
@@ -194,7 +194,7 @@ const Profile = () => {
                       setTouchedFields((prev) => ({ ...prev, password: true }));
                     }
                   }}
-                  className="appearance-none bg-[var(--bg-color)] border-3 border-white rounded-[20px] px-4 py-2 text-white"
+                  className="appearance-none bg-white border-3 border-[var(--bg-color)] rounded-[20px] px-4 py-2 text-white"
                 />
               </div>
             )}
@@ -222,8 +222,9 @@ const Profile = () => {
               >
                 Save Changes
               </button>
+              
             </div>
-          </>
+          </div>
         )}
       </form>
     </section>
