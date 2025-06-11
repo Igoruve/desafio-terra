@@ -235,9 +235,7 @@ const ProjectsByUser = () => {
                 <h2>Edit projects</h2>
               </div>
             </div>
-          )}
-
-          
+          )}      
 
         <div className="space-y-12">
           {projects.map((p, index) => {
