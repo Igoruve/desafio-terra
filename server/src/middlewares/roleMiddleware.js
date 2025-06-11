@@ -11,7 +11,7 @@ function requireAdmin(req, res, next) {
 }
 
 
-function requirePM(req, res, next) {
+function requirePM(req, res, next) { 
   const userRole = req.user?.role;
 
   if (userRole === "client") {
