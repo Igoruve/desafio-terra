@@ -176,6 +176,7 @@ async function editIssue(issueId, data) {
         new Date(),
         statusEmailMessages[newStatus]
       );
+      console.log("Email enviado")
     }
   }
 

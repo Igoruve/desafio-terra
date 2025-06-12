@@ -318,7 +318,7 @@ async function editEasyTask(taskId, apiKey) {
   const data = await issueModel.findOne({ issueId: taskId }).populate({
     path: "client",
     select: "-password",
-  });
+  }); 
 
   const options = {
     method: "PUT",
@@ -329,7 +329,7 @@ async function editEasyTask(taskId, apiKey) {
     },
     body: JSON.stringify({
       name: data.issueType,
-      description: `Client: ${data.client.name}\nDevice: ${data.device}\nBrowser: ${data.browser}\nPage: ${data.page}\nComment: ${data.clientComment}`,
+      description: `Client: ${data.client.name}\nDevice: ${data.device}\nBrowser: ${data.browser}\nPage: ${data.page}\nComment: ${data.clientComment}\nTerra Comment: ${data.terraComments}`,
     }),
   };
 
