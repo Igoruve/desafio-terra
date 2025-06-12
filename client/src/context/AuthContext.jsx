@@ -22,6 +22,7 @@ const AuthProvider = ({ children }) => {
         setLoading(true);
         const result = await getMe();
         result.user.userId = result.user._id;
+        console.log("result", result);
         if (result.user && result.user.role) {
           setUserData(result.user);
         } else {
@@ -75,6 +76,7 @@ const AuthProvider = ({ children }) => {
           saveToken(result.token);
         }
         let finalUserData = result.user;
+        console.log("finalUserData", finalUserData);
         setUserData(finalUserData);
         navigate("/projects"); 
         return null;

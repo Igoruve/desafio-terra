@@ -70,6 +70,7 @@ const EditIssue = () => {
           issuesData = data;
         } else if (userData.role === "client") {
           const data = await FetchData(`/issue/user/${userData._id}`);
+          console.log("HEllo", userData.id);
           if (data.error || data.status >= 400) {
             throw new Error(
               data.message ||
@@ -101,31 +102,33 @@ const EditIssue = () => {
               )}`
             );
           }
+          console.log("proyectos", projectsData);
           projectIds = projectsData.map((project) => project.projectId);
           setManagerProjectIds(projectIds);
-          if (projectIds.length > 0) {
-            const issuesResponse = await FetchData(
-              "/issue/byProjects",
-              "POST",
-              { projectIds }
-            );
-            if (issuesResponse.error || issuesResponse.status >= 400) {
-              throw new Error(
-                issuesResponse.message ||
-                  `Failed to fetch issues: ${
-                    issuesResponse.status || "Unknown status"
-                  }`
-              );
-            }
-            if (!Array.isArray(issuesResponse)) {
-              throw new Error(
-                `Unexpected issues response format: ${JSON.stringify(
-                  issuesResponse
-                )}`
-              );
-            }
-            issuesData = issuesResponse;
-          }
+          // if (projectIds.length > 0) {
+          //   const issuesResponse = await FetchData(
+          //     "/issue/byProjects",
+          //     "POST",
+          //     { projectIds }
+          //   );
+          //   if (issuesResponse.error || issuesResponse.status >= 400) {
+          //     throw new Error(
+          //       issuesResponse.message ||
+          //         `Failed to fetch issues: ${
+          //           issuesResponse.status || "Unknown status"
+          //         }`
+          //     );
+          //   }
+          //   if (!Array.isArray(issuesResponse)) {
+          //     throw new Error(
+          //       `Unexpected issues response format: ${JSON.stringify(
+          //         issuesResponse
+          //       )}`
+          //     );
+          //   }
+          //   issuesData = issuesResponse;
+          // }
+          issuesData = projectsData.map(project => project.issues).flat();
         } else {
           setError(
             "Unauthorized access. Your role does not permit viewing issues."

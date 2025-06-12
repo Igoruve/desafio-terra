@@ -211,39 +211,40 @@ const ProjectsByUser = () => {
       </header>
 
       <main className="px-8 md:px-24 py-12 text-black">
-        {userData.role !== "client" && (
-          <div className="flex sm:flex-row flex-col justify-between gap-4 pb-12">
-            <div className="flex sm:flex-row flex-col justify-between gap-4">
-              <div
-                className="flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
-                onClick={() => navigate(`/newproject`)}
-              >
-                <img
-                  src="/Plus.svg"
-                  alt=""
-                  className="invert brightness-0 saturate-0"
-                />
-                <h2 className="text-2xl font-bold">New Project</h2>
-              </div>
+        <div className="flex sm:flex-row flex-col justify-between gap-4 pb-12">
+          {userData.role !== "client" && (
+            <div >
+              <div className="flex sm:flex-row flex-col justify-between gap-4">
+                <div
+                  className="flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 cursor-pointer hover:rounded-[8px] transition-all 300ms ease-in-out"
+                  onClick={() => navigate(`/newproject`)}
+                >
+                  <img
+                    src="/Plus.svg"
+                    alt=""
+                    className="invert brightness-0 saturate-0"
+                  />
+                  <h2 className="text-2xl font-bold">New Project</h2>
+                </div>
 
-              <div
-                className="cursor-pointer flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 hover:rounded-[8px] transition-all 300ms ease-in-out text-2xl font-bold"
-                onClick={() => navigate(`/project/edit`)}
-              >
-                <img src="/Edit.svg" alt="Delete project" />
-                <h2>Edit Projects</h2>
+                <div
+                  className="cursor-pointer flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 hover:rounded-[8px] transition-all 300ms ease-in-out text-2xl font-bold"
+                  onClick={() => navigate(`/project/edit`)}
+                >
+                  <img src="/Edit.svg" alt="Delete project" />
+                  <h2>Edit Projects</h2>
+                </div>
               </div>
             </div>
-            <div
-              className="cursor-pointer flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 hover:rounded-[8px] transition-all 300ms ease-in-out text-2xl font-bold"
-              onClick={() => navigate(`/issues/edit`)}
-            >
-              <img src="/Edit.svg" alt="Delete project" />
-              <h2>Edit Issues</h2>
-            </div>
+          )}
+          <div
+            className="cursor-pointer flex flex-row gap-4 items-center  bg-[var(--bg-color)] text-white w-fit px-12 py-6 rounded-[50px] backdrop-blur-md sticky left-12 hover:rounded-[8px] transition-all 300ms ease-in-out text-2xl font-bold"
+            onClick={() => navigate(`/issues/edit`)}
+          >
+            <img src="/Edit.svg" alt="Delete project" />
+            <h2>Edit Issues</h2>
           </div>
-        )}
-
+        </div>
         <div className="space-y-12">
           {projects.map((p, index) => {
             const isCancelled = p.status === "Cancelled";
