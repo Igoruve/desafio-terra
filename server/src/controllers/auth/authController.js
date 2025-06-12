@@ -53,7 +53,7 @@ const login = async ({ email, password }) => {
   return {
     token,
     user: {
-      id: user._id,
+      _id: user._id,
       userId: user._id,
       name: user.name,
       role: user.role,

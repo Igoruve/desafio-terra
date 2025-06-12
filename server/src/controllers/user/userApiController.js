@@ -1,7 +1,6 @@
-
 import userController from "./userController.js";
-import projectModel from "../../models/projectModel.js";  
-import {ProjectNotFound} from "../../utils/errors/projectErrors.js";
+import projectModel from "../../models/projectModel.js";
+import { ProjectNotFound } from "../../utils/errors/projectErrors.js";
 import {
   UserDoesNotExist,
   ApiKeyRequired,
@@ -10,8 +9,6 @@ import {
   RoleChangeNotAllowed,
   UsersDoNotExist,
 } from "../../utils/errors/userErrors.js";
-
-
 
 const getUserByName = async (req, res) => {
   try {
@@ -27,17 +24,18 @@ const getUserByName = async (req, res) => {
 
 /*************  ✨ Windsurf Command ⭐  *************/
 /**
-/*******  01db999a-c48e-41f9-8115-585e1f29b120  *******/const getAllUsers = async (req, res) => {
-  try {
-    const users = await userController.getAll();
-    res.status(200).json(users);
-  } catch (error) {
-    if (error instanceof UsersDoNotExist) {
-      return res.status(error.statusCode).json({ error: error.message });
+/*******  01db999a-c48e-41f9-8115-585e1f29b120  *******/ const getAllUsers =
+  async (req, res) => {
+    try {
+      const users = await userController.getAll();
+      res.status(200).json(users);
+    } catch (error) {
+      if (error instanceof UsersDoNotExist) {
+        return res.status(error.statusCode).json({ error: error.message });
+      }
+      res.status(500).json({ error: "Internal server error" });
     }
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+  };
 
 const getUserById = async (req, res) => {
   try {
@@ -97,7 +95,9 @@ const getUserByProjectId = async (req, res) => {
       throw new ProjectNotFound();
     }
     if (!project.userId) {
-      return res.status(404).json({ error: "No user associated with this project" });
+      return res
+        .status(404)
+        .json({ error: "No user associated with this project" });
     }
     const user = await userController.getUserById(project.userId);
     res.status(200).json(user);
@@ -114,7 +114,11 @@ const editUserRole = async (req, res) => {
     const adminUserId = req.user.userId;
     const { userId, newRole } = req.body;
 
-    const user = await userController.editUserRole(adminUserId, userId, newRole);
+    const user = await userController.editUserRole(
+      adminUserId,
+      userId,
+      newRole
+    );
     res.status(200).json(user);
   } catch (error) {
     if (
@@ -152,16 +156,14 @@ const uploadImage = async (req, res) => {
     }
 
     const imageUrl = `/uploads/${req.file.filename}`;
-    return res.status(200).json({ imageUrl });  
+    return res.status(200).json({ imageUrl });
   } catch (error) {
     console.error("Error uploading image:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-
-
-export default{
+export default {
   getAllUsers,
   getUserById,
   getUserByName,
@@ -171,5 +173,5 @@ export default{
   getUserByProjectId,
   editUserRole,
   editUserWorkspace,
-  uploadImage
+  uploadImage,
 };

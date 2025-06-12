@@ -13,11 +13,15 @@ import {
   pageUrlNotProvided,
 } from "../../utils/errors/issueErrors.js";
 
-import { createEasyTask, deleteEasyTask, editEasyTask, uploadImageToTask } from "../../utils/clickUpApi/apiFunctions.js";
+import {
+  createEasyTask,
+  deleteEasyTask,
+  editEasyTask,
+  uploadImageToTask,
+} from "../../utils/clickUpApi/apiFunctions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 //CAMBIO
 
@@ -68,7 +72,6 @@ async function getIssuesByDevice(device) {
 }
 
 async function createIssue(projectId, data, imageFile = null) {
-
   if (!data.issueType) throw new issueTypeNotProvided();
   if (!data.device) throw new deviceNotProvided();
   if (!data.browser) throw new browserNotProvided();
@@ -113,6 +116,7 @@ async function editIssue(issueId, data) {
   if (!issue) {
     throw new Error("Issue not found");
   }
+  console.log("Issue found:", issue);
 
   const previousStatus = issue.status;
 
@@ -122,11 +126,16 @@ async function editIssue(issueId, data) {
     .populate("client");
 
   const project = await projectModel
-    .findOne({ clients: issue.client })
+    .findOne({
+      $or: [
+        { clients: issue.client._id }, // buscar por client ID
+        { manager: issue.client._id }, // o buscar por manager ID
+      ],
+    })
     .populate({
       path: "manager",
-      select: "-password",
-    })
+      select: "-password", 
+    });
 
   await editEasyTask(issueId, project.manager.apiKey);
 
@@ -235,7 +244,6 @@ async function deleteIssueScreenshot(_id) {
 
     try {
       await fs.unlink(filePath);
-
     } catch (error) {
       console.error("Error deleting screenshot file:", error);
     }
@@ -257,5 +265,5 @@ export default {
   replaceIssueScreenshot,
   deleteIssue,
   getIssuesByUser,
-  deleteIssueScreenshot
+  deleteIssueScreenshot,
 };
